@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:background="@color/bg_main"
+    android:layout_height="match_parent"
+    tools:context=".activity.LoginRegisterActivity">
+
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:gravity="start"
+            android:layout_gravity="start"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:paddingTop="@dimen/_24sdp"
+                android:paddingBottom="@dimen/_24sdp"
+                android:background="@drawable/gr"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:src="@drawable/logo"
+                    android:layout_width="@dimen/_82sdp"
+                    android:layout_height="@dimen/_82sdp" />
+                <TextView
+                    android:textColor="@color/white"
+                    android:layout_marginTop="@dimen/_16sdp"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/m"
+                    android:textSize="@dimen/_16sdp"
+                    android:text="It Takes One Click To"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:textColor="@color/white"
+                    android:layout_marginTop="@dimen/_2sdp"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/m"
+                    android:textSize="@dimen/_16sdp"
+                    android:text="Send Messages To Your Friend's"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:padding="@dimen/_16sdp"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <ImageView
+                    android:adjustViewBounds="true"
+                    android:src="@drawable/log"
+                    android:layout_width="@dimen/_100sdp"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:fontFamily="@font/m"
+                    android:alpha="0.8"
+                    android:textSize="@dimen/_14sdp"
+                    android:textStyle="bold"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:text="Live Chat With Your Friend's"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <Button
+                    android:id="@+id/btn_login"
+                    android:fontFamily="@font/m"
+                    android:textSize="@dimen/_14sdp"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:background="@drawable/btnshape"
+                    android:layout_marginTop="@dimen/_16sdp"
+                    android:text="Login"
+                    android:layout_width="@dimen/_124sdp"
+                    android:layout_height="wrap_content"/>
+
+                <Button
+                    android:id="@+id/btn_register"
+                    android:fontFamily="@font/m"
+                    android:textSize="@dimen/_14sdp"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:background="@drawable/btnshape"
+                    android:layout_marginTop="@dimen/_8sdp"
+                    android:text="Register"
+                    android:layout_width="@dimen/_124sdp"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+</LinearLayout>

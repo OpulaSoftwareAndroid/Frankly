@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:fontFamily="@font/m"
+            android:textColor="@color/colorPrimary"
+            android:textSize="@dimen/_12sdp"
+            android:layout_margin="@dimen/_16sdp"
+            android:text="Are you sure you want to log out?"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+        <LinearLayout
+            android:layout_marginBottom="@dimen/_16sdp"
+            android:gravity="end"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/btn_no"
+                android:fontFamily="@font/m"
+                android:textAllCaps="false"
+                android:layout_marginRight="@dimen/_16sdp"
+                android:textSize="@dimen/_12sdp"
+                android:textColor="@color/white"
+                android:background="@drawable/btnshape_plain_without_stroke"
+                android:text="No"
+                android:layout_width="@dimen/_64sdp"
+                android:layout_height="@dimen/_32sdp"/>
+            <Button
+                android:textStyle="bold"
+                android:id="@+id/btn_yes"
+                android:fontFamily="@font/m"
+                android:textAllCaps="false"
+                android:layout_marginRight="@dimen/_16sdp"
+                android:textSize="@dimen/_12sdp"
+                android:textColor="@color/white"
+                android:background="@drawable/btnshape_plain_without_stroke"
+                android:text="Yes"
+                android:layout_width="@dimen/_64sdp"
+                android:layout_height="@dimen/_32sdp"/>
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

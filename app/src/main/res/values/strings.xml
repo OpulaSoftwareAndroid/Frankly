@@ -1,6 +1,5 @@
 <resources>
-    <string name="app_name">ChatApp</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="app_name">Frankly</string>
+    <string name="network_time_out_error">Something went wrong, Please try again later!!!</string>
+    <string name="network_error">No internet connection. Make sure Wi-Fi or cellular data is turned on, then try again.</string>
 </resources>
