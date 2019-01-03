@@ -1,19 +1,17 @@
-package com.opula.chatapp.activity;
+package com.opula.chatapp.fragments;
 
-import android.content.Intent;
-import android.content.SharedPreferences;
+import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -25,7 +23,9 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.opula.chatapp.R;
 import com.opula.chatapp.adapter.MessageAdapter;
-import com.opula.chatapp.fragments.APIService;
+import com.opula.chatapp.api.APIService;
+import com.opula.chatapp.constant.SharedPreference;
+import com.opula.chatapp.constant.WsConstant;
 import com.opula.chatapp.model.Chat;
 import com.opula.chatapp.model.User;
 import com.opula.chatapp.notifications.Client;
@@ -33,17 +33,15 @@ import com.opula.chatapp.notifications.Data;
 import com.opula.chatapp.notifications.MyResponse;
 import com.opula.chatapp.notifications.Sender;
 import com.opula.chatapp.notifications.Token;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
 import de.hdodenhof.circleimageview.CircleImageView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MessageActivity extends AppCompatActivity {
+public class MessageFragment extends Fragment {
 
     CircleImageView profile_image;
     TextView username;
@@ -59,48 +57,37 @@ public class MessageActivity extends AppCompatActivity {
 
     RecyclerView recyclerView;
 
-    Intent intent;
-
     ValueEventListener seenListener;
 
     String userid;
 
     APIService apiService;
 
+    SharedPreference sharedPreference;
+
     boolean notify = false;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_message);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_message, container, false);
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // and this
-                startActivity(new Intent(MessageActivity.this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
-            }
-        });
+        sharedPreference = new SharedPreference();
 
         apiService = Client.getClient("https://fcm.googleapis.com/").create(APIService.class);
 
-        recyclerView = findViewById(R.id.recycler_view);
+        recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
         linearLayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(linearLayoutManager);
 
-        profile_image = findViewById(R.id.profile_image);
-        username = findViewById(R.id.username);
-        btn_send = findViewById(R.id.btn_send);
-        text_send = findViewById(R.id.text_send);
+        profile_image = view.findViewById(R.id.profile_image);
+        username = view.findViewById(R.id.username);
+        btn_send = view.findViewById(R.id.btn_send);
+        text_send = view.findViewById(R.id.text_send);
 
-        intent = getIntent();
-        userid = intent.getStringExtra("userid");
+        userid = sharedPreference.getValue(getActivity(),WsConstant.userId);
         fuser = FirebaseAuth.getInstance().getCurrentUser();
 
         btn_send.setOnClickListener(new View.OnClickListener() {
@@ -111,7 +98,7 @@ public class MessageActivity extends AppCompatActivity {
                 if (!msg.equals("")){
                     sendMessage(fuser.getUid(), userid, msg);
                 } else {
-                    Toast.makeText(MessageActivity.this, "You can't send empty message", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "You can't send empty message", Toast.LENGTH_SHORT).show();
                 }
                 text_send.setText("");
             }
@@ -129,7 +116,11 @@ public class MessageActivity extends AppCompatActivity {
                     profile_image.setImageResource(R.drawable.image_boy);
                 } else {
                     //and this
-                    Glide.with(getApplicationContext()).load(user.getImageURL()).into(profile_image);
+                    try {
+                        Glide.with(getActivity()).load(user.getImageURL()).into(profile_image);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
 
                 readMesagges(fuser.getUid(), userid, user.getImageURL());
@@ -142,6 +133,8 @@ public class MessageActivity extends AppCompatActivity {
         });
 
         seenMessage(userid);
+
+        return view;
     }
 
     private void seenMessage(final String userid){
@@ -197,7 +190,7 @@ public class MessageActivity extends AppCompatActivity {
 
             }
         });
-        
+
         final DatabaseReference chatRefReceiver = FirebaseDatabase.getInstance().getReference("Chatlist")
                 .child(userid)
                 .child(fuser.getUid());
@@ -242,7 +235,7 @@ public class MessageActivity extends AppCompatActivity {
                                 public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
                                     if (response.code() == 200){
                                         if (response.body().success != 1){
-                                            Toast.makeText(MessageActivity.this, "Failed!", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(getActivity(), "Failed!", Toast.LENGTH_SHORT).show();
                                         }
                                     }
                                 }
@@ -277,7 +270,7 @@ public class MessageActivity extends AppCompatActivity {
                         mchat.add(chat);
                     }
 
-                    messageAdapter = new MessageAdapter(MessageActivity.this, mchat, imageurl);
+                    messageAdapter = new MessageAdapter(getActivity(), mchat, imageurl);
                     recyclerView.setAdapter(messageAdapter);
                 }
             }
@@ -289,8 +282,8 @@ public class MessageActivity extends AppCompatActivity {
         });
     }
 
-    private void currentUser(String userid){
-        SharedPreferences.Editor editor = getSharedPreferences("PREFS", MODE_PRIVATE).edit();
+   /* private void currentUser(String userid){
+        SharedPreferences.Editor editor = getActivity().getSharedPreferences("PREFS", MODE_PRIVATE).edit();
         editor.putString("currentuser", userid);
         editor.apply();
     }
@@ -302,20 +295,22 @@ public class MessageActivity extends AppCompatActivity {
         hashMap.put("status", status);
 
         reference.updateChildren(hashMap);
-    }
+    }*/
 
-    @Override
-    protected void onResume() {
+   /* @Override
+    public void onResume() {
         super.onResume();
         status("online");
         currentUser(userid);
     }
 
     @Override
-    protected void onPause() {
+    public void onPause() {
         super.onPause();
         reference.removeEventListener(seenListener);
         status("offline");
         currentUser("none");
-    }
+    }*/
+
+
 }

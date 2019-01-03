@@ -1,14 +1,15 @@
-package com.opula.chatapp.activity;
+package com.opula.chatapp.fragments;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -24,10 +25,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.opula.chatapp.R;
+import com.opula.chatapp.activity.LoginRegisterActivity;
 import com.opula.chatapp.constant.AppGlobal;
 
+import java.util.Objects;
 
-public class MyProfileActivity extends AppCompatActivity {
+public class MyProfileFragment extends Fragment {
 
     ImageView imgBack;
     LinearLayout lin_synccontact, lin_franklyweb, lin_close_account, lin_logout;
@@ -36,20 +39,21 @@ public class MyProfileActivity extends AppCompatActivity {
     DatabaseReference reference;
     FirebaseAuth firebaseAuth;
 
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_my_profile);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_my_profile, container, false);
 
 
-        lin_close_account = findViewById(R.id.lin_close_account);
-        imgBack = findViewById(R.id.imgBack);
-        lin_logout = findViewById(R.id.lin_logout);
+        lin_close_account = view.findViewById(R.id.lin_close_account);
+        imgBack = view.findViewById(R.id.imgBack);
+        lin_logout = view.findViewById(R.id.lin_logout);
 
         imgBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onBackPressed();
+                Objects.requireNonNull(getActivity()).onBackPressed();
             }
         });
 
@@ -59,22 +63,25 @@ public class MyProfileActivity extends AppCompatActivity {
         lin_close_account.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                showCloseAccountDialog(MyProfileActivity.this);
+                showCloseAccountDialog(getActivity());
             }
         });
 
         lin_logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showDialog(MyProfileActivity.this);
+                showDialog(getActivity());
             }
         });
+
+        return view;
+
+
     }
 
     public void showCloseAccountDialog(Context mContext) {
         final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mContext);
-        LayoutInflater inflater = (MyProfileActivity.this).getLayoutInflater();
+        LayoutInflater inflater = (getActivity()).getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.dailog_close_account, null);
         alertDialogBuilder.setView(dialogView);
         alertDialogBuilder.setCancelable(false);
@@ -101,10 +108,9 @@ public class MyProfileActivity extends AppCompatActivity {
         alertDialog.show();
     }
 
-
     public void showDialog(Context mContext) {
         final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mContext);
-        LayoutInflater inflater = (MyProfileActivity.this).getLayoutInflater();
+        LayoutInflater inflater = (getActivity()).getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.dailog_logout, null);
         alertDialogBuilder.setView(dialogView);
         alertDialogBuilder.setCancelable(false);
@@ -124,7 +130,11 @@ public class MyProfileActivity extends AppCompatActivity {
         btn_yes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                FirebaseAuth.getInstance().signOut();
+                Toast.makeText(getActivity(), "Logout Successfully!", Toast.LENGTH_SHORT).show();
+                Intent it = new Intent(getActivity(), LoginRegisterActivity.class);
+                startActivity(it);
+                getActivity().finish();
             }
         });
         alertDialog.show();
@@ -202,19 +212,26 @@ public class MyProfileActivity extends AppCompatActivity {
         firebaseUser.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
-                AppGlobal.showProgressDialog(MyProfileActivity.this);
+                AppGlobal.showProgressDialog(getActivity());
                 if (task.isSuccessful()) {
                     FirebaseAuth.getInstance().signOut();
-                    AppGlobal.hideProgressDialog(MyProfileActivity.this);
-                    Intent it = new Intent(getApplicationContext(), LoginRegisterActivity.class);
+                    AppGlobal.hideProgressDialog(getActivity());
+                    Intent it = new Intent(getActivity(), LoginRegisterActivity.class);
                     startActivity(it);
-                    finish();
-//                    Toast.makeText(MyProfileActivity.this, "Your profile is deleted:( Create a account now!", Toast.LENGTH_SHORT).show();
+                    getActivity().finish();
+                    Toast.makeText(getActivity(), "Your account is closed!", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(MyProfileActivity.this, "Failed to delete your account!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "Failed to delete your account!", Toast.LENGTH_SHORT).show();
 
                 }
             }
         });
     }
+
+
+
+
+
+
+
 }

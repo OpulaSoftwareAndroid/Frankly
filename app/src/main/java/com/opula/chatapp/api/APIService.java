@@ -1,4 +1,4 @@
-package com.opula.chatapp.fragments;
+package com.opula.chatapp.api;
 
 import com.opula.chatapp.notifications.MyResponse;
 import com.opula.chatapp.notifications.Sender;

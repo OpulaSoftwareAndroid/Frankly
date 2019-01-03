@@ -17,7 +17,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.opula.chatapp.Main2Activity;
 import com.opula.chatapp.adapter.UserAdapter;
+import com.opula.chatapp.constant.WsConstant;
 import com.opula.chatapp.model.Chatlist;
 import com.opula.chatapp.model.User;
 import com.opula.chatapp.notifications.Token;
@@ -27,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class ChatsFragment extends Fragment {
+public class ListChatFragment extends Fragment {
 
     private RecyclerView recyclerView;
 
@@ -42,7 +44,9 @@ public class ChatsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_chats, container, false);
+        View view = inflater.inflate(R.layout.fragment_list_chats, container, false);
+
+        Main2Activity.showpart1();
 
         recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
@@ -99,6 +103,7 @@ public class ChatsFragment extends Fragment {
                     }
                 }
                 userAdapter = new UserAdapter(getContext(), mUsers, true);
+                WsConstant.check = "fragment";
                 recyclerView.setAdapter(userAdapter);
             }
 

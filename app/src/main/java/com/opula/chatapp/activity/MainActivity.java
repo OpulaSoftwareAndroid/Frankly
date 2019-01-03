@@ -23,7 +23,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.opula.chatapp.R;
-import com.opula.chatapp.fragments.ChatsFragment;
+import com.opula.chatapp.fragments.ListChatFragment;
 import com.opula.chatapp.fragments.ProfileFragment;
 import com.opula.chatapp.fragments.UsersFragment;
 import com.opula.chatapp.model.Chat;
@@ -92,9 +92,9 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 if (unread == 0){
-                    viewPagerAdapter.addFragment(new ChatsFragment(), "Chats");
+                    viewPagerAdapter.addFragment(new ListChatFragment(), "Chats");
                 } else {
-                    viewPagerAdapter.addFragment(new ChatsFragment(), "("+unread+") Chats");
+                    viewPagerAdapter.addFragment(new ListChatFragment(), "("+unread+") Chats");
                 }
 
                 viewPagerAdapter.addFragment(new UsersFragment(), "Users");

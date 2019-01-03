@@ -31,7 +31,6 @@
         <activity
             android:name=".activity.LoginActivity"
             android:parentActivityName=".activity.LoginRegisterActivity" />
-        <activity android:name=".activity.MessageActivity" />
         <activity
             android:name=".activity.ResetPasswordActivity"
             android:parentActivityName=".activity.LoginActivity" />
@@ -60,8 +59,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Main2Activity"></activity>
-        <activity android:name=".activity.MyProfileActivity" />
+        <activity android:name=".Main2Activity" />
     </application>
 
 </manifest>

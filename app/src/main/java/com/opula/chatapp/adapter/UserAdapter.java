@@ -1,8 +1,11 @@
 package com.opula.chatapp.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,18 +21,24 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.opula.chatapp.activity.MessageActivity;
+import com.opula.chatapp.Main2Activity;
+import com.opula.chatapp.constant.SharedPreference;
+import com.opula.chatapp.constant.WsConstant;
+import com.opula.chatapp.fragments.MessageFragment;
 import com.opula.chatapp.model.Chat;
 import com.opula.chatapp.model.User;
 import com.opula.chatapp.R;
 
 import java.util.List;
 
+import static android.app.Activity.RESULT_OK;
+
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
     private Context mContext;
     private List<User> mUsers;
     private boolean ischat;
+    SharedPreference sharedPreference;
 
     String theLastMessage;
 
@@ -48,6 +57,8 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+
+        sharedPreference = new SharedPreference();
 
         final User user = mUsers.get(position);
         holder.username.setText(user.getUsername());
@@ -79,9 +90,15 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(mContext, MessageActivity.class);
-                intent.putExtra("userid", user.getId());
-                mContext.startActivity(intent);
+                Main2Activity.hideFloatingActionButton();
+                sharedPreference.save(mContext,user.getId(),WsConstant.userId);
+                Main2Activity.checkChatTheme(mContext);
+
+                Main2Activity.showpart1();
+
+                FragmentManager fragmentManager = ((FragmentActivity)mContext).getSupportFragmentManager();
+                fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new MessageFragment()).addToBackStack(null).commit();
+
             }
         });
     }
@@ -121,7 +138,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()){
                     Chat chat = snapshot.getValue(Chat.class);
-                   if (firebaseUser != null && chat != null) {
+                    if (firebaseUser != null && chat != null) {
                         if (chat.getReceiver().equals(firebaseUser.getUid()) && chat.getSender().equals(userid) ||
                                 chat.getReceiver().equals(userid) && chat.getSender().equals(firebaseUser.getUid())) {
                             theLastMessage = chat.getMessage();
