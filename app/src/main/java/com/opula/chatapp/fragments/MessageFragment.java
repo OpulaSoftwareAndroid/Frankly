@@ -10,6 +10,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.bumptech.glide.Glide;
@@ -36,20 +39,23 @@ import com.opula.chatapp.notifications.Token;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import de.hdodenhof.circleimageview.CircleImageView;
+import java.util.Objects;
+
+import hani.momanii.supernova_emoji_library.Actions.EmojIconActions;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MessageFragment extends Fragment {
 
-    CircleImageView profile_image;
-    TextView username;
+    ImageView imgUser,image_smile;
+    LinearLayout imgBack;
+    TextView txtUserName,txtCheckActive;
 
     FirebaseUser fuser;
     DatabaseReference reference;
 
-    ImageButton btn_send;
+    RelativeLayout btn_send;
     EditText text_send;
 
     MessageAdapter messageAdapter;
@@ -65,10 +71,13 @@ public class MessageFragment extends Fragment {
 
     SharedPreference sharedPreference;
 
+    EmojIconActions emojIcon;
+
     boolean notify = false;
 
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_message, container, false);
 
@@ -77,15 +86,27 @@ public class MessageFragment extends Fragment {
         apiService = Client.getClient("https://fcm.googleapis.com/").create(APIService.class);
 
         recyclerView = view.findViewById(R.id.recycler_view);
+        btn_send = view.findViewById(R.id.btn_send);
+        text_send = view.findViewById(R.id.text_send);
+        imgBack = view.findViewById(R.id.imgBack);
+        imgUser = view.findViewById(R.id.imgUser);
+        txtUserName = view.findViewById(R.id.txtUserName);
+        txtCheckActive = view.findViewById(R.id.txtCheckActive);
+        image_smile = view.findViewById(R.id.image_smile);
+//        emojIcon = new EmojIconActions(this, view, emojiconEditText, emojiButton);
+
+
         recyclerView.setHasFixedSize(true);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(Objects.requireNonNull(getActivity()).getApplicationContext());
         linearLayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(linearLayoutManager);
 
-        profile_image = view.findViewById(R.id.profile_image);
-        username = view.findViewById(R.id.username);
-        btn_send = view.findViewById(R.id.btn_send);
-        text_send = view.findViewById(R.id.text_send);
+        imgBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity().onBackPressed();
+            }
+        });
 
         userid = sharedPreference.getValue(getActivity(),WsConstant.userId);
         fuser = FirebaseAuth.getInstance().getCurrentUser();
@@ -104,6 +125,15 @@ public class MessageFragment extends Fragment {
             }
         });
 
+        image_smile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+
+            }
+        });
+
 
         reference = FirebaseDatabase.getInstance().getReference("Users").child(userid);
 
@@ -111,13 +141,16 @@ public class MessageFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 User user = dataSnapshot.getValue(User.class);
-                username.setText(user.getUsername());
+                assert user != null;
+                txtUserName.setText(user.getUsername());
+                String status = user.getStatus();
+                txtCheckActive.setText(status);
                 if (user.getImageURL().equals("default")){
-                    profile_image.setImageResource(R.drawable.image_boy);
+                    imgUser.setImageResource(R.drawable.image_boy);
                 } else {
                     //and this
                     try {
-                        Glide.with(getActivity()).load(user.getImageURL()).into(profile_image);
+                        Glide.with(getActivity()).load(user.getImageURL()).into(imgUser);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

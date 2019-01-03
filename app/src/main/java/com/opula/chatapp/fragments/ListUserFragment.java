@@ -22,7 +22,6 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.opula.chatapp.Main2Activity;
 import com.opula.chatapp.R;
-import com.opula.chatapp.activity.MainActivity;
 import com.opula.chatapp.adapter.UserAdapter;
 import com.opula.chatapp.constant.WsConstant;
 import com.opula.chatapp.model.User;
