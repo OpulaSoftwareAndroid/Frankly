@@ -15,6 +15,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.opula.chatapp.Main2Activity;
 import com.opula.chatapp.R;
 import com.opula.chatapp.constant.AppGlobal;
 import com.rengwuxian.materialedittext.MaterialEditText;
@@ -61,7 +62,7 @@ public class LoginActivity extends AppCompatActivity {
                                 public void onComplete(@NonNull Task<AuthResult> task) {
                                     AppGlobal.hideProgressDialog(LoginActivity.this);
                                     if (task.isSuccessful()){
-                                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                        Intent intent = new Intent(LoginActivity.this, Main2Activity.class);
                                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                                         startActivity(intent);
                                         finish();

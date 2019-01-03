@@ -54,6 +54,7 @@ public class Main2Activity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), MyProfileActivity.class);
                 startActivity(intent);
+                finish();
                 //startActivityForResult(intent, 1001);
             }
         });

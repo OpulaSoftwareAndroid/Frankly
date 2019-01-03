@@ -8,11 +8,12 @@ import android.widget.Button;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.opula.chatapp.Main2Activity;
 import com.opula.chatapp.R;
 
 public class LoginRegisterActivity extends AppCompatActivity {
 
-    Button btn_login,btn_register;
+    Button btn_login, btn_register;
     FirebaseUser firebaseUser;
 
     @Override
@@ -22,8 +23,8 @@ public class LoginRegisterActivity extends AppCompatActivity {
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
         //check if user is null
-        if (firebaseUser != null){
-            Intent intent = new Intent(LoginRegisterActivity.this, MainActivity.class);
+        if (firebaseUser != null) {
+            Intent intent = new Intent(LoginRegisterActivity.this, Main2Activity.class);
             startActivity(intent);
             finish();
         }
@@ -50,5 +51,11 @@ public class LoginRegisterActivity extends AppCompatActivity {
                 startActivity(new Intent(LoginRegisterActivity.this, RegisterActivity.class));
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        LoginRegisterActivity.this.finish();
     }
 }
