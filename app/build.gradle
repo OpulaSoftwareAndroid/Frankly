@@ -68,6 +68,9 @@ dependencies {
     //chatkit
     implementation 'com.github.stfalcon:chatkit:0.3.1'
 
+    // Load Images
+    implementation 'com.github.bumptech.glide:glide:3.7.0'
+
 
 }
 
