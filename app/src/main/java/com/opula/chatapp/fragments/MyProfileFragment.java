@@ -189,7 +189,6 @@ public class MyProfileFragment extends Fragment {
         return mimeTypeMap.getExtensionFromMimeType(contentResolver.getType(uri));
     }
 
-
     private void initViews(View view) {
         image_profile = view.findViewById(R.id.profile_image);
         img_edit_profile = view.findViewById(R.id.img_edit_profile);

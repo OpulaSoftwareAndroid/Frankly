@@ -2,12 +2,12 @@ package com.opula.chatapp;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -35,7 +35,9 @@ public class Main2Activity extends AppCompatActivity {
     public static FirebaseUser firebaseUser;
     public static DatabaseReference reference;
     public static FloatingActionButton fab;
-    public static LinearLayout part1,part2;
+    public static LinearLayout part1, part2;
+    FirebaseAuth mAuth;
+    FirebaseDatabase mFirebaseInstance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +51,9 @@ public class Main2Activity extends AppCompatActivity {
         part1 = findViewById(R.id.part1);
         part2 = findViewById(R.id.part2);
 
+        mFirebaseInstance = FirebaseDatabase.getInstance();
+        mAuth = FirebaseAuth.getInstance();
+
         showFloatingActionButton();
         showpart1();
 
@@ -61,6 +66,7 @@ public class Main2Activity extends AppCompatActivity {
                 fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new ListUserFragment()).addToBackStack(null).commit();
             }
         });
+
 
         fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new ListChatFragment()).addToBackStack(null).commit();
@@ -81,6 +87,17 @@ public class Main2Activity extends AppCompatActivity {
         img_setting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+//                List<String> friends = new ArrayList<>();
+//                friends.add("John");
+//                friends.add("Steve");
+//                friends.add("Anna");
+//                reference = FirebaseDatabase.getInstance().getReference().child("GroupList").child(mAuth.getCurrentUser().getUid());
+//                for (String friend : friends) {
+//                    reference.child("friends").child(friend).setValue(true);
+//                }
+
+
                 hideFloatingActionButton();
                 showpart2();
                 FragmentManager fragmentManager = getSupportFragmentManager();
@@ -89,15 +106,14 @@ public class Main2Activity extends AppCompatActivity {
         });
 
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-
     }
 
-    public static void showpart1(){
+    public static void showpart1() {
         part1.setVisibility(View.VISIBLE);
         part2.setVisibility(View.GONE);
     }
 
-    public static void showpart2(){
+    public static void showpart2() {
         part1.setVisibility(View.GONE);
         part2.setVisibility(View.VISIBLE);
     }
@@ -112,7 +128,6 @@ public class Main2Activity extends AppCompatActivity {
             }
         }
     }
-
 
     public static void checkChatTheme(Context context) {
         txt_list.setTextColor(context.getResources().getColor(R.color.black));
@@ -169,7 +184,7 @@ public class Main2Activity extends AppCompatActivity {
         status("offline");
     }
 
-    public static void status(String status){
+    public static void status(String status) {
         reference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("status", status);

@@ -3,6 +3,7 @@ package com.opula.chatapp.adapter;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,15 +13,15 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.opula.chatapp.model.Chat;
 import com.opula.chatapp.R;
+import com.opula.chatapp.model.Chat;
 
 import java.util.List;
 
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHolder> {
 
-    public static  final int MSG_TYPE_LEFT = 0;
-    public static  final int MSG_TYPE_RIGHT = 1;
+    public static final int MSG_TYPE_LEFT = 0;
+    public static final int MSG_TYPE_RIGHT = 1;
 
     private Context mContext;
     private List<Chat> mChat;
@@ -28,7 +29,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
     FirebaseUser fuser;
 
-    public MessageAdapter(Context mContext, List<Chat> mChat, String imageurl){
+    public MessageAdapter(Context mContext, List<Chat> mChat, String imageurl) {
         this.mChat = mChat;
         this.mContext = mContext;
         this.imageurl = imageurl;
@@ -50,17 +51,27 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     public void onBindViewHolder(@NonNull MessageAdapter.ViewHolder holder, int position) {
 
         Chat chat = mChat.get(position);
+        Log.d("Chat_Data", chat.getImage() + "/");
 
-        holder.show_message.setText(chat.getMessage());
-
-        if (imageurl.equals("default")){
+        if (imageurl.equals("default")) {
             holder.profile_image.setImageResource(R.drawable.image_boy);
         } else {
             Glide.with(mContext).load(imageurl).into(holder.profile_image);
         }
 
-        if (position == mChat.size()-1){
-            if (chat.getisIsseen()){
+        if (!chat.getImage().equalsIgnoreCase("default")) {
+            holder.img_receive.setVisibility(View.VISIBLE);
+            holder.show_message.setVisibility(View.INVISIBLE);
+            Glide.with(mContext).load(chat.getImage()).into(holder.img_receive);
+        }
+        if (chat.getImage().equalsIgnoreCase("default")) {
+            holder.img_receive.setVisibility(View.GONE);
+            holder.show_message.setVisibility(View.VISIBLE);
+            holder.show_message.setText(chat.getMessage());
+        }
+
+        if (position == mChat.size() - 1) {
+            if (chat.getisIsseen() == false) {
                 holder.txt_seen.setText("Seen");
             } else {
                 holder.txt_seen.setText("Delivered");
@@ -76,10 +87,10 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         return mChat.size();
     }
 
-    public  class ViewHolder extends RecyclerView.ViewHolder{
+    public class ViewHolder extends RecyclerView.ViewHolder {
 
         public TextView show_message;
-        public ImageView profile_image;
+        public ImageView profile_image, img_receive;
         public TextView txt_seen;
 
         public ViewHolder(View itemView) {
@@ -87,6 +98,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
             show_message = itemView.findViewById(R.id.show_message);
             profile_image = itemView.findViewById(R.id.profile_image);
+            img_receive = itemView.findViewById(R.id.img_receive);
             txt_seen = itemView.findViewById(R.id.txt_seen);
         }
     }
@@ -94,7 +106,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     @Override
     public int getItemViewType(int position) {
         fuser = FirebaseAuth.getInstance().getCurrentUser();
-        if (mChat.get(position).getSender().equals(fuser.getUid())){
+        if (mChat.get(position).getSender().equals(fuser.getUid())) {
             return MSG_TYPE_RIGHT;
         } else {
             return MSG_TYPE_LEFT;

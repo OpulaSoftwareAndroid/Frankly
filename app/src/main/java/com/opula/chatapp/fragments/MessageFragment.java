@@ -7,10 +7,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.provider.MediaStore;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -21,13 +21,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
-import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -75,14 +74,12 @@ import retrofit2.Response;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
-import static br.com.instachat.emojilibrary.controller.emoji_pages.FragmentEmojiRecents.TAG;
-import static com.opula.chatapp.Main2Activity.firebaseUser;
 
 public class MessageFragment extends Fragment {
 
     ImageView imgUser;
     LinearLayout imgBack;
-    TextView txtUserName,txtCheckActive;
+    TextView txtUserName, txtCheckActive;
     FirebaseUser fuser;
     DatabaseReference reference;
     RelativeLayout btn_send;
@@ -94,7 +91,7 @@ public class MessageFragment extends Fragment {
     APIService apiService;
     SharedPreference sharedPreference;
     EmojiconEditText text_send;
-    ImageView emojiButton,send_image;
+    ImageView emojiButton, send_image;
     View rootView;
     EmojIconActions emojIcon;
 
@@ -132,8 +129,7 @@ public class MessageFragment extends Fragment {
         send_image = view.findViewById(R.id.send_image);
         emojIcon = new EmojIconActions(getActivity(), rootView, text_send, emojiButton);
         emojIcon.ShowEmojIcon();
-        emojIcon.setIconsIds(R.drawable.ic_keyboard_black_24dp,R.drawable.ic_sentiment_satisfied_black_24dp);
-
+        emojIcon.setIconsIds(R.drawable.ic_keyboard_black_24dp, R.drawable.ic_sentiment_satisfied_black_24dp);
 
 
         recyclerView.setHasFixedSize(true);
@@ -148,7 +144,7 @@ public class MessageFragment extends Fragment {
             }
         });
 
-        userid = sharedPreference.getValue(getActivity(),WsConstant.userId);
+        userid = sharedPreference.getValue(getActivity(), WsConstant.userId);
         fuser = FirebaseAuth.getInstance().getCurrentUser();
 
         btn_send.setOnClickListener(new View.OnClickListener() {
@@ -156,7 +152,7 @@ public class MessageFragment extends Fragment {
             public void onClick(View view) {
                 notify = true;
                 String msg = text_send.getText().toString();
-                if (!msg.equals("")){
+                if (!msg.equals("")) {
                     sendMessage(fuser.getUid(), userid, msg, false, "default");
                 } else {
                     Toast.makeText(getActivity(), "You can't send empty message", Toast.LENGTH_SHORT).show();
@@ -178,9 +174,12 @@ public class MessageFragment extends Fragment {
             boolean isTyping = false;
 
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
 
             private Timer timer = new Timer();
             private final long DELAY = 1500; // milliseconds
@@ -188,7 +187,7 @@ public class MessageFragment extends Fragment {
             @Override
             public void afterTextChanged(final Editable s) {
                 Log.d("", "");
-                if(!isTyping) {
+                if (!isTyping) {
                     Log.d("typing", "started typing");
                     // Send notification for start typing event
                     isTyping = true;
@@ -220,7 +219,7 @@ public class MessageFragment extends Fragment {
                 txtUserName.setText(user.getUsername());
                 String status = user.getStatus();
                 txtCheckActive.setText(status);
-                if (user.getImageURL().equals("default")){
+                if (user.getImageURL().equals("default")) {
                     imgUser.setImageResource(R.drawable.image_boy);
                 } else {
                     //and this
@@ -375,15 +374,14 @@ public class MessageFragment extends Fragment {
     }
 
 
-
-    private void seenMessage(final String userid){
+    private void seenMessage(final String userid) {
         reference = FirebaseDatabase.getInstance().getReference("Chats");
         seenListener = reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Chat chat = snapshot.getValue(Chat.class);
-                    if (chat.getReceiver().equals(fuser.getUid()) && chat.getSender().equals(userid)){
+                    if (chat.getReceiver().equals(fuser.getUid()) && chat.getSender().equals(userid)) {
                         HashMap<String, Object> hashMap = new HashMap<>();
                         hashMap.put("isseen", true);
                         snapshot.getRef().updateChildren(hashMap);
@@ -398,20 +396,19 @@ public class MessageFragment extends Fragment {
         });
     }
 
-    private void sendMessage(String sender, final String receiver, String message, boolean isimage, String uri){
+    private void sendMessage(String sender, final String receiver, String message, boolean isimage, String uri) {
 
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
 
-            HashMap<String, Object> hashMap = new HashMap<>();
-            hashMap.put("sender", sender);
-            hashMap.put("receiver", receiver);
-            hashMap.put("message", message);
-            hashMap.put("isseen", false);
-            hashMap.put("isimage", isimage);
-            hashMap.put("image", uri);
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("sender", sender);
+        hashMap.put("receiver", receiver);
+        hashMap.put("message", message);
+        hashMap.put("isseen", false);
+        hashMap.put("isimage", isimage);
+        hashMap.put("image", uri);
 
-            reference.child("Chats").push().setValue(hashMap);
-
+        reference.child("Chats").push().setValue(hashMap);
 
 
         // add user to chat fragment
@@ -422,7 +419,7 @@ public class MessageFragment extends Fragment {
         chatRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (!dataSnapshot.exists()){
+                if (!dataSnapshot.exists()) {
                     chatRef.child("id").setValue(userid);
                 }
             }
@@ -458,15 +455,15 @@ public class MessageFragment extends Fragment {
         });
     }
 
-    private void sendNotifiaction(String receiver, final String username, final String message){
+    private void sendNotifiaction(String receiver, final String username, final String message) {
         DatabaseReference tokens = FirebaseDatabase.getInstance().getReference("Tokens");
         Query query = tokens.orderByKey().equalTo(receiver);
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Token token = snapshot.getValue(Token.class);
-                    Data data = new Data(fuser.getUid(), R.mipmap.ic_launcher, username+": "+message, "New Message",
+                    Data data = new Data(fuser.getUid(), R.mipmap.ic_launcher, username + ": " + message, "New Message",
                             userid);
 
                     Sender sender = new Sender(data, token.getToken());
@@ -475,8 +472,8 @@ public class MessageFragment extends Fragment {
                             .enqueue(new Callback<MyResponse>() {
                                 @Override
                                 public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
-                                    if (response.code() == 200){
-                                        if (response.body().success != 1){
+                                    if (response.code() == 200) {
+                                        if (response.body().success != 1) {
                                             Toast.makeText(getActivity(), "Failed!", Toast.LENGTH_SHORT).show();
                                         }
                                     }
@@ -497,7 +494,7 @@ public class MessageFragment extends Fragment {
         });
     }
 
-    private void readMesagges(final String myid, final String userid, final String imageurl){
+    private void readMesagges(final String myid, final String userid, final String imageurl) {
         mchat = new ArrayList<>();
 
         reference = FirebaseDatabase.getInstance().getReference("Chats");
@@ -505,10 +502,10 @@ public class MessageFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 mchat.clear();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Chat chat = snapshot.getValue(Chat.class);
                     if (chat.getReceiver().equals(myid) && chat.getSender().equals(userid) ||
-                            chat.getReceiver().equals(userid) && chat.getSender().equals(myid)){
+                            chat.getReceiver().equals(userid) && chat.getSender().equals(myid)) {
                         mchat.add(chat);
                     }
 

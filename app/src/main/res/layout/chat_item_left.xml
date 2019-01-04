@@ -1,33 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="300dp"
-    android:padding="8dp"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:padding="8dp">
 
     <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/profile_image"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:id="@+id/profile_image"
-        android:src="@mipmap/ic_launcher"/>
+        android:src="@mipmap/ic_launcher" />
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/profile_image"
-        android:layout_marginLeft="5dp"
-        android:text="hello"
         android:id="@+id/show_message"
-        android:textSize="18sp"
-        android:padding="8dp"
-        android:background="@drawable/background_left"/>
-
-    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/txt_seen"
-        android:visibility="gone"
-        android:layout_below="@id/show_message"/>
+        android:layout_marginLeft="5dp"
+        android:layout_toRightOf="@id/profile_image"
+        android:background="@drawable/background_left"
+        android:padding="8dp"
+        android:text="hello"
+        android:textSize="18sp"
+        android:visibility="visible" />
 
+    <TextView
+        android:id="@+id/txt_seen"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/show_message"
+        android:visibility="gone" />
+
+    <ImageView
+        android:id="@+id/img_receive"
+        android:layout_width="@dimen/_150sdp"
+        android:layout_height="@dimen/_150sdp"
+        android:layout_marginTop="@dimen/_30sdp"
+        android:src="@color/colorPrimary"
+        android:visibility="visible" />
 
 </RelativeLayout>
