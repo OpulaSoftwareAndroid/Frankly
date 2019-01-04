@@ -6,12 +6,16 @@ public class Chat {
     private String receiver;
     private String message;
     private boolean isseen;
+    private boolean isimage;
+    private String image;
 
-    public Chat(String sender, String receiver, String message, boolean isseen) {
+    public Chat(String sender, String receiver, String message, boolean isseen, boolean isimage, String image) {
         this.sender = sender;
         this.receiver = receiver;
         this.message = message;
         this.isseen = isseen;
+        this.isimage = isimage;
+        this.image = image;
     }
 
     public Chat() {
@@ -41,11 +45,27 @@ public class Chat {
         this.message = message;
     }
 
-    public boolean isIsseen() {
+    public boolean getisIsseen() {
         return isseen;
     }
 
     public void setIsseen(boolean isseen) {
         this.isseen = isseen;
+    }
+
+    public boolean getisIsimage() {
+        return isimage;
+    }
+
+    public void setIsimage(boolean isimage) {
+        this.isimage = isimage;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 }

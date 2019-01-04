@@ -29,6 +29,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
+import com.opula.chatapp.Main2Activity;
 import com.opula.chatapp.model.User;
 import com.opula.chatapp.R;
 
@@ -59,6 +60,8 @@ public class ProfileFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
+
+        Main2Activity.hideFloatingActionButton();
 
         image_profile = view.findViewById(R.id.profile_image);
         username = view.findViewById(R.id.username);
