@@ -7,6 +7,8 @@ public class User {
     private String imageURL;
     private String status;
     private String search;
+    private String email;
+    public boolean checked;
 
     public User(String id, String username, String imageURL, String status, String search) {
         this.id = id;
@@ -58,5 +60,21 @@ public class User {
 
     public void setSearch(String search) {
         this.search = search;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public boolean isChecked() {
+        return checked;
+    }
+
+    public void setChecked(boolean checked) {
+        this.checked = checked;
     }
 }

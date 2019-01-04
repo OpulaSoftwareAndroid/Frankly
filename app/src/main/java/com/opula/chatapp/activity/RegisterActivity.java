@@ -62,7 +62,7 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
-    private void register(final String username, String email, String password){
+    private void register(final String username, final String email, String password){
         AppGlobal.showProgressDialog(RegisterActivity.this);
         auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -81,6 +81,7 @@ public class RegisterActivity extends AppCompatActivity {
                             hashMap.put("username", username);
                             hashMap.put("imageURL", "default");
                             hashMap.put("status", "offline");
+                            hashMap.put("email", email);
                             hashMap.put("search", username.toLowerCase());
 
                             reference.setValue(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {

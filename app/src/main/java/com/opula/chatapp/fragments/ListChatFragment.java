@@ -18,12 +18,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.opula.chatapp.Main2Activity;
+import com.opula.chatapp.R;
 import com.opula.chatapp.adapter.UserAdapter;
 import com.opula.chatapp.constant.WsConstant;
 import com.opula.chatapp.model.Chatlist;
 import com.opula.chatapp.model.User;
 import com.opula.chatapp.notifications.Token;
-import com.opula.chatapp.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +47,7 @@ public class ListChatFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_list_chats, container, false);
 
         Main2Activity.showpart1();
-
+        Main2Activity.showFloatingActionButton();
         recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -61,7 +61,7 @@ public class ListChatFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 usersList.clear();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Chatlist chatlist = snapshot.getValue(Chatlist.class);
                     usersList.add(chatlist);
                 }
@@ -81,7 +81,7 @@ public class ListChatFragment extends Fragment {
         return view;
     }
 
-    private void updateToken(String token){
+    private void updateToken(String token) {
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Tokens");
         Token token1 = new Token(token);
         reference.child(fuser.getUid()).setValue(token1);
@@ -94,10 +94,10 @@ public class ListChatFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 mUsers.clear();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     User user = snapshot.getValue(User.class);
-                    for (Chatlist chatlist : usersList){
-                        if (user.getId().equals(chatlist.getId())){
+                    for (Chatlist chatlist : usersList) {
+                        if (user.getId().equals(chatlist.getId())) {
                             mUsers.add(user);
                         }
                     }

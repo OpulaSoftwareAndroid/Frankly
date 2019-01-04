@@ -1,14 +1,22 @@
 package com.opula.chatapp.fragments;
 
+import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.Filter;
 import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -18,36 +26,86 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.opula.chatapp.R;
-import com.opula.chatapp.adapter.UserAdapter;
 import com.opula.chatapp.constant.WsConstant;
 import com.opula.chatapp.model.User;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class CreateGrpFragment extends Fragment {
 
-    private RecyclerView recyclerView;
-    private UserAdapter userAdapter;
-    private List<User> mUsers;
+    private ListView listMember;
+    private ItemsListAdapter userAdapter;
+    private ArrayList<User> mUsers;
     LinearLayout createNewGrpLayout;
+    int count = 0;
+    Button btnNext;
+    TextView txtSelectedCount;
+    StringBuilder commaSepValueBuilder;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_create_grp, container, false);
 
-        recyclerView = view.findViewById(R.id.recycler_view);
+        initViews(view);
 
-        createNewGrpLayout = view.findViewById(R.id.createNewGrpLayout);
-
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mUsers = new ArrayList<>();
 
         readUsers();
 
+        commaSepValueBuilder = new StringBuilder();
+        txtSelectedCount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                for (int i = 0; i < mUsers.size(); i++) {
+                    if (mUsers.get(i).isChecked()) {
+                        commaSepValueBuilder.append(mUsers.get(i).getId());
+                        if (i != mUsers.size()) {
+                            commaSepValueBuilder.append(",");
+                        }
+                    }
+                }
+                if (commaSepValueBuilder.length() > 0) {
+                    commaSepValueBuilder.deleteCharAt(commaSepValueBuilder.lastIndexOf(","));
+                }
+
+            }
+        });
+
+        btnNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                txtSelectedCount.performClick();
+                if (commaSepValueBuilder.toString().equalsIgnoreCase("")) {
+                    Toast.makeText(getContext(), "Please select members", Toast.LENGTH_SHORT).show();
+                } else {
+                    CreateGroupDetailFragment ldf = new CreateGroupDetailFragment();
+                    FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                    Bundle args = new Bundle();
+                    args.putString("GrpList", commaSepValueBuilder.toString());
+                    ldf.setArguments(args);
+                    fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, ldf).addToBackStack(null).commit();
+                }
+            }
+        });
+
         return view;
+
     }
+
+    private void initViews(View view) {
+        listMember = view.findViewById(R.id.listMember);
+        btnNext = view.findViewById(R.id.btnNext);
+        txtSelectedCount = view.findViewById(R.id.txtSelectedCount);
+        createNewGrpLayout = view.findViewById(R.id.createNewGrpLayout);
+    }
+
+
+    static class ViewHolder {
+        CheckBox checkBox;
+        TextView txtName, txtNumber;
+    }
+
     private void readUsers() {
 
         final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -56,7 +114,6 @@ public class CreateGrpFragment extends Fragment {
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                if (search_users.getText().toString().equals("")) {
                 mUsers.clear();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     User user = snapshot.getValue(User.class);
@@ -65,17 +122,92 @@ public class CreateGrpFragment extends Fragment {
                         mUsers.add(user);
                     }
                 }
-                userAdapter = new UserAdapter(getActivity(), mUsers, false);
+                userAdapter = new ItemsListAdapter(getActivity(), mUsers);
                 WsConstant.check = "activity";
-                recyclerView.setAdapter(userAdapter);
+                listMember.setAdapter(userAdapter);
             }
-//            }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
         });
+    }
+
+
+    public class ItemsListAdapter extends BaseAdapter {
+
+        private Context context;
+        private ArrayList<User> oricoininfo;
+        private ArrayList<User> origPlanetList;
+        private Filter planetFilter;
+
+        ItemsListAdapter(Context c, ArrayList<User> l) {
+            context = c;
+            oricoininfo = l;
+            origPlanetList = l;
+        }
+
+        @Override
+        public int getCount() {
+            return oricoininfo.size();
+        }
+
+        public void resetData() {
+            oricoininfo = origPlanetList;
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return oricoininfo.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        public boolean isChecked(int position) {
+            return oricoininfo.get(position).checked;
+        }
+
+        @Override
+        public View getView(final int position, View convertView, ViewGroup parent) {
+            View rowView = convertView;
+            // reuse views
+            ViewHolder viewHolder = new ViewHolder();
+            if (rowView == null) {
+                LayoutInflater inflater = ((Activity) context).getLayoutInflater();
+                rowView = inflater.inflate(R.layout.group_user_item, null);
+
+                viewHolder.checkBox = (CheckBox) rowView.findViewById(R.id.rowCheckBox);
+                viewHolder.txtNumber = (TextView) rowView.findViewById(R.id.txtNumber);
+                viewHolder.txtName = (TextView) rowView.findViewById(R.id.txtName);
+                rowView.setTag(viewHolder);
+            } else {
+                viewHolder = (ViewHolder) rowView.getTag();
+            }
+            viewHolder.checkBox.setChecked(oricoininfo.get(position).checked);
+            viewHolder.txtName.setText(oricoininfo.get(position).getUsername() + "");
+            viewHolder.txtNumber.setText(oricoininfo.get(position).getEmail() + "");
+            viewHolder.checkBox.setTag(position);
+            viewHolder.checkBox.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    boolean newState = !oricoininfo.get(position).isChecked();
+                    if (newState == true) {
+                        count++;
+                    } else if (newState == false) {
+                        count--;
+                    }
+                    oricoininfo.get(position).checked = newState;
+                    txtSelectedCount.setText(count + " Selected");
+                }
+            });
+            return rowView;
+        }
+
+
     }
 
 
