@@ -9,7 +9,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -20,7 +19,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.opula.chatapp.Main2Activity;
+import com.opula.chatapp.MainActivity;
 import com.opula.chatapp.R;
 import com.opula.chatapp.adapter.UserAdapter;
 import com.opula.chatapp.constant.WsConstant;
@@ -43,7 +42,7 @@ public class ListUserFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_list_user, container, false);
 
-        Main2Activity.hideFloatingActionButton();
+        MainActivity.hideFloatingActionButton();
 
 
         recyclerView = view.findViewById(R.id.recycler_view);
@@ -59,7 +58,7 @@ public class ListUserFragment extends Fragment {
         createNewGrpLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Main2Activity.hideFloatingActionButton();
+                MainActivity.hideFloatingActionButton();
                 FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new CreateGrpFragment()).addToBackStack(null).commit();
             }

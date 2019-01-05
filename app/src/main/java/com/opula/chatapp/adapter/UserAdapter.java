@@ -1,8 +1,7 @@
 package com.opula.chatapp.adapter;
 
-import android.app.Activity;
+import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -21,7 +20,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.opula.chatapp.Main2Activity;
+import com.opula.chatapp.MainActivity;
 import com.opula.chatapp.constant.SharedPreference;
 import com.opula.chatapp.constant.WsConstant;
 import com.opula.chatapp.fragments.MessageFragment;
@@ -29,9 +28,11 @@ import com.opula.chatapp.model.Chat;
 import com.opula.chatapp.model.User;
 import com.opula.chatapp.R;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
-
-import static android.app.Activity.RESULT_OK;
+import java.util.TimeZone;
 
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
@@ -40,7 +41,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
     private boolean ischat;
     SharedPreference sharedPreference;
 
-    String theLastMessage;
+    String theLastMessage,thetime;
 
     public UserAdapter(Context mContext, List<User> mUsers, boolean ischat){
         this.mUsers = mUsers;
@@ -69,7 +70,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         }
 
         if (ischat){
-            lastMessage(user.getId(), holder.last_msg);
+            lastMessage(user.getId(), holder.last_msg, holder.time);
         } else {
             holder.last_msg.setVisibility(View.GONE);
         }
@@ -90,11 +91,11 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Main2Activity.hideFloatingActionButton();
+                MainActivity.hideFloatingActionButton();
                 sharedPreference.save(mContext,user.getId(),WsConstant.userId);
-                Main2Activity.checkChatTheme(mContext);
+                MainActivity.checkChatTheme(mContext);
 
-                Main2Activity.showpart1();
+                MainActivity.showpart1();
 
                 FragmentManager fragmentManager = ((FragmentActivity)mContext).getSupportFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new MessageFragment()).addToBackStack(null).commit();
@@ -114,7 +115,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         public ImageView profile_image;
         private ImageView img_on;
         private ImageView img_off;
-        private TextView last_msg;
+        private TextView last_msg,time;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -124,12 +125,14 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
             img_on = itemView.findViewById(R.id.img_on);
             img_off = itemView.findViewById(R.id.img_off);
             last_msg = itemView.findViewById(R.id.last_msg);
+            time = itemView.findViewById(R.id.time);
         }
     }
 
     //check for last message
-    private void lastMessage(final String userid, final TextView last_msg){
+    private void lastMessage(final String userid, final TextView last_msg, final TextView time){
         theLastMessage = "default";
+        thetime = "";
         final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Chats");
 
@@ -142,6 +145,10 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                         if (chat.getReceiver().equals(firebaseUser.getUid()) && chat.getSender().equals(userid) ||
                                 chat.getReceiver().equals(userid) && chat.getSender().equals(firebaseUser.getUid())) {
                             theLastMessage = chat.getMessage();
+
+                            String tiime = getDateCurrentTimeZone(Long.parseLong(chat.getTime()));
+                            time.setText(tiime);
+
                         }
                     }
                 }
@@ -165,4 +172,19 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
             }
         });
     }
+
+    public String getDateCurrentTimeZone(long timestamp) {
+        try{
+            Calendar calendar = Calendar.getInstance();
+            TimeZone tz = TimeZone.getDefault();
+            calendar.setTimeInMillis(timestamp * 1000);
+            calendar.add(Calendar.MILLISECOND, tz.getOffset(calendar.getTimeInMillis()));
+            @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a");
+            Date currenTimeZone = (Date) calendar.getTime();
+            return sdf.format(currenTimeZone);
+        }catch (Exception e) {
+        }
+        return "";
+    }
+
 }

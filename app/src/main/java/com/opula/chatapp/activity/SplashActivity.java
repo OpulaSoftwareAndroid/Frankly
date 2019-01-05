@@ -12,7 +12,7 @@ import android.view.WindowManager;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.opula.chatapp.Main2Activity;
+import com.opula.chatapp.MainActivity;
 import com.opula.chatapp.R;
 import com.opula.chatapp.constant.SharedPreference;
 
@@ -127,7 +127,7 @@ public class SplashActivity extends AppCompatActivity {
             @Override
             public void run() {
                 if (session.equalsIgnoreCase("1")) {
-                    Intent intent = new Intent(SplashActivity.this, Main2Activity.class);
+                    Intent intent = new Intent(SplashActivity.this, MainActivity.class);
                     startActivity(intent);
                     finish();
                 } else {

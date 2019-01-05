@@ -50,6 +50,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
@@ -593,6 +594,7 @@ public class AppGlobal {
 
         return null;
     }
+
 
     public static String getDataColumn(Context context, Uri uri, String selection,
                                        String[] selectionArgs) {

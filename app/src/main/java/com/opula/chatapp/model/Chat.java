@@ -8,14 +8,16 @@ public class Chat {
     private boolean isseen;
     private boolean isimage;
     private String image;
+    private String time;
 
-    public Chat(String sender, String receiver, String message, boolean isseen, boolean isimage, String image) {
+    public Chat(String sender, String receiver, String message, boolean isseen, boolean isimage, String image, String time) {
         this.sender = sender;
         this.receiver = receiver;
         this.message = message;
         this.isseen = isseen;
         this.isimage = isimage;
         this.image = image;
+        this.time = time;
     }
 
     public Chat() {
@@ -67,5 +69,13 @@ public class Chat {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
     }
 }

@@ -8,7 +8,7 @@ import android.widget.Button;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.opula.chatapp.Main2Activity;
+import com.opula.chatapp.MainActivity;
 import com.opula.chatapp.R;
 
 public class LoginRegisterActivity extends AppCompatActivity {
@@ -24,7 +24,7 @@ public class LoginRegisterActivity extends AppCompatActivity {
 
         //check if user is null
         if (firebaseUser != null) {
-            Intent intent = new Intent(LoginRegisterActivity.this, Main2Activity.class);
+            Intent intent = new Intent(LoginRegisterActivity.this, MainActivity.class);
             startActivity(intent);
             finish();
         }

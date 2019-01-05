@@ -1,10 +1,12 @@
 package com.opula.chatapp.fragments;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -28,6 +30,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -44,7 +49,9 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
-import com.opula.chatapp.Main2Activity;
+import com.mlsdev.rximagepicker.RxImagePicker;
+import com.mlsdev.rximagepicker.Sources;
+import com.opula.chatapp.MainActivity;
 import com.opula.chatapp.R;
 import com.opula.chatapp.adapter.MessageAdapter;
 import com.opula.chatapp.api.APIService;
@@ -59,6 +66,7 @@ import com.opula.chatapp.notifications.Sender;
 import com.opula.chatapp.notifications.Token;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -101,6 +109,7 @@ public class MessageFragment extends Fragment {
     TextView txtName, txtMobile;
     Uri mImageUri = null;
     int GALLERY = 1, CAMERA = 2;
+    private String filePath = "";
 
     boolean notify = false;
 
@@ -110,7 +119,7 @@ public class MessageFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_message, container, false);
 
-        Main2Activity.hideFloatingActionButton();
+        MainActivity.hideFloatingActionButton();
 
         sharedPreference = new SharedPreference();
 
@@ -272,17 +281,20 @@ public class MessageFragment extends Fragment {
         startActivityForResult(galleryIntent, GALLERY);
     }
 
+    @SuppressLint("CheckResult")
     private void takePhotoFromCamera() {
-        Intent intent1 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(intent1, CAMERA);
-    }
+        RxImagePicker.with(getActivity()).requestImage(Sources.CAMERA).subscribe(new io.reactivex.functions.Consumer<Uri>() {
+            @Override
+            public void accept(@io.reactivex.annotations.NonNull Uri uri) throws Exception {
+                mImageUri = uri;
+                if (uploadTask != null && uploadTask.isInProgress()) {
+                    Toast.makeText(getContext(), "Upload in preogress", Toast.LENGTH_SHORT).show();
+                } else {
+                    uploadImage();
+                }
+            }
+        });
 
-    public Uri getImageUri(Context inContext, Bitmap inImage) {
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(),
-                inImage, "Title", null);
-        return Uri.parse(path);
     }
 
     @Override
@@ -302,18 +314,6 @@ public class MessageFragment extends Fragment {
                 } else {
                     uploadImage();
                 }
-            }
-        }
-        if (requestCode == CAMERA && resultCode == RESULT_OK) {
-
-            Bundle bundle = data.getExtras();
-            final Bitmap bitmap = (Bitmap) bundle.get("data");
-            mImageUri = getImageUri(getContext(), bitmap);
-            //image_profile.setImageBitmap(bitmap);
-            if (uploadTask != null && uploadTask.isInProgress()) {
-                Toast.makeText(getContext(), "Upload in preogress", Toast.LENGTH_SHORT).show();
-            } else {
-                uploadImage();
             }
         }
     }
@@ -353,7 +353,7 @@ public class MessageFragment extends Fragment {
                         Uri downloadUri = task.getResult();
                         String mUri = downloadUri.toString();
 
-                        sendMessage(fuser.getUid(), userid, "defualt", true, mUri);
+                        sendMessage(fuser.getUid(), userid, "Image", true, mUri);
 
                         pd.dismiss();
                     } else {
@@ -400,6 +400,9 @@ public class MessageFragment extends Fragment {
 
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
 
+        Long tsLong = (System.currentTimeMillis()/1000 + 23400);
+        String ts = tsLong.toString();
+
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("sender", sender);
         hashMap.put("receiver", receiver);
@@ -407,6 +410,7 @@ public class MessageFragment extends Fragment {
         hashMap.put("isseen", false);
         hashMap.put("isimage", isimage);
         hashMap.put("image", uri);
+        hashMap.put("time", ts);
 
         reference.child("Chats").push().setValue(hashMap);
 

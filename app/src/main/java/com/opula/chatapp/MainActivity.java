@@ -26,7 +26,7 @@ import com.opula.chatapp.fragments.MyProfileFragment;
 
 import java.util.HashMap;
 
-public class Main2Activity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity {
 
     private long mBackPressed;
     private static final int TIME_INTERVAL = 2000;
@@ -151,7 +151,7 @@ public class Main2Activity extends AppCompatActivity {
         if (frag instanceof ListChatFragment) {
             if (mBackPressed + TIME_INTERVAL > System.currentTimeMillis()) {
                 status("offline");
-                Main2Activity.this.finishAffinity();
+                MainActivity.this.finishAffinity();
                 return;
             } else {
                 Toast.makeText(this, "Press Back again to Exit.", Toast.LENGTH_SHORT).show();
@@ -200,6 +200,4 @@ public class Main2Activity extends AppCompatActivity {
     public static void showFloatingActionButton() {
         fab.show();
     }
-
-
 }

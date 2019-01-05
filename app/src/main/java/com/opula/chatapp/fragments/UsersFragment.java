@@ -20,7 +20,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.opula.chatapp.Main2Activity;
+import com.opula.chatapp.MainActivity;
 import com.opula.chatapp.adapter.UserAdapter;
 import com.opula.chatapp.model.User;
 import com.opula.chatapp.R;
@@ -45,7 +45,7 @@ public class UsersFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_users, container, false);
 
-        Main2Activity.hideFloatingActionButton();
+        MainActivity.hideFloatingActionButton();
 
         recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);

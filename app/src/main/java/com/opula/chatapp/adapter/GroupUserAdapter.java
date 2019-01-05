@@ -19,7 +19,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.opula.chatapp.Main2Activity;
+import com.opula.chatapp.MainActivity;
 import com.opula.chatapp.R;
 import com.opula.chatapp.constant.SharedPreference;
 import com.opula.chatapp.constant.WsConstant;
@@ -87,11 +87,11 @@ public class GroupUserAdapter extends RecyclerView.Adapter<GroupUserAdapter.View
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Main2Activity.hideFloatingActionButton();
+                MainActivity.hideFloatingActionButton();
                 sharedPreference.save(mContext, user.getGroupId(), WsConstant.groupUserId);
-                Main2Activity.checkChatTheme(mContext);
+                MainActivity.checkChatTheme(mContext);
 
-                Main2Activity.showpart1();
+                MainActivity.showpart1();
 
                 FragmentManager fragmentManager = ((FragmentActivity) mContext).getSupportFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new GroupMessageFragment()).addToBackStack(null).commit();
