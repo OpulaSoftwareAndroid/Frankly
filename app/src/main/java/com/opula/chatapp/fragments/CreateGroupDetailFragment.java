@@ -263,6 +263,170 @@ public class CreateGroupDetailFragment extends Fragment {
                         for (int i = 0; i < myList.size(); i++) {
 
                             final int finalI = i;
+
+                            DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+                            rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    if (dataSnapshot.hasChild("Chatlist")) {
+                                        // run some code
+                                        DatabaseReference reference1 = FirebaseDatabase.getInstance().getReference("Chatlist").child(myList.get(finalI));
+                                        reference1.addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
+                                                if (dataSnapshot.exists()) {
+                                                    for (DataSnapshot d1 : dataSnapshot.getChildren()) {
+                                                        Log.d("GroupChat", d1.getValue() + "//");
+                                                        final DatabaseReference reference2 = FirebaseDatabase.getInstance().getReference("Chatlist").child(dataSnapshot.getKey()).child("group");
+                                                        reference2.addListenerForSingleValueEvent(new ValueEventListener() {
+                                                            @Override
+                                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot1) {
+                                                                if (dataSnapshot1.getValue() == null) {
+                                                                    grpList.add(sb.toString());
+                                                                    for (String s : grpList) {
+                                                                        reference2.child(s).setValue(s);
+                                                                    }
+                                                                } else {
+                                                                    grpList.add(sb.toString());
+                                                                    for (String s : grpList) {
+                                                                        reference2.child(s).setValue(s);
+                                                                    }
+                                                                }
+                                                            }
+
+                                                            @Override
+                                                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                            }
+                                                        });
+                                                    }
+                                                } else if (!dataSnapshot.exists()) {
+//                                        if (!myList.get(finalI).equalsIgnoreCase(fuser.getUid())) {
+//                                            for (int i = 0; i < myList.size(); i++) {
+//                                                if (!myList.get(i).equalsIgnoreCase(dataSnapshot.getKey())) {
+                                                    final DatabaseReference reference2 = FirebaseDatabase.getInstance().getReference("Chatlist").child(myList.get(finalI)).child("group");
+                                                    reference2.addListenerForSingleValueEvent(new ValueEventListener() {
+                                                        @Override
+                                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot1) {
+                                                            if (dataSnapshot1.getValue() == null) {
+                                                                grpList.add(sb.toString());
+                                                                for (String s : grpList) {
+                                                                    reference2.child(s).setValue(s);
+                                                                }
+                                                            } else {
+                                                                grpList.add(sb.toString());
+                                                                for (String s : grpList) {
+                                                                    reference2.child(s).setValue(s);
+                                                                }
+                                                            }
+                                                        }
+
+                                                        @Override
+                                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                        }
+                                                    });
+//                                                }
+//                                            }
+//                                        }
+                                                }
+
+                                            }
+
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                            }
+                                        });
+                                    } else {
+                                        DatabaseReference reference1 = FirebaseDatabase.getInstance().getReference("Chatlist");
+                                        reference1.addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                DatabaseReference reference1 = FirebaseDatabase.getInstance().getReference("Chatlist").child(myList.get(finalI));
+                                                reference1.addListenerForSingleValueEvent(new ValueEventListener() {
+                                                    @Override
+                                                    public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
+                                                        if (dataSnapshot.exists()) {
+                                                            for (DataSnapshot d1 : dataSnapshot.getChildren()) {
+                                                                Log.d("GroupChat", d1.getValue() + "//");
+                                                                final DatabaseReference reference2 = FirebaseDatabase.getInstance().getReference("Chatlist").child(dataSnapshot.getKey()).child("group");
+                                                                reference2.addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                    @Override
+                                                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot1) {
+                                                                        if (dataSnapshot1.getValue() == null) {
+                                                                            grpList.add(sb.toString());
+                                                                            for (String s : grpList) {
+                                                                                reference2.child(s).setValue(s);
+                                                                            }
+                                                                        } else {
+                                                                            grpList.add(sb.toString());
+                                                                            for (String s : grpList) {
+                                                                                reference2.child(s).setValue(s);
+                                                                            }
+                                                                        }
+                                                                    }
+
+                                                                    @Override
+                                                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                                    }
+                                                                });
+                                                            }
+                                                        } else if (!dataSnapshot.exists()) {
+//                                        if (!myList.get(finalI).equalsIgnoreCase(fuser.getUid())) {
+//                                            for (int i = 0; i < myList.size(); i++) {
+//                                                if (!myList.get(i).equalsIgnoreCase(dataSnapshot.getKey())) {
+                                                            final DatabaseReference reference2 = FirebaseDatabase.getInstance().getReference("Chatlist").child(myList.get(finalI)).child("group");
+                                                            reference2.addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                @Override
+                                                                public void onDataChange(@NonNull DataSnapshot dataSnapshot1) {
+                                                                    if (dataSnapshot1.getValue() == null) {
+                                                                        grpList.add(sb.toString());
+                                                                        for (String s : grpList) {
+                                                                            reference2.child(s).setValue(s);
+                                                                        }
+                                                                    } else {
+                                                                        grpList.add(sb.toString());
+                                                                        for (String s : grpList) {
+                                                                            reference2.child(s).setValue(s);
+                                                                        }
+                                                                    }
+                                                                }
+
+                                                                @Override
+                                                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                                }
+                                                            });
+//                                                }
+//                                            }
+//                                        }
+                                                        }
+
+                                                    }
+
+                                                    @Override
+                                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                    }
+                                                });
+                                            }
+
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                            }
+                                        });
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
+
                             DatabaseReference reference1 = FirebaseDatabase.getInstance().getReference("Chatlist").child(myList.get(i));
                             reference1.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override

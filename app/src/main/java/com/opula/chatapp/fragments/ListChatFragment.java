@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,7 +39,7 @@ public class ListChatFragment extends Fragment {
 
     FirebaseUser fuser;
     DatabaseReference reference;
-
+    Chatlist chatlist;
     private List<Chatlist> usersList;
 
     @Override
@@ -62,10 +63,9 @@ public class ListChatFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 usersList.clear();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    Chatlist chatlist = snapshot.getValue(Chatlist.class);
+                    chatlist = snapshot.getValue(Chatlist.class);
                     usersList.add(chatlist);
                 }
-
                 chatList();
             }
 
@@ -97,6 +97,9 @@ public class ListChatFragment extends Fragment {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     User user = snapshot.getValue(User.class);
                     for (Chatlist chatlist : usersList) {
+
+                        Log.d("Log_Data", "/" + chatlist.getId() + "//" + chatlist.getGroup());
+
                         if (user.getId().equals(chatlist.getId())) {
                             mUsers.add(user);
                         }

@@ -107,7 +107,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         }
 
         if (position == mChat.size() - 1) {
-            if (chat.getisIsseen() == false) {
+            if (chat.getisIsseen()) {
                 holder.txt_seen.setText("Seen");
             } else {
                 holder.txt_seen.setText("Delivered");

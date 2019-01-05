@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -24,6 +25,7 @@ import com.opula.chatapp.MainActivity;
 import com.opula.chatapp.constant.SharedPreference;
 import com.opula.chatapp.constant.WsConstant;
 import com.opula.chatapp.fragments.MessageFragment;
+import com.opula.chatapp.fragments.UserProfileFragment;
 import com.opula.chatapp.model.Chat;
 import com.opula.chatapp.model.User;
 import com.opula.chatapp.R;
@@ -88,7 +90,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
             holder.img_off.setVisibility(View.GONE);
         }
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
+        holder.click_layout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 MainActivity.hideFloatingActionButton();
@@ -99,6 +101,21 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
                 FragmentManager fragmentManager = ((FragmentActivity)mContext).getSupportFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new MessageFragment()).addToBackStack(null).commit();
+
+            }
+        });
+
+        holder.profile_image.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MainActivity.hideFloatingActionButton();
+                sharedPreference.save(mContext,user.getId(),WsConstant.userId);
+                MainActivity.checkChatTheme(mContext);
+
+                MainActivity.showpart1();
+
+                FragmentManager fragmentManager = ((FragmentActivity)mContext).getSupportFragmentManager();
+                fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new UserProfileFragment()).addToBackStack(null).commit();
 
             }
         });
@@ -116,6 +133,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         private ImageView img_on;
         private ImageView img_off;
         private TextView last_msg,time;
+        LinearLayout click_layout;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -126,6 +144,8 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
             img_off = itemView.findViewById(R.id.img_off);
             last_msg = itemView.findViewById(R.id.last_msg);
             time = itemView.findViewById(R.id.time);
+            click_layout = itemView.findViewById(R.id.click_layout);
+
         }
     }
 

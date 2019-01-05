@@ -3,14 +3,10 @@ package com.opula.chatapp.fragments;
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -30,9 +26,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -64,9 +57,8 @@ import com.opula.chatapp.notifications.Data;
 import com.opula.chatapp.notifications.MyResponse;
 import com.opula.chatapp.notifications.Sender;
 import com.opula.chatapp.notifications.Token;
+import com.squareup.picasso.Picasso;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -74,6 +66,7 @@ import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import hani.momanii.supernova_emoji_library.Actions.EmojIconActions;
 import hani.momanii.supernova_emoji_library.Helper.EmojiconEditText;
 import retrofit2.Call;
@@ -85,7 +78,7 @@ import static android.app.Activity.RESULT_OK;
 
 public class MessageFragment extends Fragment {
 
-    ImageView imgUser;
+    CircleImageView imgUser;
     LinearLayout imgBack;
     TextView txtUserName, txtCheckActive;
     FirebaseUser fuser;
@@ -233,7 +226,10 @@ public class MessageFragment extends Fragment {
                 } else {
                     //and this
                     try {
-                        Glide.with(getActivity()).load(user.getImageURL()).into(imgUser);
+                        Log.d("Image", user.getImageURL());
+                        Picasso.get().load(user.getImageURL())
+                                .placeholder(R.drawable.image_boy).error(R.drawable.image_boy)
+                                .into(imgUser);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -400,7 +396,7 @@ public class MessageFragment extends Fragment {
 
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
 
-        Long tsLong = (System.currentTimeMillis()/1000 + 23400);
+        Long tsLong = (System.currentTimeMillis() / 1000 + 66600);
         String ts = tsLong.toString();
 
         HashMap<String, Object> hashMap = new HashMap<>();
