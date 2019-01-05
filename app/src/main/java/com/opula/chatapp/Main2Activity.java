@@ -19,6 +19,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.opula.chatapp.fragments.ListChatFragment;
+import com.opula.chatapp.fragments.ListGroupChatFragment;
 import com.opula.chatapp.fragments.ListUserFragment;
 import com.opula.chatapp.fragments.MessageFragment;
 import com.opula.chatapp.fragments.MyProfileFragment;
@@ -30,7 +31,7 @@ public class Main2Activity extends AppCompatActivity {
     private long mBackPressed;
     private static final int TIME_INTERVAL = 2000;
     public static TextView text, txt_list, txt_chats;
-    ImageView img_setting;
+    ImageView img_setting, img_search;
     public static FragmentManager fragmentManager;
     public static FirebaseUser firebaseUser;
     public static DatabaseReference reference;
@@ -47,6 +48,7 @@ public class Main2Activity extends AppCompatActivity {
         txt_list = findViewById(R.id.txt_list);
         txt_chats = findViewById(R.id.txt_chats);
         img_setting = findViewById(R.id.img_setting);
+        img_search = findViewById(R.id.img_search);
         fab = findViewById(R.id.fab);
         part1 = findViewById(R.id.part1);
         part2 = findViewById(R.id.part2);
@@ -87,23 +89,22 @@ public class Main2Activity extends AppCompatActivity {
         img_setting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-//                List<String> friends = new ArrayList<>();
-//                friends.add("John");
-//                friends.add("Steve");
-//                friends.add("Anna");
-//                reference = FirebaseDatabase.getInstance().getReference().child("GroupList").child(mAuth.getCurrentUser().getUid());
-//                for (String friend : friends) {
-//                    reference.child("friends").child(friend).setValue(true);
-//                }
-
-
                 hideFloatingActionButton();
                 showpart2();
                 FragmentManager fragmentManager = getSupportFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new MyProfileFragment()).addToBackStack(null).commit();
             }
         });
+        img_search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                hideFloatingActionButton();
+                showpart2();
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new ListGroupChatFragment()).addToBackStack(null).commit();
+            }
+        });
+
 
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
     }

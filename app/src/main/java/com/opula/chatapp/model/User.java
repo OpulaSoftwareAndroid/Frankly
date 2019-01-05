@@ -10,17 +10,6 @@ public class User {
     private String email;
     public boolean checked;
 
-    public User(String id, String username, String imageURL, String status, String search) {
-        this.id = id;
-        this.username = username;
-        this.imageURL = imageURL;
-        this.status = status;
-        this.search = search;
-    }
-
-    public User() {
-
-    }
 
     public String getId() {
         return id;
