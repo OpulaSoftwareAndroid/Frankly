@@ -3,6 +3,8 @@ package com.opula.chatapp.fragments;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,10 +20,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.opula.chatapp.MainActivity;
 import com.opula.chatapp.R;
 import com.opula.chatapp.constant.SharedPreference;
 import com.opula.chatapp.constant.WsConstant;
 import com.opula.chatapp.model.GroupUser;
+import com.opula.chatapp.model.User;
 import com.squareup.picasso.Picasso;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -35,18 +39,21 @@ public class GroupMessageFragment extends Fragment {
     RecyclerView recyclerView;
     RelativeLayout btn_send;
     CircleImageView imgUser;
-    LinearLayout imgBack;
+    LinearLayout imgBack, groupName;
     EmojiconEditText text_send;
     ImageView emojiButton, send_image;
     TextView txtUserName, txtCheckActive;
     View rootView;
+    StringBuilder commaSepValueBuilder;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_group_message, container, false);
+
         sharedPreference = new SharedPreference();
         groupUserId = sharedPreference.getValue(getActivity(), WsConstant.groupUserId);
+        commaSepValueBuilder = new StringBuilder();
 
         initViews(view);
 
@@ -55,8 +62,7 @@ public class GroupMessageFragment extends Fragment {
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                GroupUser user = dataSnapshot.getValue(GroupUser.class);
-                Log.d("Group_dataa",user.getMemberList().get(1)+"//");
+                final GroupUser user = dataSnapshot.getValue(GroupUser.class);
                 assert user != null;
                 txtUserName.setText(user.getGroupName());
                 if (user.getImageURL().equals("default")) {
@@ -72,7 +78,29 @@ public class GroupMessageFragment extends Fragment {
                     }
                 }
 
-//                readMesagges(fuser.getUid(), userid, user.getImageURL());
+                for (int i = 0; i < user.getMemberList().size(); i++) {
+                    final int finalI = i;
+                    reference = FirebaseDatabase.getInstance().getReference("Users").child(String.valueOf(user.getMemberList().get(finalI)));
+                    reference.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                            User u1 = dataSnapshot.getValue(User.class);
+                            commaSepValueBuilder.append(u1.getEmail());
+                            if (finalI != user.getMemberList().size()) {
+                                commaSepValueBuilder.append(",");
+                                txtCheckActive.setText(commaSepValueBuilder);
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+
+                    Log.d("Group_dataa", commaSepValueBuilder + "//");
+                }
             }
 
             @Override
@@ -87,6 +115,19 @@ public class GroupMessageFragment extends Fragment {
                 getActivity().onBackPressed();
             }
         });
+        groupName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MainActivity.hideFloatingActionButton();
+                MainActivity.checkChatTheme(getContext());
+                MainActivity.showpart2();
+
+                FragmentManager fragmentManager = ((FragmentActivity) getContext()).getSupportFragmentManager();
+                fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new GroupProfileFragment()).addToBackStack(null).commit();
+
+            }
+        });
+
 
         return view;
     }
@@ -103,5 +144,6 @@ public class GroupMessageFragment extends Fragment {
         rootView = view.findViewById(R.id.root_view);
         emojiButton = view.findViewById(R.id.emoji_btn);
         send_image = view.findViewById(R.id.send_image);
+        groupName = view.findViewById(R.id.groupName);
     }
 }
