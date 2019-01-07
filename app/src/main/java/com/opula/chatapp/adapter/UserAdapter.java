@@ -22,13 +22,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.opula.chatapp.MainActivity;
+import com.opula.chatapp.R;
 import com.opula.chatapp.constant.SharedPreference;
 import com.opula.chatapp.constant.WsConstant;
 import com.opula.chatapp.fragments.MessageFragment;
 import com.opula.chatapp.fragments.UserProfileFragment;
 import com.opula.chatapp.model.Chat;
 import com.opula.chatapp.model.User;
-import com.opula.chatapp.R;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -43,9 +43,9 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
     private boolean ischat;
     SharedPreference sharedPreference;
 
-    String theLastMessage,thetime;
+    String theLastMessage, thetime;
 
-    public UserAdapter(Context mContext, List<User> mUsers, boolean ischat){
+    public UserAdapter(Context mContext, List<User> mUsers, boolean ischat) {
         this.mUsers = mUsers;
         this.mContext = mContext;
         this.ischat = ischat;
@@ -65,20 +65,20 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
         final User user = mUsers.get(position);
         holder.username.setText(user.getUsername());
-        if (user.getImageURL().equals("default")){
+        if (user.getImageURL().equals("default")) {
             holder.profile_image.setImageResource(R.drawable.image_boy);
         } else {
             Glide.with(mContext).load(user.getImageURL()).into(holder.profile_image);
         }
 
-        if (ischat){
+        if (ischat) {
             lastMessage(user.getId(), holder.last_msg, holder.time);
         } else {
             holder.last_msg.setVisibility(View.GONE);
         }
 
-        if (ischat){
-            if (user.getStatus().equals("online")){
+        if (ischat) {
+            if (user.getStatus().equals("online")) {
                 holder.img_on.setVisibility(View.VISIBLE);
                 holder.img_off.setVisibility(View.GONE);
             } else {
@@ -94,12 +94,10 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
             @Override
             public void onClick(View view) {
                 MainActivity.hideFloatingActionButton();
-                sharedPreference.save(mContext,user.getId(),WsConstant.userId);
+                sharedPreference.save(mContext, user.getId(), WsConstant.userId);
                 MainActivity.checkChatTheme(mContext);
-
                 MainActivity.showpart1();
-
-                FragmentManager fragmentManager = ((FragmentActivity)mContext).getSupportFragmentManager();
+                FragmentManager fragmentManager = ((FragmentActivity) mContext).getSupportFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new MessageFragment()).addToBackStack(null).commit();
 
             }
@@ -109,12 +107,12 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
             @Override
             public void onClick(View view) {
                 MainActivity.hideFloatingActionButton();
-                sharedPreference.save(mContext,user.getId(),WsConstant.userId);
+                sharedPreference.save(mContext, user.getId(), WsConstant.userId);
                 MainActivity.checkChatTheme(mContext);
 
                 MainActivity.showpart1();
 
-                FragmentManager fragmentManager = ((FragmentActivity)mContext).getSupportFragmentManager();
+                FragmentManager fragmentManager = ((FragmentActivity) mContext).getSupportFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new UserProfileFragment()).addToBackStack(null).commit();
 
             }
@@ -126,13 +124,13 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         return mUsers.size();
     }
 
-    public  class ViewHolder extends RecyclerView.ViewHolder{
+    public class ViewHolder extends RecyclerView.ViewHolder {
 
         public TextView username;
         public ImageView profile_image;
         private ImageView img_on;
         private ImageView img_off;
-        private TextView last_msg,time;
+        private TextView last_msg, time;
         LinearLayout click_layout;
 
         public ViewHolder(View itemView) {
@@ -150,7 +148,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
     }
 
     //check for last message
-    private void lastMessage(final String userid, final TextView last_msg, final TextView time){
+    private void lastMessage(final String userid, final TextView last_msg, final TextView time) {
         theLastMessage = "default";
         thetime = "";
         final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -159,7 +157,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Chat chat = snapshot.getValue(Chat.class);
                     if (firebaseUser != null && chat != null) {
                         if (chat.getReceiver().equals(firebaseUser.getUid()) && chat.getSender().equals(userid) ||
@@ -173,8 +171,8 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                     }
                 }
 
-                switch (theLastMessage){
-                    case  "default":
+                switch (theLastMessage) {
+                    case "default":
                         last_msg.setText("No Message");
                         break;
 
@@ -194,7 +192,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
     }
 
     public String getDateCurrentTimeZone(long timestamp) {
-        try{
+        try {
             Calendar calendar = Calendar.getInstance();
             TimeZone tz = TimeZone.getDefault();
             calendar.setTimeInMillis(timestamp * 1000);
@@ -202,7 +200,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
             @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a");
             Date currenTimeZone = (Date) calendar.getTime();
             return sdf.format(currenTimeZone);
-        }catch (Exception e) {
+        } catch (Exception e) {
         }
         return "";
     }

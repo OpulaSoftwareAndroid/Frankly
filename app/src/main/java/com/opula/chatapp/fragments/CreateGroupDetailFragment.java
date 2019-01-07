@@ -58,7 +58,7 @@ public class CreateGroupDetailFragment extends Fragment {
     TextView txtaddPhoto;
     Button btnCreate;
     MaterialEditText txt_name;
-    ImageView view_image, add_image;
+    ImageView add_image,imgUpload;
     Uri mImageUri = null;
     int GALLERY = 1, CAMERA = 2;
     StorageReference storageReference;
@@ -96,7 +96,7 @@ public class CreateGroupDetailFragment extends Fragment {
             public void onClick(View v) {
 
                 if (uploadTask != null && uploadTask.isInProgress()) {
-                    Toast.makeText(getContext(), "Upload in preogress", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Upload in progress", Toast.LENGTH_SHORT).show();
                 } else {
                     uploadImage();
                 }
@@ -109,7 +109,7 @@ public class CreateGroupDetailFragment extends Fragment {
 
     private void showPictureDialog() {
         AlertDialog.Builder pictureDialog = new AlertDialog.Builder(getContext());
-        pictureDialog.setTitle("Select Action");
+        pictureDialog.setTitle("Choose Image");
         String[] pictureDialogItems = {
                 "Gallery",
                 "Camera"};
@@ -159,6 +159,8 @@ public class CreateGroupDetailFragment extends Fragment {
             if (data != null) {
                 mImageUri = data.getData();
                 add_image.setImageURI(mImageUri);
+                txtaddPhoto.setVisibility(View.GONE);
+                imgUpload.setVisibility(View.GONE);
 
             }
         }
@@ -168,63 +170,17 @@ public class CreateGroupDetailFragment extends Fragment {
             final Bitmap bitmap = (Bitmap) bundle.get("data");
             mImageUri = getImageUri(getContext(), bitmap);
             add_image.setImageBitmap(bitmap);
+            txtaddPhoto.setVisibility(View.GONE);
+            imgUpload.setVisibility(View.GONE);
 
         }
     }
-
 
     private void uploadImage() {
         final ProgressDialog pd = new ProgressDialog(getContext());
         pd.setMessage("Creating Group..");
         pd.show();
         randomString(9);
-
-//
-//        //create node if not exists
-//        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Chatlist");
-//        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
-//                for (DataSnapshot d1 : dataSnapshot.getChildren()) {
-//                    for (int ij = 0; ij < myList.size(); ij++) {
-//                        if (!myList.get(ij).equalsIgnoreCase(d1.getKey())) {
-//                            Log.d("GroupChat_if", d1.getKey() + "//");
-//
-//                            final DatabaseReference chatRef = FirebaseDatabase.getInstance().getReference("Chatlist").child(myList.get(ij));
-//                            final int finalIj = ij;
-//
-//                            chatRef.addListenerForSingleValueEvent(new ValueEventListener() {
-//                                @Override
-//                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                                    if (!dataSnapshot.exists()) {
-//                                        if (!myList.get(finalIj).equalsIgnoreCase(fuser.getUid())) {
-//                                            for (int i = 0; i < myList.size(); i++) {
-//                                                if (!myList.get(i).equalsIgnoreCase(dataSnapshot.getKey())) {
-//
-////                                                    chatRef.child(myList.get(i)).child("id").setValue(myList.get(i));
-//                                                }
-//                                            }
-//                                        }
-//                                    }
-//                                }
-//
-//                                @Override
-//                                public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//                                }
-//                            });
-//
-//                        }
-//                    }
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        });
-
 
         if (mImageUri != null) {
             final StorageReference fileReference = storageReference.child(System.currentTimeMillis()
@@ -301,9 +257,6 @@ public class CreateGroupDetailFragment extends Fragment {
                                                         });
                                                     }
                                                 } else if (!dataSnapshot.exists()) {
-//                                        if (!myList.get(finalI).equalsIgnoreCase(fuser.getUid())) {
-//                                            for (int i = 0; i < myList.size(); i++) {
-//                                                if (!myList.get(i).equalsIgnoreCase(dataSnapshot.getKey())) {
                                                     final DatabaseReference reference2 = FirebaseDatabase.getInstance().getReference("Chatlist").child(myList.get(finalI)).child("group");
                                                     reference2.addListenerForSingleValueEvent(new ValueEventListener() {
                                                         @Override
@@ -426,76 +379,74 @@ public class CreateGroupDetailFragment extends Fragment {
 
                                 }
                             });
-
-                            DatabaseReference reference1 = FirebaseDatabase.getInstance().getReference("Chatlist").child(myList.get(i));
-                            reference1.addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
-                                    if (dataSnapshot.exists()) {
-                                        for (DataSnapshot d1 : dataSnapshot.getChildren()) {
-                                            Log.d("GroupChat", d1.getValue() + "//");
-                                            final DatabaseReference reference2 = FirebaseDatabase.getInstance().getReference("Chatlist").child(dataSnapshot.getKey()).child("group");
-                                            reference2.addListenerForSingleValueEvent(new ValueEventListener() {
-                                                @Override
-                                                public void onDataChange(@NonNull DataSnapshot dataSnapshot1) {
-                                                    if (dataSnapshot1.getValue() == null) {
-                                                        grpList.add(sb.toString());
-                                                        for (String s : grpList) {
-                                                            reference2.child(s).setValue(s);
-                                                        }
-                                                    } else {
-                                                        grpList.add(sb.toString());
-                                                        for (String s : grpList) {
-                                                            reference2.child(s).setValue(s);
-                                                        }
-                                                    }
-                                                }
-
-                                                @Override
-                                                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                                }
-                                            });
-                                        }
-                                    } else if (!dataSnapshot.exists()) {
-//                                        if (!myList.get(finalI).equalsIgnoreCase(fuser.getUid())) {
-//                                            for (int i = 0; i < myList.size(); i++) {
-//                                                if (!myList.get(i).equalsIgnoreCase(dataSnapshot.getKey())) {
-                                        final DatabaseReference reference2 = FirebaseDatabase.getInstance().getReference("Chatlist").child(myList.get(finalI)).child("group");
-                                        reference2.addListenerForSingleValueEvent(new ValueEventListener() {
-                                            @Override
-                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot1) {
-                                                if (dataSnapshot1.getValue() == null) {
-                                                    grpList.add(sb.toString());
-                                                    for (String s : grpList) {
-                                                        reference2.child(s).setValue(s);
-                                                    }
-                                                } else {
-                                                    grpList.add(sb.toString());
-                                                    for (String s : grpList) {
-                                                        reference2.child(s).setValue(s);
-                                                    }
-                                                }
-                                            }
-
-                                            @Override
-                                            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                            }
-                                        });
+//                            DatabaseReference reference1 = FirebaseDatabase.getInstance().getReference("Chatlist").child(myList.get(i));
+//                            reference1.addListenerForSingleValueEvent(new ValueEventListener() {
+//                                @Override
+//                                public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
+//                                    if (dataSnapshot.exists()) {
+//                                        for (DataSnapshot d1 : dataSnapshot.getChildren()) {
+//                                            Log.d("GroupChat", d1.getValue() + "//");
+//                                            final DatabaseReference reference2 = FirebaseDatabase.getInstance().getReference("Chatlist").child(dataSnapshot.getKey()).child("group");
+//                                            reference2.addListenerForSingleValueEvent(new ValueEventListener() {
+//                                                @Override
+//                                                public void onDataChange(@NonNull DataSnapshot dataSnapshot1) {
+//                                                    if (dataSnapshot1.getValue() == null) {
+//                                                        grpList.add(sb.toString());
+//                                                        for (String s : grpList) {
+//                                                            reference2.child(s).setValue(s);
+//                                                        }
+//                                                    } else {
+//                                                        grpList.add(sb.toString());
+//                                                        for (String s : grpList) {
+//                                                            reference2.child(s).setValue(s);
+//                                                        }
+//                                                    }
+//                                                }
+//
+//                                                @Override
+//                                                public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                                                }
+//                                            });
+//                                        }
+//                                    } else if (!dataSnapshot.exists()) {
+////                                        if (!myList.get(finalI).equalsIgnoreCase(fuser.getUid())) {
+////                                            for (int i = 0; i < myList.size(); i++) {
+////                                                if (!myList.get(i).equalsIgnoreCase(dataSnapshot.getKey())) {
+//                                        final DatabaseReference reference2 = FirebaseDatabase.getInstance().getReference("Chatlist").child(myList.get(finalI)).child("group");
+//                                        reference2.addListenerForSingleValueEvent(new ValueEventListener() {
+//                                            @Override
+//                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot1) {
+//                                                if (dataSnapshot1.getValue() == null) {
+//                                                    grpList.add(sb.toString());
+//                                                    for (String s : grpList) {
+//                                                        reference2.child(s).setValue(s);
+//                                                    }
+//                                                } else {
+//                                                    grpList.add(sb.toString());
+//                                                    for (String s : grpList) {
+//                                                        reference2.child(s).setValue(s);
+//                                                    }
 //                                                }
 //                                            }
-//                                        }
-                                    }
-
-                                }
-
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                }
-                            });
-
+//
+//                                            @Override
+//                                            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                                            }
+//                                        });
+////                                                }
+////                                            }
+////                                        }
+//                                    }
+//
+//                                }
+//
+//                                @Override
+//                                public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                                }
+//                            });
                         }
                         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                         fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new ListChatFragment()).addToBackStack(null).commit();
@@ -541,7 +492,7 @@ public class CreateGroupDetailFragment extends Fragment {
         txt_name = view.findViewById(R.id.txt_name);
         add_image = view.findViewById(R.id.add_image);
         txtaddPhoto = view.findViewById(R.id.txtaddPhoto);
-        view_image = view.findViewById(R.id.view_image);
         btnCreate = view.findViewById(R.id.btnCreate);
+        imgUpload = view.findViewById(R.id.imgUpload);
     }
 }

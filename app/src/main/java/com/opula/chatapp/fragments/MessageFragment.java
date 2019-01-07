@@ -25,7 +25,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -99,10 +98,8 @@ public class MessageFragment extends Fragment {
     //pickimage
     StorageReference storageReference;
     private StorageTask uploadTask;
-    TextView txtName, txtMobile;
     Uri mImageUri = null;
-    int GALLERY = 1, CAMERA = 2;
-    private String filePath = "";
+    int GALLERY = 1;
 
     boolean notify = false;
 
@@ -117,18 +114,7 @@ public class MessageFragment extends Fragment {
         sharedPreference = new SharedPreference();
 
         apiService = Client.getClient("https://fcm.googleapis.com/").create(APIService.class);
-
-        recyclerView = view.findViewById(R.id.recycler_view);
-        btn_send = view.findViewById(R.id.btn_send);
-        text_send = view.findViewById(R.id.text_send);
-        imgBack = view.findViewById(R.id.imgBack);
-        imgUser = view.findViewById(R.id.imgUser);
-        txtUserName = view.findViewById(R.id.txtUserName);
-        txtCheckActive = view.findViewById(R.id.txtCheckActive);
-
-        rootView = view.findViewById(R.id.root_view);
-        emojiButton = view.findViewById(R.id.emoji_btn);
-        send_image = view.findViewById(R.id.send_image);
+        initViews(view);
         emojIcon = new EmojIconActions(getActivity(), rootView, text_send, emojiButton);
         emojIcon.ShowEmojIcon();
         emojIcon.setIconsIds(R.drawable.ic_keyboard_black_24dp, R.drawable.ic_sentiment_satisfied_black_24dp);
@@ -249,9 +235,23 @@ public class MessageFragment extends Fragment {
         return view;
     }
 
+    private void initViews(View view) {
+
+        recyclerView = view.findViewById(R.id.recycler_view);
+        btn_send = view.findViewById(R.id.btn_send);
+        text_send = view.findViewById(R.id.text_send);
+        imgBack = view.findViewById(R.id.imgBack);
+        imgUser = view.findViewById(R.id.imgUser);
+        txtUserName = view.findViewById(R.id.txtUserName);
+        txtCheckActive = view.findViewById(R.id.txtCheckActive);
+        rootView = view.findViewById(R.id.root_view);
+        emojiButton = view.findViewById(R.id.emoji_btn);
+        send_image = view.findViewById(R.id.send_image);
+    }
+
     private void showPictureDialog() {
         AlertDialog.Builder pictureDialog = new AlertDialog.Builder(getContext());
-        pictureDialog.setTitle("Select Action");
+        pictureDialog.setTitle("Choose Image");
         String[] pictureDialogItems = {
                 "Gallery",
                 "Camera"};

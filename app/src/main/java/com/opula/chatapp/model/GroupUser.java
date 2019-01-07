@@ -1,11 +1,14 @@
 package com.opula.chatapp.model;
 
+import java.util.ArrayList;
+
 public class GroupUser {
 
     private String groupName;
     private String groupId;
     private String memberCount;
     private String imageURL;
+    private ArrayList<String> memberList;
 
     public String getGroupName() {
         return groupName;
@@ -37,5 +40,13 @@ public class GroupUser {
 
     public void setGroupId(String groupId) {
         this.groupId = groupId;
+    }
+
+    public ArrayList<String> getMemberList() {
+        return memberList;
+    }
+
+    public void setMemberList(ArrayList<String> memberList) {
+        this.memberList = memberList;
     }
 }
