@@ -59,7 +59,7 @@ public class CreateGroupDetailFragment extends Fragment {
     TextView txtaddPhoto;
     Button btnCreate;
     MaterialEditText txt_name;
-    ImageView add_image,imgUpload;
+    ImageView add_image, imgUpload;
     Uri mImageUri = null;
     int GALLERY = 1, CAMERA = 2;
     StorageReference storageReference;
@@ -215,6 +215,8 @@ public class CreateGroupDetailFragment extends Fragment {
                         hashMap.put("membercount", memberCount);
                         hashMap.put("memberList", myList);
                         hashMap.put("imageURL", mUri);
+                        hashMap.put("groupAdmin", fuser.getUid());
+
                         hashMap.put("groupId", sb.toString());
 
                         reference.child("Groups").child(sb.toString()).setValue(hashMap);
@@ -330,9 +332,6 @@ public class CreateGroupDetailFragment extends Fragment {
                                                                 });
                                                             }
                                                         } else if (!dataSnapshot.exists()) {
-//                                        if (!myList.get(finalI).equalsIgnoreCase(fuser.getUid())) {
-//                                            for (int i = 0; i < myList.size(); i++) {
-//                                                if (!myList.get(i).equalsIgnoreCase(dataSnapshot.getKey())) {
                                                             final DatabaseReference reference2 = FirebaseDatabase.getInstance().getReference("Chatlist").child(myList.get(finalI)).child("group");
                                                             reference2.addListenerForSingleValueEvent(new ValueEventListener() {
                                                                 @Override

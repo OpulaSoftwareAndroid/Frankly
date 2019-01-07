@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/border_white">
+
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
         <LinearLayout
-            android:background="@color/white"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
@@ -25,9 +30,18 @@
                         android:layout_height="@dimen/_150sdp"
                         android:layout_centerHorizontal="true"
                         android:layout_gravity="center"
-
                         android:scaleType="fitXY"
                         android:src="@drawable/img2" />
+
+                    <ImageView
+                        android:id="@+id/groupimg_edit"
+                        android:layout_width="@dimen/_18sdp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_margin="@dimen/_8sdp"
+                        android:adjustViewBounds="true"
+                        android:src="@drawable/ic_edit" />
+
 
                     <ImageView
                         android:id="@+id/imgBack"
@@ -85,7 +99,7 @@
                             <ImageView
                                 android:id="@+id/img_edit_profile"
                                 android:layout_width="match_parent"
-                                android:layout_height="@dimen/_24sdp"
+                                android:layout_height="@dimen/_22sdp"
                                 android:layout_gravity="end|center"
                                 android:layout_weight="0.9"
                                 android:src="@drawable/ic_edit" />
@@ -109,15 +123,17 @@
                             android:text="Media"
                             android:textColor="@color/colorPrimary"
                             android:textSize="@dimen/_12sdp"
-                            android:textStyle="bold" />
+                            android:textStyle="bold"
+                            android:visibility="gone" />
 
 
                         <android.support.v7.widget.RecyclerView
-                            android:id="@+id/recycler_view"
+                            android:id="@+id/recycler_view_media"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content" />
 
                         <TextView
+                            android:id="@+id/txtParticipant"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
@@ -132,11 +148,10 @@
                         <android.support.v7.widget.RecyclerView
                             android:id="@+id/recycler_view_member"
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent" />
-
+                            android:layout_height="wrap_content" />
 
                         <Button
-                            android:id="@+id/btnCreate"
+                            android:id="@+id/btnExit"
                             android:layout_width="match_parent"
                             android:layout_height="@dimen/_32sdp"
                             android:layout_alignParentBottom="true"
@@ -148,9 +163,9 @@
                             android:textColor="@color/white"
                             android:textSize="@dimen/_12sdp"
                             android:textStyle="bold" />
-
                     </LinearLayout>
                 </RelativeLayout>
             </LinearLayout>
         </LinearLayout>
+    </ScrollView>
 </LinearLayout>

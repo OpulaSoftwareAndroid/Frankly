@@ -55,7 +55,6 @@ public class GroupMessageFragment extends Fragment {
 
         sharedPreference = new SharedPreference();
         groupUserId = sharedPreference.getValue(getActivity(), WsConstant.groupUserId);
-        commaSepValueBuilder = new StringBuilder();
 
         initViews(view);
 
@@ -67,6 +66,7 @@ public class GroupMessageFragment extends Fragment {
                 final GroupUser user = dataSnapshot.getValue(GroupUser.class);
                 assert user != null;
                 txtUserName.setText(user.getGroupName());
+                txtCheckActive.setText(user.getMemberList().size()+" Members");
                 if (user.getImageURL().equals("default")) {
                     imgUser.setImageResource(R.drawable.image_boy);
                 } else {
@@ -80,7 +80,8 @@ public class GroupMessageFragment extends Fragment {
                     }
                 }
 
-                for (int i = 0; i < user.getMemberList().size(); i++) {
+               /* for (int i = 0; i < user.getMemberList().size(); i++) {
+                    commaSepValueBuilder = new StringBuilder();
                     final int finalI = i;
                     reference = FirebaseDatabase.getInstance().getReference("Users").child(String.valueOf(user.getMemberList().get(finalI)));
                     reference.addValueEventListener(new ValueEventListener() {
@@ -101,8 +102,7 @@ public class GroupMessageFragment extends Fragment {
                         }
                     });
 
-                    Log.d("Group_dataa", commaSepValueBuilder + "//");
-                }
+                }*/
             }
 
             @Override
