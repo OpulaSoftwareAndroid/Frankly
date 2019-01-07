@@ -75,6 +75,7 @@ public class GroupProfileFragment extends Fragment {
     StorageReference storageReference;
     FirebaseUser firebaseUser;
     FirebaseAuth firebaseAuth;
+    List<String> grpList;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -85,6 +86,7 @@ public class GroupProfileFragment extends Fragment {
 
         sharedPreference = new SharedPreference();
         groupUserId = sharedPreference.getValue(getActivity(), WsConstant.groupUserId);
+        grpList = new ArrayList<>();
 
         initViews(view);
 
@@ -114,12 +116,100 @@ public class GroupProfileFragment extends Fragment {
             }
         });
 
+        btnExit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showExitDialog(getContext());
+            }
+        });
         return view;
+    }
+
+
+    public void showExitDialog(Context mContext) {
+        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mContext);
+        LayoutInflater inflater = (getActivity()).getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dailog_close_account, null);
+        alertDialogBuilder.setView(dialogView);
+        alertDialogBuilder.setCancelable(false);
+        alertDialogBuilder.setCustomTitle(View.inflate(mContext, R.layout.alert_back, null));
+        final AlertDialog alertDialog = alertDialogBuilder.create();
+
+        Button btn_no = dialogView.findViewById(R.id.btn_no);
+        Button btn_yes = dialogView.findViewById(R.id.btn_yes);
+
+        btn_no.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alertDialog.dismiss();
+            }
+        });
+
+        btn_yes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                exitGroup();
+                alertDialog.dismiss();
+            }
+        });
+        alertDialog.show();
+    }
+
+    private void exitGroup() {
+
+        deleteGroupFromChatList();
+        deleteMemebeFromGroup();
+    }
+
+    private void deleteMemebeFromGroup() {
+        final DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Groups").child(groupUserId);
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull final DataSnapshot d1) {
+                if (d1.exists()) {
+                    HashMap<String, Object> hashMap = new HashMap<>();
+                    GroupUser groupUser = d1.getValue(GroupUser.class);
+                    for (int i = 0; i < groupUser.getMemberList().size(); i++) {
+                        String member = groupUser.getMemberList().get(i);
+                        if (!firebaseUser.getUid().equals(member)) {
+                            String grp=member;
+                            Log.d("GroupChat2", grp + "//");
+                            grpList.add(grp);
+                        }
+                    }
+                    ref.child("memberList").setValue(grpList);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void deleteGroupFromChatList() {
+        DatabaseReference reference1 = FirebaseDatabase.getInstance().getReference("Chatlist").child(firebaseUser.getUid()).child("group");
+        reference1.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot d1 : dataSnapshot.getChildren()) {
+                        d1.getRef().removeValue();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private void showPictureDialog() {
         AlertDialog.Builder pictureDialog = new AlertDialog.Builder(getContext());
-        pictureDialog.setTitle("Select Action");
+        pictureDialog.setTitle("Choose Image");
         String[] pictureDialogItems = {
                 "Gallery",
                 "Camera",
