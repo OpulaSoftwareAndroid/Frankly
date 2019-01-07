@@ -4,8 +4,7 @@
     android:layout_gravity="start"
     android:gravity="start"
     android:layout_height="wrap_content"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:aandroid="http://schemas.android.com/apk/res-auto">
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <RelativeLayout
         android:layout_width="300dp"
@@ -21,8 +20,7 @@
                 android:id="@+id/profile_image"
                 android:layout_width="24dp"
                 android:layout_weight="0"
-                android:layout_height="24dp"
-                android:src="@drawable/image_boy" />
+                android:layout_height="24dp" />
 
             <LinearLayout
                 android:layout_marginLeft="4dp"
@@ -57,7 +55,6 @@
                         android:layout_height="300dp"
                         android:adjustViewBounds="true"
                         android:scaleType="centerCrop"
-                        android:src="@drawable/img4"
                         android:visibility="gone" />
                 </RelativeLayout>
 
@@ -66,7 +63,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="start"
-                    android:text="Ljhjhjh"
                     android:textAlignment="gravity"
                     android:textSize="18sp"
                     android:visibility="visible" />
@@ -77,17 +73,30 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom|end"
                     android:layout_marginTop="2dp"
-                    android:text="10:24"
                     android:textSize="10sp"
                     android:visibility="visible" />
 
-                <TextView
+                <RelativeLayout
                     android:visibility="gone"
                     android:id="@+id/txt_seen"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="seen"
-                    android:textSize="10sp" />
+                    android:layout_width="12dp"
+                    android:layout_gravity="bottom|end"
+                    android:layout_marginTop="2dp"
+                    android:layout_height="12dp">
+
+                    <ImageView
+                        android:id="@+id/img_tick"
+                        android:src="@drawable/ic_checked"
+                        android:layout_width="12dp"
+                        android:layout_height="12dp" />
+
+                    <ImageView
+                        android:id="@+id/img_dtick"
+                        android:src="@drawable/ic_double_tick_indicator"
+                        android:layout_width="12dp"
+                        android:layout_height="12dp" />
+
+                </RelativeLayout>
             </LinearLayout>
 
         </LinearLayout>

@@ -107,10 +107,14 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         }
 
         if (position == mChat.size() - 1) {
-            if (chat.getisIsseen()) {
-                holder.txt_seen.setText("Seen");
+            if (chat.isIsseen()) {
+                //holder.txt_seen.setText("Seen");
+                holder.img_tick.setVisibility(View.GONE);
+                holder.img_dtick.setVisibility(View.VISIBLE);
             } else {
-                holder.txt_seen.setText("Delivered");
+                //holder.txt_seen.setText("Delivered");
+                holder.img_tick.setVisibility(View.VISIBLE);
+                holder.img_dtick.setVisibility(View.GONE);
             }
         } else {
             holder.txt_seen.setVisibility(View.GONE);
@@ -166,10 +170,10 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         public TextView show_message;
-        public ImageView profile_image, img_receive;
-        public TextView txt_seen,show_time;
+        public ImageView profile_image, img_receive, img_tick, img_dtick;
+        public TextView show_time;
         public ProgressBar progress_circular;
-        public RelativeLayout relative;
+        public RelativeLayout relative,txt_seen;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -181,6 +185,8 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             show_time = itemView.findViewById(R.id.show_time);
             progress_circular = itemView.findViewById(R.id.progress_circular);
             relative = itemView.findViewById(R.id.relative);
+            img_tick = itemView.findViewById(R.id.img_tick);
+            img_dtick = itemView.findViewById(R.id.img_dtick);
 
 
         }

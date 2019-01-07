@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -22,7 +23,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -44,20 +44,17 @@ import com.opula.chatapp.R;
 import com.opula.chatapp.activity.LoginRegisterActivity;
 import com.opula.chatapp.constant.AppGlobal;
 import com.opula.chatapp.model.User;
-
 import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 import java.util.Objects;
-
 import de.hdodenhof.circleimageview.CircleImageView;
-
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 
 public class MyProfileFragment extends Fragment {
 
     ImageView imgBack;
-    LinearLayout lin_close_account, lin_logout;
+    LinearLayout lin_close_account, lin_logout, lin_sync, lin_web;
     FirebaseUser firebaseUser;
     DatabaseReference reference;
     FirebaseAuth firebaseAuth;
@@ -95,6 +92,29 @@ public class MyProfileFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 showCloseAccountDialog(getActivity());
+            }
+        });
+
+        lin_sync.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final ProgressDialog pd = new ProgressDialog(getContext());
+                pd.setMessage("Syncing Contacts...");
+                pd.show();
+
+                new Handler().postDelayed(new Runnable() {
+                    public void run() {
+                        Toast.makeText(getActivity(), "Contacts are updated...", Toast.LENGTH_SHORT).show();
+                        pd.hide();
+                    }
+                }, 2500);
+            }
+        });
+
+        lin_web.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getActivity(), "Frankly web is currently not available... ", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -193,6 +213,8 @@ public class MyProfileFragment extends Fragment {
         image_profile = view.findViewById(R.id.profile_image);
         img_edit_profile = view.findViewById(R.id.img_edit_profile);
         lin_close_account = view.findViewById(R.id.lin_close_account);
+        lin_sync = view.findViewById(R.id.lin_sync);
+        lin_web = view.findViewById(R.id.lin_web);
         imgBack = view.findViewById(R.id.imgBack);
         lin_logout = view.findViewById(R.id.lin_logout);
         txtName = view.findViewById(R.id.txtName);

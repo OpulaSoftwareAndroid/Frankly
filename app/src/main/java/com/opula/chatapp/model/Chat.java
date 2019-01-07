@@ -10,19 +10,6 @@ public class Chat {
     private String image;
     private String time;
 
-    public Chat(String sender, String receiver, String message, boolean isseen, boolean isimage, String image, String time) {
-        this.sender = sender;
-        this.receiver = receiver;
-        this.message = message;
-        this.isseen = isseen;
-        this.isimage = isimage;
-        this.image = image;
-        this.time = time;
-    }
-
-    public Chat() {
-    }
-
     public String getSender() {
         return sender;
     }
@@ -47,7 +34,7 @@ public class Chat {
         this.message = message;
     }
 
-    public boolean getisIsseen() {
+    public boolean isIsseen() {
         return isseen;
     }
 
@@ -55,7 +42,7 @@ public class Chat {
         this.isseen = isseen;
     }
 
-    public boolean getisIsimage() {
+    public boolean isIsimage() {
         return isimage;
     }
 

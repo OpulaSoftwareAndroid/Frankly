@@ -30,8 +30,8 @@
                           <map>
                             <entry key="assetSourceType" value="FILE" />
                             <entry key="color" value="cccccc" />
-                            <entry key="outputName" value="ic_clip" />
-                            <entry key="sourceFile" value="D:\clip.svg" />
+                            <entry key="outputName" value="ic_double_tick_indicator" />
+                            <entry key="sourceFile" value="D:\double-tick-indicator.svg" />
                           </map>
                         </option>
                       </PersistentState>
