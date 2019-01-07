@@ -9,6 +9,8 @@ public class Chat {
     private boolean isimage;
     private String image;
     private String time;
+    private String sender_username;
+    private String sender_image;
 
     public String getSender() {
         return sender;
@@ -64,5 +66,21 @@ public class Chat {
 
     public void setTime(String time) {
         this.time = time;
+    }
+
+    public String getSender_username() {
+        return sender_username;
+    }
+
+    public void setSender_username(String sender_username) {
+        this.sender_username = sender_username;
+    }
+
+    public String getSender_image() {
+        return sender_image;
+    }
+
+    public void setSender_image(String sender_image) {
+        this.sender_image = sender_image;
     }
 }

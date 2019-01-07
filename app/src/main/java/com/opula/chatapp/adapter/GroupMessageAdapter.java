@@ -15,6 +15,7 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
@@ -25,26 +26,22 @@ import com.opula.chatapp.R;
 import com.opula.chatapp.constant.AppGlobal;
 import com.opula.chatapp.model.Chat;
 
-
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.TimeZone;
 
-public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHolder> {
+public class GroupMessageAdapter extends RecyclerView.Adapter<GroupMessageAdapter.ViewHolder> {
 
     public static final int MSG_TYPE_LEFT = 0;
     public static final int MSG_TYPE_RIGHT = 1;
+
     private Context mContext;
     private List<Chat> mChat;
     private String imageurl;
 
-    FirebaseUser fuser;
-
-    public MessageAdapter(Context mContext, List<Chat> mChat, String imageurl) {
+    public GroupMessageAdapter(Context mContext, List<Chat> mChat, String imageurl) {
         this.mChat = mChat;
         this.mContext = mContext;
         this.imageurl = imageurl;
@@ -52,33 +49,34 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
     @NonNull
     @Override
-    public MessageAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public GroupMessageAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (viewType == MSG_TYPE_RIGHT) {
-            View view = LayoutInflater.from(mContext).inflate(R.layout.chat_item_right, parent, false);
-            return new MessageAdapter.ViewHolder(view);
+            View view = LayoutInflater.from(mContext).inflate(R.layout.group_chat_item_right, parent, false);
+            return new GroupMessageAdapter.ViewHolder(view);
         } else {
-            View view = LayoutInflater.from(mContext).inflate(R.layout.chat_item_left, parent, false);
-            return new MessageAdapter.ViewHolder(view);
+            View view = LayoutInflater.from(mContext).inflate(R.layout.group_chat_item_left, parent, false);
+            return new GroupMessageAdapter.ViewHolder(view);
         }
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final MessageAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final GroupMessageAdapter.ViewHolder holder, int position) {
 
         final Chat chat = mChat.get(position);
         Log.d("Chat_Data", chat.getImage() + "/");
 
-        if (imageurl.equals("default")) {
+        if (chat.getSender_image().equals("default")) {
             holder.profile_image.setImageResource(R.drawable.image_boy);
         } else {
             Glide.with(mContext).load(imageurl).into(holder.profile_image);
         }
 
+        holder.show_sender.setText(chat.getSender_username());
+
         if (!chat.getImage().equalsIgnoreCase("default")) {
             holder.img_receive.setVisibility(View.VISIBLE);
             holder.show_message.setVisibility(View.GONE);
             holder.relative.setVisibility(View.VISIBLE);
-
 
             holder.progress_circular.setVisibility(View.VISIBLE);
             Glide.with(mContext).load(chat.getImage())
@@ -168,15 +166,15 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        public TextView show_message;
+        public TextView show_message,show_time,show_sender;
         public ImageView profile_image, img_receive, img_tick, img_dtick;
-        public TextView show_time;
         public ProgressBar progress_circular;
         public RelativeLayout relative,txt_seen;
 
         public ViewHolder(View itemView) {
             super(itemView);
 
+            show_sender = itemView.findViewById(R.id.show_sender);
             show_message = itemView.findViewById(R.id.show_message);
             profile_image = itemView.findViewById(R.id.profile_image);
             img_receive = itemView.findViewById(R.id.img_receive);
@@ -193,7 +191,8 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
     @Override
     public int getItemViewType(int position) {
-        fuser = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser fuser = FirebaseAuth.getInstance().getCurrentUser();
+        assert fuser != null;
         if (mChat.get(position).getSender().equals(fuser.getUid())) {
             return MSG_TYPE_RIGHT;
         } else {

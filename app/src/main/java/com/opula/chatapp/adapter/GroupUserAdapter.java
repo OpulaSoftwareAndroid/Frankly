@@ -1,5 +1,6 @@
 package com.opula.chatapp.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
@@ -10,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -27,7 +27,11 @@ import com.opula.chatapp.fragments.GroupMessageFragment;
 import com.opula.chatapp.model.Chat;
 import com.opula.chatapp.model.GroupUser;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 public class GroupUserAdapter extends RecyclerView.Adapter<GroupUserAdapter.ViewHolder> {
 
@@ -36,7 +40,7 @@ public class GroupUserAdapter extends RecyclerView.Adapter<GroupUserAdapter.View
     private boolean ischat;
     SharedPreference sharedPreference;
 
-    String theLastMessage;
+    String theLastMessage, thetime;
 
     public GroupUserAdapter(Context mContext, List<GroupUser> mUsers, boolean ischat) {
         this.mUsers = mUsers;
@@ -65,24 +69,11 @@ public class GroupUserAdapter extends RecyclerView.Adapter<GroupUserAdapter.View
             Glide.with(mContext).load(user.getImageURL()).into(holder.profile_image);
         }
 
-//        if (ischat){
-//            lastMessage(user.getId(), holder.last_msg);
-//        } else {
-//            holder.last_msg.setVisibility(View.GONE);
-//        }
-
-//        if (ischat){
-//            if (user.getStatus().equals("online")){
-//                holder.img_on.setVisibility(View.VISIBLE);
-//                holder.img_off.setVisibility(View.GONE);
-//            } else {
-//                holder.img_on.setVisibility(View.GONE);
-//                holder.img_off.setVisibility(View.VISIBLE);
-//            }
-//        } else {
-//            holder.img_on.setVisibility(View.GONE);
-//            holder.img_off.setVisibility(View.GONE);
-//        }
+        if (ischat){
+            lastMessage(user.getGroupId(), holder.last_msg, holder.time);
+        } else {
+            holder.last_msg.setVisibility(View.GONE);
+        }
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -111,7 +102,7 @@ public class GroupUserAdapter extends RecyclerView.Adapter<GroupUserAdapter.View
         public ImageView profile_image;
         private ImageView img_on;
         private ImageView img_off;
-        private TextView last_msg;
+        private TextView last_msg,time;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -121,11 +112,12 @@ public class GroupUserAdapter extends RecyclerView.Adapter<GroupUserAdapter.View
             img_on = itemView.findViewById(R.id.img_on);
             img_off = itemView.findViewById(R.id.img_off);
             last_msg = itemView.findViewById(R.id.last_msg);
+            time = itemView.findViewById(R.id.time);
         }
     }
 
     //check for last message
-    private void lastMessage(final String userid, final TextView last_msg) {
+    private void lastMessage(final String userid, final TextView last_msg, final TextView time) {
         theLastMessage = "default";
         final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Chats");
@@ -136,9 +128,12 @@ public class GroupUserAdapter extends RecyclerView.Adapter<GroupUserAdapter.View
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Chat chat = snapshot.getValue(Chat.class);
                     if (firebaseUser != null && chat != null) {
-                        if (chat.getReceiver().equals(firebaseUser.getUid()) && chat.getSender().equals(userid) ||
-                                chat.getReceiver().equals(userid) && chat.getSender().equals(firebaseUser.getUid())) {
+                        if (chat.getReceiver().equals(userid)) {
                             theLastMessage = chat.getMessage();
+
+                            String tiime = getDateCurrentTimeZone(Long.parseLong(chat.getTime()));
+                            time.setText(tiime);
+
                         }
                     }
                 }
@@ -162,4 +157,19 @@ public class GroupUserAdapter extends RecyclerView.Adapter<GroupUserAdapter.View
             }
         });
     }
+
+    public String getDateCurrentTimeZone(long timestamp) {
+        try {
+            Calendar calendar = Calendar.getInstance();
+            TimeZone tz = TimeZone.getDefault();
+            calendar.setTimeInMillis(timestamp * 1000);
+            calendar.add(Calendar.MILLISECOND, tz.getOffset(calendar.getTimeInMillis()));
+            @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a");
+            Date currenTimeZone = (Date) calendar.getTime();
+            return sdf.format(currenTimeZone);
+        } catch (Exception e) {
+        }
+        return "";
+    }
+
 }

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_gravity="end"
+    android:gravity="end"
+    android:layout_height="wrap_content"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <RelativeLayout
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:padding="4dp">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/profile_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/profile_image"
+            android:layout_alignParentEnd="true"
+            android:background="@drawable/background_right"
+            android:orientation="vertical"
+            android:paddingLeft="8dp"
+            android:paddingTop="4dp"
+            android:paddingRight="8dp"
+            android:paddingBottom="4dp"
+            android:visibility="visible">
+
+            <RelativeLayout
+                android:visibility="gone"
+                android:id="@+id/relative"
+                android:layout_marginTop="4dp"
+                android:layout_width="300dp"
+                android:layout_height="300dp">
+                <ProgressBar
+                    android:visibility="gone"
+                    android:id="@+id/progress_circular"
+                    android:layout_centerInParent="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <ImageView
+                    android:id="@+id/img_receive"
+                    android:layout_width="300dp"
+                    android:layout_height="300dp"
+                    android:adjustViewBounds="true"
+                    android:scaleType="centerCrop"
+                    android:visibility="gone" />
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/show_sender"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|start"
+                android:layout_marginTop="2dp"
+                android:textColor="@color/colorAccent"
+                android:textStyle="italic"
+                android:textSize="10sp"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/show_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                android:textAlignment="gravity"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                android:visibility="visible" />
+
+            <RelativeLayout
+                android:id="@+id/txt_seen"
+                android:layout_width="12dp"
+                android:layout_gravity="bottom|end"
+                android:layout_marginTop="2dp"
+                android:layout_height="12dp">
+
+                <ImageView
+                    android:visibility="gone"
+                    android:id="@+id/img_tick"
+                    android:src="@drawable/ic_checked"
+                    android:layout_width="12dp"
+                    android:layout_height="12dp" />
+
+                <ImageView
+                    android:visibility="gone"
+                    android:id="@+id/img_dtick"
+                    android:src="@drawable/ic_double_tick_indicator"
+                    android:layout_width="12dp"
+                    android:layout_height="12dp" />
+
+            </RelativeLayout>
+
+
+
+            <TextView
+                android:id="@+id/show_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="10sp"
+                android:visibility="visible" />
+
+
+        </LinearLayout>
+    </RelativeLayout>
+</LinearLayout>

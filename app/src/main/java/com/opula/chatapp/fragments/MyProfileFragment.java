@@ -138,7 +138,6 @@ public class MyProfileFragment extends Fragment {
     }
 
     private void checkImage() {
-
         reference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
         reference.addValueEventListener(new ValueEventListener() {
             @Override

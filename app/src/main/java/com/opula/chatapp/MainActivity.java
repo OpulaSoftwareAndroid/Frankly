@@ -3,27 +3,37 @@ package com.opula.chatapp;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.opula.chatapp.adapter.UserAdapter;
+import com.opula.chatapp.constant.SharedPreference;
 import com.opula.chatapp.constant.WsConstant;
 import com.opula.chatapp.fragments.ListChatFragment;
 import com.opula.chatapp.fragments.ListGroupChatFragment;
 import com.opula.chatapp.fragments.ListUserFragment;
 import com.opula.chatapp.fragments.MessageFragment;
 import com.opula.chatapp.fragments.MyProfileFragment;
+import com.opula.chatapp.model.Chatlist;
+import com.opula.chatapp.model.User;
 
 import java.util.HashMap;
 
@@ -38,13 +48,17 @@ public class MainActivity extends AppCompatActivity {
     public static DatabaseReference reference;
     public static FloatingActionButton fab;
     public static LinearLayout part1, part2;
-    FirebaseAuth mAuth;
+    FirebaseUser mUser;
     FirebaseDatabase mFirebaseInstance;
+    FirebaseAuth firebaseAuth;
+    SharedPreference sharedPreference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        sharedPreference = new SharedPreference();
 
         txt_list = findViewById(R.id.txt_list);
         txt_chats = findViewById(R.id.txt_chats);
@@ -54,11 +68,32 @@ public class MainActivity extends AppCompatActivity {
         part1 = findViewById(R.id.part1);
         part2 = findViewById(R.id.part2);
 
+        mUser = FirebaseAuth.getInstance().getCurrentUser();
         mFirebaseInstance = FirebaseDatabase.getInstance();
-        mAuth = FirebaseAuth.getInstance();
 
         showFloatingActionButton();
         showpart1();
+
+
+        //save userdata
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        reference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                User user = dataSnapshot.getValue(User.class);
+                assert user != null;
+                sharedPreference.save(MainActivity.this,user.getUsername(),WsConstant.userUsername);
+                sharedPreference.save(MainActivity.this,user.getImageURL(),WsConstant.userImage);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -80,10 +115,10 @@ public class MainActivity extends AppCompatActivity {
                 checkListTheme(MainActivity.this);
 
                 String ismain = WsConstant.ismain;
-                if (ismain.equalsIgnoreCase("p")){
+                if (ismain.equalsIgnoreCase("p")) {
                     FragmentManager fragmentGroup = getSupportFragmentManager();
                     fragmentGroup.beginTransaction().replace(R.id.frame_mainactivity, new ListChatFragment()).addToBackStack(null).commit();
-                } else if (ismain.equalsIgnoreCase("g")){
+                } else if (ismain.equalsIgnoreCase("g")) {
                     FragmentManager fragmentPersonal = getSupportFragmentManager();
                     fragmentPersonal.beginTransaction().replace(R.id.frame_mainactivity, new ListGroupChatFragment()).addToBackStack(null).commit();
                 }
@@ -108,12 +143,12 @@ public class MainActivity extends AppCompatActivity {
 
                 String ismain = WsConstant.ismain;
 
-                if (ismain.equalsIgnoreCase("p")){
+                if (ismain.equalsIgnoreCase("p")) {
                     img_chat.setImageDrawable(getResources().getDrawable(R.drawable.personal));
                     showpart1();
                     FragmentManager fragmentGroup = getSupportFragmentManager();
                     fragmentGroup.beginTransaction().replace(R.id.frame_mainactivity, new ListGroupChatFragment()).addToBackStack(null).commit();
-                } else if (ismain.equalsIgnoreCase("g")){
+                } else if (ismain.equalsIgnoreCase("g")) {
                     img_chat.setImageDrawable(getResources().getDrawable(R.drawable.groupchat));
                     showpart1();
                     FragmentManager fragmentPersonal = getSupportFragmentManager();
@@ -122,9 +157,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
-
-        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
     }
 
     public static void showpart1() {
@@ -166,7 +198,7 @@ public class MainActivity extends AppCompatActivity {
     public void onBackPressed() {
         Fragment frag = getSupportFragmentManager().findFragmentById(R.id.frame_mainactivity);
 
-        if (frag instanceof ListChatFragment || frag instanceof  ListGroupChatFragment) {
+        if (frag instanceof ListChatFragment || frag instanceof ListGroupChatFragment) {
             if (mBackPressed + TIME_INTERVAL > System.currentTimeMillis()) {
                 status("offline");
                 MainActivity.this.finishAffinity();
