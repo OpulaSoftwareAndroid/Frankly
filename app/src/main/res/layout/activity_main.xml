@@ -32,13 +32,13 @@
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:id="@+id/img_search"
+                    android:id="@+id/img_chat"
                     android:layout_width="@dimen/_18sdp"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/_8sdp"
                     android:layout_weight="0"
                     android:adjustViewBounds="true"
-                    android:src="@drawable/search"
+                    android:src="@drawable/groupchat"
                     android:tint="@color/white" />
 
                 <LinearLayout
@@ -154,7 +154,7 @@
                     android:clickable="true"
                     android:focusable="true"
                     android:src="@drawable/add"
-                    android:visibility="gone"
+                    android:visibility="visible"
                     app:backgroundTint="@color/colorPrimary"
                     app:elevation="6dp"
                     app:fabSize="normal"

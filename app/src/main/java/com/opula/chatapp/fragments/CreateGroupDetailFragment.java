@@ -38,6 +38,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
+import com.opula.chatapp.MainActivity;
 import com.opula.chatapp.R;
 import com.rengwuxian.materialedittext.MaterialEditText;
 
@@ -73,6 +74,8 @@ public class CreateGroupDetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_create_grp_detail, container, false);
+
+        MainActivity.hideFloatingActionButton();
 
         fuser = FirebaseAuth.getInstance().getCurrentUser();
         gropuList = getArguments().getString("GrpList");
@@ -214,7 +217,7 @@ public class CreateGroupDetailFragment extends Fragment {
                         hashMap.put("imageURL", mUri);
                         hashMap.put("groupId", sb.toString());
 
-                        reference.child("GroupChatList").child(sb.toString()).setValue(hashMap);
+                        reference.child("Groups").child(sb.toString()).setValue(hashMap);
 
                         for (int i = 0; i < myList.size(); i++) {
 
@@ -379,74 +382,7 @@ public class CreateGroupDetailFragment extends Fragment {
 
                                 }
                             });
-//                            DatabaseReference reference1 = FirebaseDatabase.getInstance().getReference("Chatlist").child(myList.get(i));
-//                            reference1.addListenerForSingleValueEvent(new ValueEventListener() {
-//                                @Override
-//                                public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
-//                                    if (dataSnapshot.exists()) {
-//                                        for (DataSnapshot d1 : dataSnapshot.getChildren()) {
-//                                            Log.d("GroupChat", d1.getValue() + "//");
-//                                            final DatabaseReference reference2 = FirebaseDatabase.getInstance().getReference("Chatlist").child(dataSnapshot.getKey()).child("group");
-//                                            reference2.addListenerForSingleValueEvent(new ValueEventListener() {
-//                                                @Override
-//                                                public void onDataChange(@NonNull DataSnapshot dataSnapshot1) {
-//                                                    if (dataSnapshot1.getValue() == null) {
-//                                                        grpList.add(sb.toString());
-//                                                        for (String s : grpList) {
-//                                                            reference2.child(s).setValue(s);
-//                                                        }
-//                                                    } else {
-//                                                        grpList.add(sb.toString());
-//                                                        for (String s : grpList) {
-//                                                            reference2.child(s).setValue(s);
-//                                                        }
-//                                                    }
-//                                                }
-//
-//                                                @Override
-//                                                public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//                                                }
-//                                            });
-//                                        }
-//                                    } else if (!dataSnapshot.exists()) {
-////                                        if (!myList.get(finalI).equalsIgnoreCase(fuser.getUid())) {
-////                                            for (int i = 0; i < myList.size(); i++) {
-////                                                if (!myList.get(i).equalsIgnoreCase(dataSnapshot.getKey())) {
-//                                        final DatabaseReference reference2 = FirebaseDatabase.getInstance().getReference("Chatlist").child(myList.get(finalI)).child("group");
-//                                        reference2.addListenerForSingleValueEvent(new ValueEventListener() {
-//                                            @Override
-//                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot1) {
-//                                                if (dataSnapshot1.getValue() == null) {
-//                                                    grpList.add(sb.toString());
-//                                                    for (String s : grpList) {
-//                                                        reference2.child(s).setValue(s);
-//                                                    }
-//                                                } else {
-//                                                    grpList.add(sb.toString());
-//                                                    for (String s : grpList) {
-//                                                        reference2.child(s).setValue(s);
-//                                                    }
-//                                                }
-//                                            }
-//
-//                                            @Override
-//                                            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//                                            }
-//                                        });
-////                                                }
-////                                            }
-////                                        }
-//                                    }
-//
-//                                }
-//
-//                                @Override
-//                                public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//                                }
-//                            });
+
                         }
                         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                         fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new ListChatFragment()).addToBackStack(null).commit();

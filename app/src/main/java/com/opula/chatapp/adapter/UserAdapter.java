@@ -106,11 +106,11 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         holder.profile_image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MainActivity.hideFloatingActionButton();
+                //MainActivity.hideFloatingActionButton();
                 sharedPreference.save(mContext, user.getId(), WsConstant.userId);
-                MainActivity.checkChatTheme(mContext);
+                //MainActivity.checkChatTheme(mContext);
 
-                MainActivity.showpart1();
+                MainActivity.showpart2();
 
                 FragmentManager fragmentManager = ((FragmentActivity) mContext).getSupportFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new UserProfileFragment()).addToBackStack(null).commit();

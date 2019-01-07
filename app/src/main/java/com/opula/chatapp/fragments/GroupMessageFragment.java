@@ -51,13 +51,15 @@ public class GroupMessageFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_group_message, container, false);
 
+        MainActivity.hideFloatingActionButton();
+
         sharedPreference = new SharedPreference();
         groupUserId = sharedPreference.getValue(getActivity(), WsConstant.groupUserId);
         commaSepValueBuilder = new StringBuilder();
 
         initViews(view);
 
-        reference = FirebaseDatabase.getInstance().getReference("GroupChatList").child(groupUserId);
+        reference = FirebaseDatabase.getInstance().getReference("Groups").child(groupUserId);
 
         reference.addValueEventListener(new ValueEventListener() {
             @Override

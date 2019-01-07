@@ -27,15 +27,25 @@
                 android:orientation="horizontal"
                 tools:targetApi="lollipop">
 
-                <ImageView
-                    android:id="@+id/imgBack"
-                    android:layout_width="@dimen/_18sdp"
-                    android:layout_height="wrap_content"
+                <LinearLayout
                     android:layout_centerVertical="true"
-                    android:layout_marginLeft="@dimen/_8sdp"
-                    android:adjustViewBounds="true"
-                    android:src="@drawable/back"
-                    android:tint="@color/black" />
+                    android:id="@+id/imgBack"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:paddingStart="@dimen/_8sdp"
+                    android:paddingTop="@dimen/_8sdp"
+                    android:paddingEnd="@dimen/_8sdp"
+                    android:paddingBottom="@dimen/_8sdp">
+
+                    <ImageView
+                        android:layout_width="@dimen/_18sdp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:adjustViewBounds="true"
+                        android:src="@drawable/back"
+                        android:tint="@color/black" />
+                </LinearLayout>
 
                 <TextView
                     android:layout_width="wrap_content"

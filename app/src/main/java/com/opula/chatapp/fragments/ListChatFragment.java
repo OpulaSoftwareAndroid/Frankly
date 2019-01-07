@@ -33,10 +33,8 @@ import java.util.List;
 public class ListChatFragment extends Fragment {
 
     private RecyclerView recyclerView;
-
     private UserAdapter userAdapter;
     private List<User> mUsers;
-
     FirebaseUser fuser;
     DatabaseReference reference;
     Chatlist chatlist;
@@ -49,6 +47,8 @@ public class ListChatFragment extends Fragment {
 
         MainActivity.showpart1();
         MainActivity.showFloatingActionButton();
+        WsConstant.ismain = "p";
+
         recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));

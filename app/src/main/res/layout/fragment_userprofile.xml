@@ -9,11 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:background="@drawable/grq"
-        android:orientation="vertical"
-        android:paddingLeft="@dimen/_5sdp"
-        android:paddingTop="@dimen/_5sdp"
-        android:paddingRight="@dimen/_5sdp">
+        android:orientation="vertical">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -21,36 +17,55 @@
             android:background="@drawable/border_white"
             android:orientation="vertical">
 
-            <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            <RelativeLayout
                 android:id="@+id/toolbarLayout"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_40sdp"
-                android:background="@drawable/border_white"
                 android:clipToPadding="false"
                 android:elevation="5dp"
                 android:orientation="horizontal"
                 tools:targetApi="lollipop">
 
-                <ImageView
-                    android:id="@+id/imgBack"
-                    android:layout_width="@dimen/_18sdp"
-                    android:layout_height="wrap_content"
+                <LinearLayout
                     android:layout_centerVertical="true"
-                    android:layout_marginLeft="@dimen/_8sdp"
-                    android:adjustViewBounds="true"
-                    android:src="@drawable/back"
-                    android:tint="@color/black" />
+                    android:id="@+id/imgBack"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:paddingStart="@dimen/_8sdp"
+                    android:paddingTop="@dimen/_8sdp"
+                    android:paddingEnd="@dimen/_8sdp"
+                    android:paddingBottom="@dimen/_8sdp">
+
+                    <ImageView
+                        android:layout_width="@dimen/_18sdp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:adjustViewBounds="true"
+                        android:src="@drawable/back"
+                        android:tint="@color/black" />
+                </LinearLayout>
 
                 <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
                     android:layout_centerVertical="true"
+                    android:fontFamily="@font/m"
                     android:gravity="center"
                     android:text="Profile"
                     android:textColor="@android:color/black"
-                    android:textSize="@dimen/_14sdp" />
+                    android:textSize="@dimen/_14sdp"
+                    android:textStyle="bold" />
+
             </RelativeLayout>
+
+            <View
+                android:id="@+id/vw"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_1sdp"
+                android:layout_below="@id/toolbarLayout"
+                android:background="@color/gray" />
 
             <LinearLayout
                 android:layout_width="match_parent"

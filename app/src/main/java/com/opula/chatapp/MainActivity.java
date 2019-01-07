@@ -18,6 +18,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.opula.chatapp.constant.WsConstant;
 import com.opula.chatapp.fragments.ListChatFragment;
 import com.opula.chatapp.fragments.ListGroupChatFragment;
 import com.opula.chatapp.fragments.ListUserFragment;
@@ -31,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
     private long mBackPressed;
     private static final int TIME_INTERVAL = 2000;
     public static TextView text, txt_list, txt_chats;
-    ImageView img_setting, img_search;
+    ImageView img_setting, img_chat;
     public static FragmentManager fragmentManager;
     public static FirebaseUser firebaseUser;
     public static DatabaseReference reference;
@@ -43,12 +44,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main2);
+        setContentView(R.layout.activity_main);
 
         txt_list = findViewById(R.id.txt_list);
         txt_chats = findViewById(R.id.txt_chats);
         img_setting = findViewById(R.id.img_setting);
-        img_search = findViewById(R.id.img_search);
+        img_chat = findViewById(R.id.img_chat);
         fab = findViewById(R.id.fab);
         part1 = findViewById(R.id.part1);
         part2 = findViewById(R.id.part2);
@@ -76,32 +77,49 @@ public class MainActivity extends AppCompatActivity {
         txt_list.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                txt_list.setTextColor(getResources().getColor(R.color.white));
-                txt_chats.setTextColor(getResources().getColor(R.color.black));
-                txt_list.setBackgroundResource(R.drawable.toolbar_backgroung_list_red);
-                txt_chats.setBackgroundResource(R.drawable.toolbar_backgroung_chats_white);
-                showFloatingActionButton();
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new ListChatFragment()).addToBackStack(null).commit();
+                checkListTheme(MainActivity.this);
+
+                String ismain = WsConstant.ismain;
+                if (ismain.equalsIgnoreCase("p")){
+                    FragmentManager fragmentGroup = getSupportFragmentManager();
+                    fragmentGroup.beginTransaction().replace(R.id.frame_mainactivity, new ListChatFragment()).addToBackStack(null).commit();
+                } else if (ismain.equalsIgnoreCase("g")){
+                    FragmentManager fragmentPersonal = getSupportFragmentManager();
+                    fragmentPersonal.beginTransaction().replace(R.id.frame_mainactivity, new ListGroupChatFragment()).addToBackStack(null).commit();
+                }
+
             }
         });
 
         img_setting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                hideFloatingActionButton();
                 showpart2();
                 FragmentManager fragmentManager = getSupportFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new MyProfileFragment()).addToBackStack(null).commit();
             }
         });
-        img_search.setOnClickListener(new View.OnClickListener() {
+
+        img_chat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                hideFloatingActionButton();
-                showpart2();
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new ListGroupChatFragment()).addToBackStack(null).commit();
+
+                checkListTheme(MainActivity.this);
+
+                String ismain = WsConstant.ismain;
+
+                if (ismain.equalsIgnoreCase("p")){
+                    img_chat.setImageDrawable(getResources().getDrawable(R.drawable.personal));
+                    showpart1();
+                    FragmentManager fragmentGroup = getSupportFragmentManager();
+                    fragmentGroup.beginTransaction().replace(R.id.frame_mainactivity, new ListGroupChatFragment()).addToBackStack(null).commit();
+                } else if (ismain.equalsIgnoreCase("g")){
+                    img_chat.setImageDrawable(getResources().getDrawable(R.drawable.groupchat));
+                    showpart1();
+                    FragmentManager fragmentPersonal = getSupportFragmentManager();
+                    fragmentPersonal.beginTransaction().replace(R.id.frame_mainactivity, new ListChatFragment()).addToBackStack(null).commit();
+                }
+
             }
         });
 
@@ -148,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
     public void onBackPressed() {
         Fragment frag = getSupportFragmentManager().findFragmentById(R.id.frame_mainactivity);
 
-        if (frag instanceof ListChatFragment) {
+        if (frag instanceof ListChatFragment || frag instanceof  ListGroupChatFragment) {
             if (mBackPressed + TIME_INTERVAL > System.currentTimeMillis()) {
                 status("offline");
                 MainActivity.this.finishAffinity();

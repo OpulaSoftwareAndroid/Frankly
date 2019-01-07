@@ -44,7 +44,6 @@ public class ListUserFragment extends Fragment {
 
         MainActivity.hideFloatingActionButton();
 
-
         recyclerView = view.findViewById(R.id.recycler_view);
 
         createNewGrpLayout = view.findViewById(R.id.createNewGrpLayout);

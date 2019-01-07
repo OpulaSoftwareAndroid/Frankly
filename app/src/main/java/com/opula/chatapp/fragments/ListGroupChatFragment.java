@@ -17,6 +17,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.opula.chatapp.MainActivity;
 import com.opula.chatapp.R;
 import com.opula.chatapp.adapter.GroupUserAdapter;
 import com.opula.chatapp.constant.WsConstant;
@@ -39,6 +40,10 @@ public class ListGroupChatFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_list_group_chats, container, false);
+
+        MainActivity.showpart1();
+        MainActivity.hideFloatingActionButton();
+        WsConstant.ismain = "g";
 
         recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
@@ -73,7 +78,7 @@ public class ListGroupChatFragment extends Fragment {
 
     private void groupList() {
         mUsers = new ArrayList<>();
-        reference = FirebaseDatabase.getInstance().getReference("GroupChatList");
+        reference = FirebaseDatabase.getInstance().getReference("Groups");
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

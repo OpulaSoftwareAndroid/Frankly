@@ -21,6 +21,7 @@ import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.bumptech.glide.Glide;
@@ -53,7 +54,7 @@ import static android.app.Activity.RESULT_OK;
 
 public class MyProfileFragment extends Fragment {
 
-    ImageView imgBack;
+    LinearLayout imgBack;
     LinearLayout lin_close_account, lin_logout, lin_sync, lin_web;
     FirebaseUser firebaseUser;
     DatabaseReference reference;

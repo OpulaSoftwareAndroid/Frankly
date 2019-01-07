@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -18,6 +19,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.opula.chatapp.MainActivity;
 import com.opula.chatapp.R;
 import com.opula.chatapp.constant.SharedPreference;
 import com.opula.chatapp.constant.WsConstant;
@@ -30,9 +32,8 @@ public class UserProfileFragment extends Fragment {
     String userid;
     TextView txtName, txtEmail;
     TextView txtOnOff;
-    ImageView imgBack;
+    LinearLayout imgBack;
     CircleImageView image_PersonalInfo_DP;
-
     Switch chkNotification;
     DatabaseReference reference;
 
@@ -41,9 +42,18 @@ public class UserProfileFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_userprofile, container, false);
 
+        MainActivity.hideFloatingActionButton();
+
         sharedPreference = new SharedPreference();
         userid = sharedPreference.getValue(getActivity(), WsConstant.userId);
         initViews(view);
+
+        imgBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity().onBackPressed();
+            }
+        });
 
         reference = FirebaseDatabase.getInstance().getReference("Users").child(userid);
         reference.addValueEventListener(new ValueEventListener() {
