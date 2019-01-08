@@ -92,7 +92,7 @@ public class GroupProfileFragment extends Fragment {
 
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        storageReference = FirebaseStorage.getInstance().getReference("Group_Profile");
+        storageReference = FirebaseStorage.getInstance().getReference("Group_profile");
 
         recycler_view_member.setHasFixedSize(true);
         recycler_view_member.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -129,7 +129,7 @@ public class GroupProfileFragment extends Fragment {
     public void showExitDialog(Context mContext) {
         final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mContext);
         LayoutInflater inflater = (getActivity()).getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.dailog_close_account, null);
+        View dialogView = inflater.inflate(R.layout.dailog_exit_group, null);
         alertDialogBuilder.setView(dialogView);
         alertDialogBuilder.setCancelable(false);
         alertDialogBuilder.setCustomTitle(View.inflate(mContext, R.layout.alert_back, null));
