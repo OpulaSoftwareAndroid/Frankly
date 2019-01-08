@@ -10,6 +10,9 @@ public class WsConstant {
 
     public static final String groupUserId = "groupUserId";
     public static final String groupadminId = "groupadminId";
+    public static final String groupId = "groupId";
+
+
     public static String check = "check";
     public static String ismain = "ismain";
 

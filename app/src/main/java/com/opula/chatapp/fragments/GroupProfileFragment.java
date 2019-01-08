@@ -2,7 +2,6 @@ package com.opula.chatapp.fragments;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -14,9 +13,12 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,10 +32,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -52,7 +50,6 @@ import com.google.firebase.storage.UploadTask;
 import com.opula.chatapp.MainActivity;
 import com.opula.chatapp.R;
 import com.opula.chatapp.adapter.GroupParticipantAdapter;
-import com.opula.chatapp.constant.AppGlobal;
 import com.opula.chatapp.constant.RoundCornersTransformation;
 import com.opula.chatapp.constant.SharedPreference;
 import com.opula.chatapp.constant.WsConstant;
@@ -60,17 +57,19 @@ import com.opula.chatapp.model.GroupUser;
 import com.opula.chatapp.model.User;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
+
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 
 public class GroupProfileFragment extends Fragment {
 
     LinearLayout imgBack;
-    ImageView mImageView, groupimg_edit, img_edit_profile;
+    ImageView mImageView, groupimg_edit, img_edit_profile, img_add_person;
     TextView txtName, txtMember, txtParticipant;
     Button btnExit;
     RecyclerView recycler_view_member, recycler_view_media;
@@ -151,11 +150,6 @@ public class GroupProfileFragment extends Fragment {
                         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Groups").child(groupUserId);
                         ref.child("groupName").setValue(text.getText().toString());
 
-
-//                        DatabaseReference reference1 = FirebaseDatabase.getInstance().getReference("Groups").child(groupUserId);
-////                        HashMap<String, Object> map = new HashMap<>();
-////                        map.put("groupName", text.getText());
-//                        reference1.child("groupName").setValue(text.getText());
                         Toast.makeText(getActivity(), "Group Updated!", Toast.LENGTH_SHORT).show();
                         alertDialog.dismiss();
 
@@ -179,6 +173,17 @@ public class GroupProfileFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 showExitDialog(getContext());
+            }
+        });
+        img_add_person.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MainActivity.hideFloatingActionButton();
+                sharedPreference.save(getContext(), user.getGroupId(), WsConstant.groupUserId);
+                MainActivity.checkChatTheme(getContext());
+                MainActivity.showpart2();
+                FragmentManager fragmentManager = ((FragmentActivity) getContext()).getSupportFragmentManager();
+                fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new AddMemberGroupFragment()).addToBackStack(null).commit();
             }
         });
         return view;
@@ -231,7 +236,7 @@ public class GroupProfileFragment extends Fragment {
                     for (int i = 0; i < groupUser.getMemberList().size(); i++) {
                         String member = groupUser.getMemberList().get(i);
                         if (!firebaseUser.getUid().equals(member)) {
-                            String grp=member;
+                            String grp = member;
                             Log.d("GroupChat2", grp + "//");
                             grpList.add(grp);
                         }
@@ -312,6 +317,7 @@ public class GroupProfileFragment extends Fragment {
                 txtMember.setText(user.getMemberList().size() + " member");
                 txtParticipant.setText(user.getMemberList().size() + " Participants");
                 sharedPreference.save(getContext(), user.getGroupAdmin(), WsConstant.groupadminId);
+                sharedPreference.save(getContext(), user.getGroupId(), WsConstant.groupId);
                 if (user.getImageURL().equals("default")) {
                     mImageView.setImageResource(R.drawable.img2);
                 } else {
@@ -320,7 +326,7 @@ public class GroupProfileFragment extends Fragment {
                         Log.d("Image", user.getImageURL());
                         Picasso.get()
                                 .load(user.getImageURL())
-                                .transform(new RoundCornersTransformation(8, 00, true, false))
+                                .transform(new RoundCornersTransformation(50, 0, true, false))
                                 .into(mImageView, new Callback() {
                                     @Override
                                     public void onSuccess() {
@@ -371,7 +377,7 @@ public class GroupProfileFragment extends Fragment {
                 mImageUri = data.getData();
                 mImageView.setImageURI(mImageUri);
                 if (uploadTask != null && uploadTask.isInProgress()) {
-                    Toast.makeText(getContext(), "Upload in preogress", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Upload in progress", Toast.LENGTH_SHORT).show();
                 } else {
                     uploadImage();
                 }
@@ -384,7 +390,7 @@ public class GroupProfileFragment extends Fragment {
             mImageUri = getImageUri(getContext(), bitmap);
             mImageView.setImageBitmap(bitmap);
             if (uploadTask != null && uploadTask.isInProgress()) {
-                Toast.makeText(getContext(), "Upload in preogress", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Upload in progress", Toast.LENGTH_SHORT).show();
             } else {
                 uploadImage();
             }
@@ -422,7 +428,6 @@ public class GroupProfileFragment extends Fragment {
                     if (!task.isSuccessful()) {
                         throw task.getException();
                     }
-
                     return fileReference.getDownloadUrl();
                 }
             }).addOnCompleteListener(new OnCompleteListener<Uri>() {
@@ -484,14 +489,13 @@ public class GroupProfileFragment extends Fragment {
 
             }
         });
-
-
     }
 
     private void initViews(View view) {
         mImageView = view.findViewById(R.id.image_PersonalInfo_DP);
         imgBack = view.findViewById(R.id.imgBack);
         txtParticipant = view.findViewById(R.id.txtParticipant);
+        img_add_person = view.findViewById(R.id.imgaddperson);
         txtMember = view.findViewById(R.id.txtMember);
         groupimg_edit = view.findViewById(R.id.groupimg_edit);
         img_edit_profile = view.findViewById(R.id.img_edit_profile);

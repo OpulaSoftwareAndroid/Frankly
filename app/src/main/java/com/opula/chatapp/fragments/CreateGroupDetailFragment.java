@@ -208,17 +208,13 @@ public class CreateGroupDetailFragment extends Fragment {
 //                        group chat
 
                         String grpName = txt_name.getText().toString();
-                        String memberCount = String.valueOf(myList.size());
                         final DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
                         final HashMap<String, Object> hashMap = new HashMap<>();
                         hashMap.put("groupName", grpName);
-                        hashMap.put("membercount", memberCount);
                         hashMap.put("memberList", myList);
                         hashMap.put("imageURL", mUri);
                         hashMap.put("groupAdmin", fuser.getUid());
-
                         hashMap.put("groupId", sb.toString());
-
                         reference.child("Groups").child(sb.toString()).setValue(hashMap);
 
                         for (int i = 0; i < myList.size(); i++) {

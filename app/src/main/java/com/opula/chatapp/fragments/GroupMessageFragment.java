@@ -122,10 +122,6 @@ public class GroupMessageFragment extends Fragment {
         userusername = sharedPreference.getValue(getActivity(), WsConstant.userUsername);
         userimage = sharedPreference.getValue(getActivity(), WsConstant.userImage);
 
-
-
-
-
         initViews(view);
         emojIcon = new EmojIconActions(getActivity(), rootView, text_send, emojiButton);
         emojIcon.ShowEmojIcon();

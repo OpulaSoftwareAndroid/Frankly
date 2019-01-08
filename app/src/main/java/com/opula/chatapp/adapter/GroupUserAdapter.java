@@ -81,9 +81,7 @@ public class GroupUserAdapter extends RecyclerView.Adapter<GroupUserAdapter.View
                 MainActivity.hideFloatingActionButton();
                 sharedPreference.save(mContext, user.getGroupId(), WsConstant.groupUserId);
                 MainActivity.checkChatTheme(mContext);
-
                 MainActivity.showpart1();
-
                 FragmentManager fragmentManager = ((FragmentActivity) mContext).getSupportFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new GroupMessageFragment()).addToBackStack(null).commit();
 

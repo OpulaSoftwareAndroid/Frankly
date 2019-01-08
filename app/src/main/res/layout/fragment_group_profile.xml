@@ -26,30 +26,28 @@
 
                     <RelativeLayout
                         android:id="@+id/relative"
-                        android:layout_gravity="center"
-                        android:layout_centerHorizontal="true"
                         android:layout_width="match_parent"
-                        android:layout_height="@dimen/_150sdp">
+                        android:layout_height="@dimen/_150sdp"
+                        android:layout_centerHorizontal="true"
+                        android:layout_gravity="center">
 
                         <ImageView
                             android:id="@+id/image_PersonalInfo_DP"
                             android:layout_width="match_parent"
-                            android:layout_height="@dimen/_150sdp"
+                            android:layout_height="match_parent"
                             android:layout_centerHorizontal="true"
                             android:layout_gravity="center"
-                            android:scaleType="centerCrop" />
-
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/img1" />
 
                         <ProgressBar
-                            android:visibility="gone"
                             android:id="@+id/progress_circular"
-                            android:layout_centerInParent="true"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:visibility="gone" />
 
                     </RelativeLayout>
-
-
 
 
                     <ImageView
@@ -155,28 +153,43 @@
 
 
                         <android.support.v7.widget.RecyclerView
-                            android:layout_marginTop="8dp"
                             android:id="@+id/recycler_view_media"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp" />
 
-                        <TextView
-                            android:id="@+id/txtParticipant"
+                        <RelativeLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="center"
                             android:layout_marginTop="8dp"
-                            android:fontFamily="@font/m"
-                            android:textAlignment="center"
-                            android:textColor="@color/colorPrimary"
-                            android:textSize="@dimen/_12sdp"
-                            android:textStyle="bold" />
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/txtParticipant"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:fontFamily="@font/m"
+                                android:textAlignment="center"
+                                android:textColor="@color/colorPrimary"
+                                android:textSize="@dimen/_12sdp"
+                                android:textStyle="bold" />
+
+                            <ImageView
+                                android:id="@+id/imgaddperson"
+                                android:layout_width="wrap_content"
+                                android:layout_height="@dimen/_20sdp"
+                                android:layout_alignParentEnd="true"
+                                android:layout_gravity="center"
+                                android:adjustViewBounds="true"
+                                android:src="@drawable/ic_person_add" />
+                        </RelativeLayout>
 
                         <android.support.v7.widget.RecyclerView
-                            android:layout_marginTop="8dp"
                             android:id="@+id/recycler_view_member"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp" />
 
                         <Button
                             android:id="@+id/btnExit"
