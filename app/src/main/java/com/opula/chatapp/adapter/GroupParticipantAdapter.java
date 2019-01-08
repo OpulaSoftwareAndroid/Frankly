@@ -17,6 +17,8 @@ import com.opula.chatapp.model.User;
 
 import java.util.List;
 
+import hani.momanii.supernova_emoji_library.Helper.EmojiconTextView;
+
 public class GroupParticipantAdapter extends RecyclerView.Adapter<GroupParticipantAdapter.ViewHolder> {
 
     private Context mContext;
@@ -60,11 +62,8 @@ public class GroupParticipantAdapter extends RecyclerView.Adapter<GroupParticipa
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        public TextView username;
         public ImageView profile_image;
-        private ImageView img_on;
-        private ImageView img_off;
-        private TextView last_msg, time;
+        private EmojiconTextView last_msg, username;
         LinearLayout click_layout;
 
         public ViewHolder(View itemView) {
@@ -72,8 +71,6 @@ public class GroupParticipantAdapter extends RecyclerView.Adapter<GroupParticipa
 
             username = itemView.findViewById(R.id.username);
             profile_image = itemView.findViewById(R.id.profile_image);
-            img_on = itemView.findViewById(R.id.img_on);
-            img_off = itemView.findViewById(R.id.img_off);
             last_msg = itemView.findViewById(R.id.last_msg);
             click_layout = itemView.findViewById(R.id.click_layout);
 

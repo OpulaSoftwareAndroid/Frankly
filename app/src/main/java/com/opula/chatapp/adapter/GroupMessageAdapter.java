@@ -32,6 +32,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
+import hani.momanii.supernova_emoji_library.Helper.EmojiconTextView;
+
 public class GroupMessageAdapter extends RecyclerView.Adapter<GroupMessageAdapter.ViewHolder> {
 
     public static final int MSG_TYPE_LEFT = 0;
@@ -168,7 +170,8 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<GroupMessageAdapte
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        public TextView show_message,show_time,show_sender;
+        EmojiconTextView show_sender,show_message;
+        public TextView show_time;
         public ImageView profile_image, img_receive, img_tick, img_dtick;
         public ProgressBar progress_circular;
         public RelativeLayout relative,txt_seen;
