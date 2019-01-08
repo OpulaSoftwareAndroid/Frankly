@@ -39,8 +39,8 @@
                     android:paddingBottom="@dimen/_8sdp">
 
                     <ImageView
-                        android:layout_width="@dimen/_18sdp"
-                        android:layout_height="wrap_content"
+                        android:layout_width="23dp"
+                        android:layout_height="23dp"
                         android:layout_gravity="center"
                         android:adjustViewBounds="true"
                         android:src="@drawable/back"

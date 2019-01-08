@@ -62,13 +62,15 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<GroupMessageAdapte
     @Override
     public void onBindViewHolder(@NonNull final GroupMessageAdapter.ViewHolder holder, int position) {
 
+
+
         final Chat chat = mChat.get(position);
         Log.d("Chat_Data", chat.getImage() + "/");
 
         if (chat.getSender_image().equals("default")) {
             holder.profile_image.setImageResource(R.drawable.image_boy);
         } else {
-            Glide.with(mContext).load(imageurl).into(holder.profile_image);
+            Glide.with(mContext).load(chat.getSender_image()).into(holder.profile_image);
         }
 
         holder.show_sender.setText(chat.getSender_username());

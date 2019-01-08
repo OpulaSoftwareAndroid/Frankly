@@ -24,38 +24,67 @@
                     android:layout_height="match_parent"
                     android:orientation="vertical">
 
-                    <ImageView
-                        android:id="@+id/image_PersonalInfo_DP"
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/_150sdp"
-                        android:layout_centerHorizontal="true"
+                    <RelativeLayout
+                        android:id="@+id/relative"
                         android:layout_gravity="center"
-                        android:scaleType="fitXY"
-                        android:src="@drawable/img2" />
+                        android:layout_centerHorizontal="true"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_150sdp">
+
+                        <ImageView
+                            android:id="@+id/image_PersonalInfo_DP"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/_150sdp"
+                            android:layout_centerHorizontal="true"
+                            android:layout_gravity="center"
+                            android:scaleType="centerCrop" />
+
+
+                        <ProgressBar
+                            android:visibility="gone"
+                            android:id="@+id/progress_circular"
+                            android:layout_centerInParent="true"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                    </RelativeLayout>
+
+
+
 
                     <ImageView
                         android:id="@+id/groupimg_edit"
-                        android:layout_width="@dimen/_18sdp"
-                        android:layout_height="wrap_content"
+                        android:layout_width="@dimen/_22sdp"
+                        android:layout_height="@dimen/_22sdp"
                         android:layout_alignParentEnd="true"
                         android:layout_margin="@dimen/_8sdp"
                         android:adjustViewBounds="true"
                         android:src="@drawable/ic_edit" />
 
-
-                    <ImageView
+                    <LinearLayout
                         android:id="@+id/imgBack"
-                        android:layout_width="@dimen/_18sdp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/_8sdp"
-                        android:adjustViewBounds="true"
-                        android:src="@drawable/back" />
+                        android:layout_gravity="center"
+                        android:paddingStart="@dimen/_8sdp"
+                        android:paddingTop="@dimen/_8sdp"
+                        android:paddingEnd="@dimen/_8sdp"
+                        android:paddingBottom="@dimen/_8sdp">
+
+                        <ImageView
+                            android:layout_width="23dp"
+                            android:layout_height="23dp"
+                            android:layout_gravity="center"
+                            android:adjustViewBounds="true"
+                            android:src="@drawable/back"
+                            android:tint="@color/white" />
+                    </LinearLayout>
 
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_below="@id/image_PersonalInfo_DP"
+                        android:layout_below="@id/relative"
                         android:layout_marginLeft="@dimen/_8sdp"
                         android:layout_marginRight="@dimen/_8sdp"
                         android:orientation="vertical">
@@ -80,7 +109,6 @@
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="@dimen/_6sdp"
                                     android:fontFamily="@font/m"
-                                    android:text="Pruthvi"
                                     android:textColor="@android:color/black"
                                     android:textSize="@dimen/_12sdp"
                                     android:textStyle="bold" />
@@ -90,7 +118,6 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:fontFamily="@font/m"
-                                    android:text="10 member"
                                     android:textColor="@android:color/darker_gray"
                                     android:textSize="@dimen/_12sdp"
                                     android:textStyle="bold" />
@@ -111,7 +138,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="@dimen/_1sdp"
                             android:layout_below="@id/txtName"
-                            android:layout_marginTop="@dimen/_2sdp"
+                            android:layout_marginTop="8dp"
                             android:background="@color/gray" />
 
                         <TextView
@@ -128,6 +155,7 @@
 
 
                         <android.support.v7.widget.RecyclerView
+                            android:layout_marginTop="8dp"
                             android:id="@+id/recycler_view_media"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content" />
@@ -137,15 +165,15 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:layout_marginTop="@dimen/_10sdp"
+                            android:layout_marginTop="8dp"
                             android:fontFamily="@font/m"
-                            android:text="15 participants"
                             android:textAlignment="center"
                             android:textColor="@color/colorPrimary"
                             android:textSize="@dimen/_12sdp"
                             android:textStyle="bold" />
 
                         <android.support.v7.widget.RecyclerView
+                            android:layout_marginTop="8dp"
                             android:id="@+id/recycler_view_member"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content" />
