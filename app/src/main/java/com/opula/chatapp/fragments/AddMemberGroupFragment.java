@@ -29,9 +29,11 @@ import com.opula.chatapp.MainActivity;
 import com.opula.chatapp.R;
 import com.opula.chatapp.constant.SharedPreference;
 import com.opula.chatapp.constant.WsConstant;
+import com.opula.chatapp.model.GroupUser;
 import com.opula.chatapp.model.User;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class AddMemberGroupFragment extends Fragment {
     private ListView listMember;
@@ -45,6 +47,7 @@ public class AddMemberGroupFragment extends Fragment {
     String groupUserId;
     SharedPreference sharedPreference;
     DatabaseReference reference;
+    List<String> grpList;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -52,8 +55,9 @@ public class AddMemberGroupFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_add_grp_member, container, false);
 
         MainActivity.hideFloatingActionButton();
-
+        grpList = new ArrayList<>();
         initViews(view);
+
         sharedPreference = new SharedPreference();
         groupUserId = sharedPreference.getValue(getActivity(), WsConstant.groupUserId);
         mUsers = new ArrayList<>();
@@ -112,12 +116,14 @@ public class AddMemberGroupFragment extends Fragment {
     }
 
     private void readUsers() {
-
         reference = FirebaseDatabase.getInstance().getReference("Groups").child(groupUserId);
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
+                GroupUser grpuser = dataSnapshot.getValue(GroupUser.class);
+                assert grpuser != null;
+                grpList.addAll(grpuser.getMemberList());
+                compareMember();
             }
 
             @Override
@@ -126,6 +132,10 @@ public class AddMemberGroupFragment extends Fragment {
             }
         });
 
+
+    }
+
+    private void compareMember() {
         final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users");
         reference.addValueEventListener(new ValueEventListener() {
@@ -134,8 +144,10 @@ public class AddMemberGroupFragment extends Fragment {
                 mUsers.clear();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     User user = snapshot.getValue(User.class);
-                    if (!user.getId().equals(firebaseUser.getUid())) {
-                        mUsers.add(user);
+                    for (String list : grpList) {
+                        if (!user.getId().equals(list)) {
+                            mUsers.add(user);
+                        }
                     }
                 }
                 userAdapter = new MemberListAdapter(getActivity(), mUsers);

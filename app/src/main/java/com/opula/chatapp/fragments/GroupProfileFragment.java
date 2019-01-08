@@ -85,8 +85,8 @@ public class GroupProfileFragment extends Fragment {
 
     LinearLayout imgBack;
     ImageView mImageView, groupimg_edit, img_edit_profile, img_add_person;
-    TextView txtName, txtMember, txtParticipant;
-    EmojiconTextView txtName;
+    TextView  txtMember, txtParticipant;
+    EmojiconTextView txtGrpName;
     Button btnExit;
     RecyclerView recycler_view_member, recycler_image;
     SharedPreference sharedPreference;
@@ -341,7 +341,7 @@ public class GroupProfileFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 user = dataSnapshot.getValue(GroupUser.class);
                 assert user != null;
-                txtName.setText(user.getGroupName());
+                txtGrpName.setText(user.getGroupName());
                 txtMember.setText(user.getMemberList().size() + " member");
                 txtParticipant.setText(user.getMemberList().size() + " Participants");
                 sharedPreference.save(getContext(), user.getGroupAdmin(), WsConstant.groupadminId);
@@ -529,7 +529,7 @@ public class GroupProfileFragment extends Fragment {
         groupimg_edit = view.findViewById(R.id.groupimg_edit);
         img_edit_profile = view.findViewById(R.id.img_edit_profile);
         btnExit = view.findViewById(R.id.btnExit);
-        txtName = view.findViewById(R.id.txtName);
+        txtGrpName = view.findViewById(R.id.txtName);
         recycler_view_member = view.findViewById(R.id.recycler_view_member);
         recycler_image = view.findViewById(R.id.recycler_image);
         progress_circular = view.findViewById(R.id.progress_circular);
