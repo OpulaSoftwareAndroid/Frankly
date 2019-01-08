@@ -9,6 +9,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -158,6 +160,17 @@ public class MessageFragment extends Fragment {
             }
         });
 
+        imgUser.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+//                MainActivity.hideFloatingActionButton();
+//                sharedPreference.save(getContext(),userid, WsConstant.userId);
+//                MainActivity.checkChatTheme(getContext());
+                MainActivity.showpart2();
+                FragmentManager fragmentManager = ((FragmentActivity) getContext()).getSupportFragmentManager();
+                fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new UserProfileFragment()).addToBackStack(null).commit();
+            }
+        });
 
         text_send.addTextChangedListener(new TextWatcher() {
 

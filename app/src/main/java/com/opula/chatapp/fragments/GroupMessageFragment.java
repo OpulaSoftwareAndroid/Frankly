@@ -48,7 +48,6 @@ import com.mlsdev.rximagepicker.Sources;
 import com.opula.chatapp.MainActivity;
 import com.opula.chatapp.R;
 import com.opula.chatapp.adapter.GroupMessageAdapter;
-import com.opula.chatapp.adapter.MessageAdapter;
 import com.opula.chatapp.api.APIService;
 import com.opula.chatapp.constant.SharedPreference;
 import com.opula.chatapp.constant.WsConstant;
@@ -97,7 +96,7 @@ public class GroupMessageFragment extends Fragment {
     GroupMessageAdapter messageAdapter;
     FirebaseUser fuser;
     ValueEventListener seenListener;
-    String userusername,userimage;
+    String userusername, userimage;
     APIService apiService;
 
     //pickimage
@@ -123,16 +122,12 @@ public class GroupMessageFragment extends Fragment {
         userimage = sharedPreference.getValue(getActivity(), WsConstant.userImage);
 
 
-
-
-
         initViews(view);
         emojIcon = new EmojIconActions(getActivity(), rootView, text_send, emojiButton);
         emojIcon.ShowEmojIcon();
         emojIcon.setIconsIds(R.drawable.ic_keyboard_black_24dp, R.drawable.ic_sentiment_satisfied_black_24dp);
 
         fuser = FirebaseAuth.getInstance().getCurrentUser();
-
 
 
         recyclerView.setHasFixedSize(true);
@@ -160,6 +155,19 @@ public class GroupMessageFragment extends Fragment {
 
             }
         });
+        imgUser.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MainActivity.hideFloatingActionButton();
+                MainActivity.checkChatTheme(getContext());
+                MainActivity.showpart2();
+
+                FragmentManager fragmentManager = ((FragmentActivity) getContext()).getSupportFragmentManager();
+                fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new GroupProfileFragment()).addToBackStack(null).commit();
+
+            }
+        });
+
 
         btn_send.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -229,6 +237,7 @@ public class GroupMessageFragment extends Fragment {
                 user = dataSnapshot.getValue(GroupUser.class);
                 assert user != null;
                 txtUserName.setText(user.getGroupName());
+                txtCheckActive.setText(user.getMemberList().size() + " Members");
                 if (user.getImageURL().equals("default")) {
                     imgUser.setImageResource(R.drawable.image_boy);
                 } else {
@@ -242,37 +251,36 @@ public class GroupMessageFragment extends Fragment {
                     }
                 }
 
-                for (int i = 0; i < user.getMemberList().size(); i++) {
-                    commaSepValueBuilder = new StringBuilder();
-                    final int finalI = i;
-                    reference = FirebaseDatabase.getInstance().getReference("Users").child(String.valueOf(user.getMemberList().get(finalI)));
-                    reference.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                for (int i = 0; i < user.getMemberList().size(); i++) {
+//                    commaSepValueBuilder = new StringBuilder();
+//                    final int finalI = i;
+//                    reference = FirebaseDatabase.getInstance().getReference("Users").child(String.valueOf(user.getMemberList().get(finalI)));
+//                    reference.addValueEventListener(new ValueEventListener() {
+//                        @Override
+//                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//
+//                            User u1 = dataSnapshot.getValue(User.class);
+//                            assert u1 != null;
+//                            commaSepValueBuilder.append(u1.getEmail());
+//                            if (finalI != user.getMemberList().size()) {
+//                                commaSepValueBuilder.append(",");
+//                                txtCheckActive.setText(commaSepValueBuilder);
+//                            }
+//
+//
+//                        }
+//
+//                        @Override
+//                        public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                        }
+//                    });
+//
+//                    Log.d("Group_dataa", commaSepValueBuilder + "//");
+//                }
 
-                            User u1 = dataSnapshot.getValue(User.class);
-                            assert u1 != null;
-                            commaSepValueBuilder.append(u1.getEmail());
-                            if (finalI != user.getMemberList().size()) {
-                                commaSepValueBuilder.append(",");
-                                txtCheckActive.setText(commaSepValueBuilder);
-                            }
 
-
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                        }
-                    });
-
-                    Log.d("Group_dataa", commaSepValueBuilder + "//");
-                }
-
-
-
-                readMesagges(groupUserId,user.getImageURL());
+                readMesagges(groupUserId, user.getImageURL());
             }
 
             @Override
@@ -302,7 +310,6 @@ public class GroupMessageFragment extends Fragment {
 
     private void readMesagges(final String groupid, final String imageurl) {
         mchat = new ArrayList<>();
-
         reference = FirebaseDatabase.getInstance().getReference("Chats");
         reference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -312,12 +319,38 @@ public class GroupMessageFragment extends Fragment {
                     final Chat chat = snapshot.getValue(Chat.class);
                     assert chat != null;
                     if (chat.getReceiver().equals(groupid)) {
+                        for (int i = 0; i < user.getMemberList().size(); i++) {
+                            final int finalI = i;
+                            DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users").child(String.valueOf(user.getMemberList().get(finalI)));
+                            reference.addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    Log.d("Group_chat_data", dataSnapshot.getValue() + "//");
+                                    User u1 = dataSnapshot.getValue(User.class);
+                                    assert u1 != null;
+                                    if (u1.getId().equalsIgnoreCase(chat.getSender())) {
+                                        chat.setSender_image(u1.getImageURL());
+                                        chat.setSender_username(u1.getUsername());
+                                    }
+
+
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
+                        }
+
                         mchat.add(chat);
+
                     }
 
                     messageAdapter = new GroupMessageAdapter(getActivity(), mchat, imageurl);
                     recyclerView.setAdapter(messageAdapter);
                 }
+
             }
 
             @Override

@@ -92,9 +92,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
             @Override
             public void onClick(View view) {
                 MainActivity.hideFloatingActionButton();
-
                 sharedPreference.save(mContext, user.getId(), WsConstant.userId);
-
                 MainActivity.checkChatTheme(mContext);
                 MainActivity.showpart1();
                 FragmentManager fragmentManager = ((FragmentActivity) mContext).getSupportFragmentManager();

@@ -8,6 +8,7 @@ public class GroupUser {
     private String groupId;
     private String memberCount;
     private String imageURL;
+    private String groupAdmin;
     private ArrayList<String> memberList;
 
     public String getGroupName() {
@@ -48,5 +49,13 @@ public class GroupUser {
 
     public void setMemberList(ArrayList<String> memberList) {
         this.memberList = memberList;
+    }
+
+    public String getGroupAdmin() {
+        return groupAdmin;
+    }
+
+    public void setGroupAdmin(String groupAdmin) {
+        this.groupAdmin = groupAdmin;
     }
 }

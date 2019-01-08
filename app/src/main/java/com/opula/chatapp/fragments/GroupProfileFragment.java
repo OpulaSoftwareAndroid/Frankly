@@ -251,6 +251,7 @@ public class GroupProfileFragment extends Fragment {
                 txtName.setText(user.getGroupName());
                 txtMember.setText(user.getMemberList().size() + " member");
                 txtParticipant.setText(user.getMemberList().size() + " Participants");
+                sharedPreference.save(getContext(), user.getGroupAdmin(), WsConstant.groupadminId);
                 if (user.getImageURL().equals("default")) {
                     mImageView.setImageResource(R.drawable.image_boy);
                 } else {

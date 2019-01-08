@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.opula.chatapp.R;
 import com.opula.chatapp.constant.SharedPreference;
+import com.opula.chatapp.constant.WsConstant;
 import com.opula.chatapp.model.User;
 
 import java.util.List;
@@ -21,7 +22,7 @@ public class GroupParticipantAdapter extends RecyclerView.Adapter<GroupParticipa
 
     private Context mContext;
     private List<User> mUsers;
-    private boolean ischat;
+    String groupAdminID;
     SharedPreference sharedPreference;
 
 
@@ -43,7 +44,12 @@ public class GroupParticipantAdapter extends RecyclerView.Adapter<GroupParticipa
         sharedPreference = new SharedPreference();
 
         final User user = mUsers.get(position);
-        holder.username.setText(user.getUsername());
+        groupAdminID = sharedPreference.getValue(mContext, WsConstant.groupadminId);
+        if (user.getId().equals(groupAdminID)) {
+            holder.username.setText(user.getUsername() + "  (admin)");
+        } else {
+            holder.username.setText(user.getUsername());
+        }
         holder.last_msg.setText(user.getEmail());
         if (user.getImageURL().equals("default")) {
             holder.profile_image.setImageResource(R.drawable.image_boy);

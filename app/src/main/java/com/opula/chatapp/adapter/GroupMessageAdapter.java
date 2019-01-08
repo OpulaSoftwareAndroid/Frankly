@@ -63,7 +63,7 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<GroupMessageAdapte
     public void onBindViewHolder(@NonNull final GroupMessageAdapter.ViewHolder holder, int position) {
 
         final Chat chat = mChat.get(position);
-        Log.d("Chat_Data", chat.getImage() + "/");
+        Log.d("Chat_Data", chat.getSender_image() + "/");
 
         if (chat.getSender_image().equals("default")) {
             holder.profile_image.setImageResource(R.drawable.image_boy);
