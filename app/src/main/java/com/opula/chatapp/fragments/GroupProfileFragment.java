@@ -8,11 +8,19 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
@@ -50,9 +58,12 @@ import com.google.firebase.storage.UploadTask;
 import com.opula.chatapp.MainActivity;
 import com.opula.chatapp.R;
 import com.opula.chatapp.adapter.GroupParticipantAdapter;
+import com.opula.chatapp.adapter.UserSharedAdapter;
+import com.opula.chatapp.constant.AppGlobal;
 import com.opula.chatapp.constant.RoundCornersTransformation;
 import com.opula.chatapp.constant.SharedPreference;
 import com.opula.chatapp.constant.WsConstant;
+import com.opula.chatapp.model.Chat;
 import com.opula.chatapp.model.GroupUser;
 import com.opula.chatapp.model.User;
 import com.squareup.picasso.Callback;
@@ -63,6 +74,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import java.util.Objects;
+
+import hani.momanii.supernova_emoji_library.Helper.EmojiconTextView;
+
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 
@@ -71,8 +86,9 @@ public class GroupProfileFragment extends Fragment {
     LinearLayout imgBack;
     ImageView mImageView, groupimg_edit, img_edit_profile, img_add_person;
     TextView txtName, txtMember, txtParticipant;
+    EmojiconTextView txtName;
     Button btnExit;
-    RecyclerView recycler_view_member, recycler_view_media;
+    RecyclerView recycler_view_member, recycler_image;
     SharedPreference sharedPreference;
     String groupUserId;
     DatabaseReference reference;
@@ -87,6 +103,10 @@ public class GroupProfileFragment extends Fragment {
     FirebaseAuth firebaseAuth;
     ProgressBar progress_circular;
     List<String> grpList;
+
+    TextView text_no_image;
+    private List<Chat> mchat;
+    private UserSharedAdapter userSharedAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -108,8 +128,8 @@ public class GroupProfileFragment extends Fragment {
         recycler_view_member.setHasFixedSize(true);
         recycler_view_member.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        recycler_view_media.setHasFixedSize(true);
-        recycler_view_media.setLayoutManager(new LinearLayoutManager(getContext()));
+        LinearLayoutManager horizontalLayoutManagaer = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
+        recycler_image.setLayoutManager(horizontalLayoutManagaer);
 
         checkImage();
 
@@ -175,6 +195,9 @@ public class GroupProfileFragment extends Fragment {
                 showExitDialog(getContext());
             }
         });
+
+        readMesagges(groupUserId);
+
         img_add_person.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -220,9 +243,14 @@ public class GroupProfileFragment extends Fragment {
     }
 
     private void exitGroup() {
-
         deleteGroupFromChatList();
         deleteMemebeFromGroup();
+
+        MainActivity.checkListTheme(Objects.requireNonNull(getContext()));
+
+        FragmentManager fragmentPersonal = Objects.requireNonNull(getActivity()).getSupportFragmentManager();
+        fragmentPersonal.beginTransaction().replace(R.id.frame_mainactivity, new ListGroupChatFragment()).addToBackStack(null).commit();
+
     }
 
     private void deleteMemebeFromGroup() {
@@ -428,6 +456,7 @@ public class GroupProfileFragment extends Fragment {
                     if (!task.isSuccessful()) {
                         throw task.getException();
                     }
+
                     return fileReference.getDownloadUrl();
                 }
             }).addOnCompleteListener(new OnCompleteListener<Uri>() {
@@ -502,7 +531,50 @@ public class GroupProfileFragment extends Fragment {
         btnExit = view.findViewById(R.id.btnExit);
         txtName = view.findViewById(R.id.txtName);
         recycler_view_member = view.findViewById(R.id.recycler_view_member);
-        recycler_view_media = view.findViewById(R.id.recycler_view_media);
+        recycler_image = view.findViewById(R.id.recycler_image);
         progress_circular = view.findViewById(R.id.progress_circular);
+        text_no_image = view.findViewById(R.id.text_no_image);
     }
+
+    private void readMesagges(final String userid) {
+        mchat = new ArrayList<>();
+
+        reference = FirebaseDatabase.getInstance().getReference("Chats");
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                mchat.clear();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Chat chat = snapshot.getValue(Chat.class);
+                    assert chat != null;
+                    if (chat.getReceiver().equals(userid)) {
+                        if (chat.getIsimage()){
+                            mchat.add(chat);
+                        }
+                    }
+
+                    userSharedAdapter = new UserSharedAdapter(getActivity(), mchat);
+                    recycler_image.setAdapter(userSharedAdapter);
+
+                    if (userSharedAdapter.getItemCount() > 0) {
+                        // listView not empty
+                        recycler_image.setVisibility(View.VISIBLE);
+                        text_no_image.setVisibility(View.GONE);
+                        recycler_image.setAdapter(userSharedAdapter);
+                    } else {
+                        // listView  empty
+                        recycler_image.setVisibility(View.GONE);
+                        text_no_image.setVisibility(View.VISIBLE);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+
 }

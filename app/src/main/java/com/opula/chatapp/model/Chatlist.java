@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 public class Chatlist implements Serializable {
     public String id;
+    public boolean istyping;
     public ArrayList<String> group;
 
     public String getId() {
@@ -13,6 +14,14 @@ public class Chatlist implements Serializable {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public boolean getIstyping() {
+        return istyping;
+    }
+
+    public void setIstyping(boolean istyping) {
+        this.istyping = istyping;
     }
 
     public ArrayList<String> getGroup() {

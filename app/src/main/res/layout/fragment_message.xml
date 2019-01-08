@@ -57,7 +57,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/m"
-                android:text="Pruthvi Patel"
                 android:textColor="@android:color/black"
                 android:textSize="@dimen/_12sdp"
                 android:textStyle="bold" />
@@ -68,7 +67,6 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/m"
                 android:gravity="start"
-                android:text="Active Now"
                 android:textColor="@color/warm_grey"
                 android:textSize="@dimen/_10sdp" />
         </LinearLayout>
@@ -138,6 +136,7 @@
                     <hani.momanii.supernova_emoji_library.Helper.EmojiconEditText
                         android:imeOptions="actionSend"
                         android:layout_marginLeft="4dp"
+                        android:fontFamily="@font/m"
                         android:gravity="center_vertical"
                         android:layout_gravity="start"
                         android:id="@+id/text_send"

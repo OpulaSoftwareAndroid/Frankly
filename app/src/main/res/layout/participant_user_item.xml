@@ -64,6 +64,7 @@
 
             <hani.momanii.supernova_emoji_library.Helper.EmojiconTextView
                 android:id="@+id/username"
+                android:fontFamily="@font/m"
                 emojicon:emojiconSize="22sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -71,7 +72,8 @@
 
             <hani.momanii.supernova_emoji_library.Helper.EmojiconTextView
                 android:id="@+id/last_msg"
-                emojicon:emojiconSize="18sp"
+                android:fontFamily="@font/m"
+                emojicon:emojiconSize="14sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"

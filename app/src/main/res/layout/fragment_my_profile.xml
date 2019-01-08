@@ -87,8 +87,7 @@
                         android:layout_height="@dimen/_80sdp"
                         android:layout_centerHorizontal="true"
                         android:layout_gravity="center"
-                        android:background="@android:color/transparent"
-                        android:src="@drawable/image_boy" />
+                        android:background="@android:color/transparent" />
 
                     <ImageView
                         android:id="@+id/img_edit_profile"
@@ -107,7 +106,6 @@
                     android:layout_gravity="center"
                     android:layout_marginTop="@dimen/_4sdp"
                     android:fontFamily="@font/m"
-                    android:text="Bryan Taylor"
                     android:textColor="@android:color/darker_gray"
                     android:textSize="@dimen/_14sdp"
                     android:textStyle="bold" />
@@ -119,7 +117,6 @@
                     android:layout_gravity="center"
                     android:layout_marginTop="@dimen/_4sdp"
                     android:fontFamily="@font/m"
-                    android:text="jenilgopani6969@gmail.com"
                     android:textColor="@android:color/darker_gray"
                     android:textSize="@dimen/_10sdp"
                     android:textStyle="bold" />

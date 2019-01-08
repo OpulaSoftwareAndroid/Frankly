@@ -2,6 +2,7 @@ package com.opula.chatapp.fragments;
 
 import android.app.Activity;
 import android.content.Context;
+import android.media.Image;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -13,6 +14,7 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.Filter;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -29,8 +31,11 @@ import com.opula.chatapp.MainActivity;
 import com.opula.chatapp.R;
 import com.opula.chatapp.constant.WsConstant;
 import com.opula.chatapp.model.User;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class CreateGrpFragment extends Fragment {
 
@@ -42,6 +47,7 @@ public class CreateGrpFragment extends Fragment {
     Button btnNext;
     TextView txtSelectedCount;
     StringBuilder commaSepValueBuilder;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -107,6 +113,7 @@ public class CreateGrpFragment extends Fragment {
     static class ViewHolder {
         CheckBox checkBox;
         TextView txtName, txtNumber;
+        CircleImageView item_profile;
     }
 
     private void readUsers() {
@@ -183,16 +190,17 @@ public class CreateGrpFragment extends Fragment {
                 LayoutInflater inflater = ((Activity) context).getLayoutInflater();
                 rowView = inflater.inflate(R.layout.group_user_item, null);
 
-                viewHolder.checkBox = (CheckBox) rowView.findViewById(R.id.rowCheckBox);
-                viewHolder.txtNumber = (TextView) rowView.findViewById(R.id.txtNumber);
-                viewHolder.txtName = (TextView) rowView.findViewById(R.id.txtName);
+                viewHolder.checkBox = rowView.findViewById(R.id.rowCheckBox);
+                viewHolder.txtNumber = rowView.findViewById(R.id.txtNumber);
+                viewHolder.txtName = rowView.findViewById(R.id.txtName);
+                viewHolder.item_profile = rowView.findViewById(R.id.item_profile);
                 rowView.setTag(viewHolder);
             } else {
                 viewHolder = (ViewHolder) rowView.getTag();
             }
             viewHolder.checkBox.setChecked(oricoininfo.get(position).checked);
-            viewHolder.txtName.setText(oricoininfo.get(position).getUsername() + "");
-            viewHolder.txtNumber.setText(oricoininfo.get(position).getEmail() + "");
+            viewHolder.txtName.setText(oricoininfo.get(position).getUsername());
+            viewHolder.txtNumber.setText(oricoininfo.get(position).getEmail());
             viewHolder.checkBox.setTag(position);
             viewHolder.checkBox.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -207,6 +215,9 @@ public class CreateGrpFragment extends Fragment {
                     txtSelectedCount.setText(count + " Selected");
                 }
             });
+            Picasso.get().load(oricoininfo.get(position).getImageURL())
+                    .placeholder(R.drawable.image_boy).error(R.drawable.image_boy)
+                    .into(viewHolder.item_profile);
             return rowView;
         }
 

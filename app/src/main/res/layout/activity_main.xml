@@ -32,10 +32,12 @@
                 android:orientation="horizontal">
 
                 <ImageView
+                    android:paddingBottom="16dp"
+                    android:paddingTop="16dp"
                     android:id="@+id/img_chat"
                     android:layout_width="@dimen/_18sdp"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/_8sdp"
+                    android:layout_marginStart="@dimen/_8sdp"
                     android:layout_weight="0"
                     android:adjustViewBounds="true"
                     android:src="@drawable/groupchat"

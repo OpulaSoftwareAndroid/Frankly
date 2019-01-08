@@ -2,7 +2,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/border_white">
+    xmlns:emojicon="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/tools"
+    android:background="@drawable/border_white"
+    app:ignore="NamespaceTypo">
 
     <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
@@ -26,19 +29,25 @@
 
                     <RelativeLayout
                         android:id="@+id/relative"
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/_150sdp"
+                        android:layout_gravity="center"
                         android:layout_centerHorizontal="true"
-                        android:layout_gravity="center">
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_150sdp">
 
-                        <ImageView
+
+                        <com.comix.rounded.RoundedCornerImageView
+                            xmlns:app="http://schemas.android.com/apk/res-auto"
                             android:id="@+id/image_PersonalInfo_DP"
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
+                            android:layout_height="@dimen/_150sdp"
                             android:layout_centerHorizontal="true"
-                            android:layout_gravity="center"
+                            app:cornerBottomDisable="true"
+                            app:cornerLeftDisable="false"
+                            app:cornerRightDisable="false"
+                            app:cornerTopDisable="false"
                             android:scaleType="centerCrop"
-                            android:src="@drawable/img1" />
+                            app:cornerColor="@color/colorPrimary"
+                            app:cornerRadius="5dp" />
 
                         <ProgressBar
                             android:id="@+id/progress_circular"
@@ -140,40 +149,52 @@
                             android:background="@color/gray" />
 
                         <TextView
+                            android:textAllCaps="true"
                             android:id="@+id/txtShared"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/_10sdp"
+                            android:layout_marginTop="8dp"
                             android:fontFamily="@font/m"
-                            android:text="Media"
+                            android:text="SHARED"
                             android:textColor="@color/colorPrimary"
                             android:textSize="@dimen/_12sdp"
                             android:textStyle="bold"
-                            android:visibility="gone" />
+                            android:visibility="visible" />
 
 
                         <android.support.v7.widget.RecyclerView
-                            android:id="@+id/recycler_view_media"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp" />
-
-                        <RelativeLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
+                            android:id="@+id/recycler_image"
+                            android:divider="@null"
+                            android:visibility="visible"
                             android:layout_marginTop="8dp"
-                            android:orientation="horizontal">
+                            android:layout_width="match_parent"
+                            android:layout_height="132dp" />
 
-                            <TextView
-                                android:id="@+id/txtParticipant"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:fontFamily="@font/m"
-                                android:textAlignment="center"
-                                android:textColor="@color/colorPrimary"
-                                android:textSize="@dimen/_12sdp"
-                                android:textStyle="bold" />
+                        <TextView
+                            android:visibility="gone"
+                            android:id="@+id/text_no_image"
+                            android:layout_marginTop="8dp"
+                            android:background="@drawable/border_black"
+                            android:fontFamily="@font/m"
+                            android:textSize="@dimen/_16sdp"
+                            android:textAllCaps="true"
+                            android:gravity="center"
+                            android:text="No Image Found!"
+                            android:layout_width="match_parent"
+                            android:layout_height="132dp" />
+
+                        <TextView
+                            android:textAllCaps="true"
+                            android:id="@+id/txtParticipant"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="8dp"
+                            android:fontFamily="@font/m"
+                            android:textAlignment="center"
+                            android:textColor="@color/colorPrimary"
+                            android:textSize="@dimen/_12sdp"
+                            android:textStyle="bold" />
 
                             <ImageView
                                 android:id="@+id/imgaddperson"

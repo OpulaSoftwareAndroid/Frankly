@@ -12,6 +12,7 @@
 
         <com.rengwuxian.materialedittext.MaterialEditText
             android:layout_width="match_parent"
+            android:fontFamily="@font/m"
             android:layout_height="wrap_content"
             android:id="@+id/text"
             android:layout_marginLeft="8dp"

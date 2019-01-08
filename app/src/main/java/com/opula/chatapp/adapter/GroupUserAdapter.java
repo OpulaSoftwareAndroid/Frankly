@@ -24,6 +24,8 @@ import com.opula.chatapp.R;
 import com.opula.chatapp.constant.SharedPreference;
 import com.opula.chatapp.constant.WsConstant;
 import com.opula.chatapp.fragments.GroupMessageFragment;
+import com.opula.chatapp.fragments.GroupProfileFragment;
+import com.opula.chatapp.fragments.UserProfileFragment;
 import com.opula.chatapp.model.Chat;
 import com.opula.chatapp.model.GroupUser;
 
@@ -87,6 +89,21 @@ public class GroupUserAdapter extends RecyclerView.Adapter<GroupUserAdapter.View
 
             }
         });
+
+        holder.profile_image.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sharedPreference.save(mContext, user.getGroupId(), WsConstant.groupUserId);
+
+                MainActivity.showpart2();
+
+                FragmentManager fragmentManager = ((FragmentActivity) mContext).getSupportFragmentManager();
+                fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new GroupProfileFragment()).addToBackStack(null).commit();
+
+            }
+        });
+
+
     }
 
     @Override

@@ -21,20 +21,22 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.opula.chatapp.MainActivity;
 import com.opula.chatapp.R;
+import com.opula.chatapp.adapter.NewChatUserAdapter;
 import com.opula.chatapp.adapter.UserAdapter;
 import com.opula.chatapp.constant.WsConstant;
 import com.opula.chatapp.model.User;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 public class ListUserFragment extends Fragment {
 
     private RecyclerView recyclerView;
-    private UserAdapter userAdapter;
+    private NewChatUserAdapter newChatUserAdapter;
     private List<User> mUsers;
-    LinearLayout createNewGrpLayout;
+    LinearLayout createNewGrpLayout,imgBack;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -47,6 +49,14 @@ public class ListUserFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recycler_view);
 
         createNewGrpLayout = view.findViewById(R.id.createNewGrpLayout);
+        imgBack = view.findViewById(R.id.imgBack);
+
+        imgBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Objects.requireNonNull(getActivity()).onBackPressed();
+            }
+        });
 
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -58,7 +68,7 @@ public class ListUserFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 MainActivity.hideFloatingActionButton();
-                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                FragmentManager fragmentManager = Objects.requireNonNull(getActivity()).getSupportFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new CreateGrpFragment()).addToBackStack(null).commit();
             }
         });
@@ -104,8 +114,8 @@ public class ListUserFragment extends Fragment {
                     }
                 }
 
-                userAdapter = new UserAdapter(getActivity(), mUsers, false);
-                recyclerView.setAdapter(userAdapter);
+                newChatUserAdapter = new NewChatUserAdapter(getActivity(), mUsers, false);
+                recyclerView.setAdapter(newChatUserAdapter);
             }
 
             @Override
@@ -117,14 +127,12 @@ public class ListUserFragment extends Fragment {
     }
 
     private void readUsers() {
-
         final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users");
 
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                if (search_users.getText().toString().equals("")) {
                 mUsers.clear();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     User user = snapshot.getValue(User.class);
@@ -133,11 +141,10 @@ public class ListUserFragment extends Fragment {
                         mUsers.add(user);
                     }
                 }
-                userAdapter = new UserAdapter(getActivity(), mUsers, false);
+                newChatUserAdapter = new NewChatUserAdapter(getActivity(), mUsers, false);
                 WsConstant.check = "activity";
-                recyclerView.setAdapter(userAdapter);
+                recyclerView.setAdapter(newChatUserAdapter);
             }
-//            }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -145,6 +152,5 @@ public class ListUserFragment extends Fragment {
             }
         });
     }
-
 
 }

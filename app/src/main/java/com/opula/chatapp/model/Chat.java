@@ -44,7 +44,7 @@ public class Chat {
         this.isseen = isseen;
     }
 
-    public boolean isIsimage() {
+    public boolean getIsimage() {
         return isimage;
     }
 

@@ -161,9 +161,6 @@ public class MessageFragment extends Fragment {
         imgUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                MainActivity.hideFloatingActionButton();
-//                sharedPreference.save(getContext(),userid, WsConstant.userId);
-//                MainActivity.checkChatTheme(getContext());
                 MainActivity.showpart2();
                 FragmentManager fragmentManager = ((FragmentActivity) getContext()).getSupportFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new UserProfileFragment()).addToBackStack(null).commit();
@@ -171,26 +168,24 @@ public class MessageFragment extends Fragment {
         });
 
         text_send.addTextChangedListener(new TextWatcher() {
-
             boolean isTyping = false;
-
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
-
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
             }
-
             private Timer timer = new Timer();
-            private final long DELAY = 1500; // milliseconds
-
+            private final long DELAY = 1500;
             @Override
             public void afterTextChanged(final Editable s) {
                 Log.d("", "");
                 if (!isTyping) {
                     Log.d("typing", "started typing");
-                    // Send notification for start typing event
+
+                    final DatabaseReference chatRefReceiver = FirebaseDatabase.getInstance().getReference("Chatlist").child(userid).child(fuser.getUid());
+                    chatRefReceiver.child("istyping").setValue(true);
+
                     isTyping = true;
                 }
                 timer.cancel();
@@ -201,7 +196,10 @@ public class MessageFragment extends Fragment {
                             public void run() {
                                 isTyping = false;
                                 Log.d("typing", "stopped typing");
-                                //send notification for stopped typing event
+
+                                final DatabaseReference chatRefReceiver = FirebaseDatabase.getInstance().getReference("Chatlist").child(userid).child(fuser.getUid());
+                                chatRefReceiver.child("istyping").setValue(false);
+
                             }
                         },
                         DELAY
@@ -209,9 +207,7 @@ public class MessageFragment extends Fragment {
             }
         });
 
-
         reference = FirebaseDatabase.getInstance().getReference("Users").child(userid);
-
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -425,15 +421,15 @@ public class MessageFragment extends Fragment {
 
 
         // add user to chat fragment
-        final DatabaseReference chatRef = FirebaseDatabase.getInstance().getReference("Chatlist")
-                .child(fuser.getUid())
-                .child(userid);
+        final DatabaseReference chatRef = FirebaseDatabase.getInstance().getReference("Chatlist").child(fuser.getUid()).child(userid);
 
         chatRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (!dataSnapshot.exists()) {
                     chatRef.child("id").setValue(userid);
+                    chatRef.child("istyping").setValue(false);
+                    chatRef.child("isnotification").setValue(false);
                 }
             }
 
@@ -443,10 +439,10 @@ public class MessageFragment extends Fragment {
             }
         });
 
-        final DatabaseReference chatRefReceiver = FirebaseDatabase.getInstance().getReference("Chatlist")
-                .child(userid)
-                .child(fuser.getUid());
+        final DatabaseReference chatRefReceiver = FirebaseDatabase.getInstance().getReference("Chatlist").child(userid).child(fuser.getUid());
         chatRefReceiver.child("id").setValue(fuser.getUid());
+        chatRefReceiver.child("istyping").setValue(false);
+        chatRefReceiver.child("isnotification").setValue(true);
 
         final String msg = message;
 

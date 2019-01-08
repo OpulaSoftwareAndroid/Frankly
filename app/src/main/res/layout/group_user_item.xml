@@ -14,11 +14,10 @@
         android:layout_weight="0"
         android:orientation="vertical">
 
-        <ImageView
+        <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/item_profile"
             android:layout_width="@dimen/_30sdp"
-            android:layout_height="@dimen/_30sdp"
-            android:src="@drawable/image_boy" />
+            android:layout_height="@dimen/_30sdp" />
     </LinearLayout>
 
     <LinearLayout
@@ -33,7 +32,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/m"
-            android:text="Bryan Taylor"
             android:textColor="@android:color/black"
             android:textSize="@dimen/_12sdp" />
 
@@ -43,7 +41,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/m"
-            android:text="1234567890"
             android:textColor="@android:color/darker_gray"
             android:textSize="@dimen/_11sdp" />
     </LinearLayout>

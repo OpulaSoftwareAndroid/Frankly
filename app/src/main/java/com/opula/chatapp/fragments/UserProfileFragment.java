@@ -3,6 +3,8 @@ package com.opula.chatapp.fragments;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,8 +23,17 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.opula.chatapp.MainActivity;
 import com.opula.chatapp.R;
+import com.opula.chatapp.adapter.MessageAdapter;
+import com.opula.chatapp.adapter.NewChatUserAdapter;
+import com.opula.chatapp.adapter.UserSharedAdapter;
 import com.opula.chatapp.constant.SharedPreference;
 import com.opula.chatapp.constant.WsConstant;
+import com.opula.chatapp.model.Chat;
+import com.opula.chatapp.model.User;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -30,12 +41,16 @@ public class UserProfileFragment extends Fragment {
 
     SharedPreference sharedPreference;
     String userid;
-    TextView txtName, txtEmail;
+    TextView txtName, txtEmail, text_no_image;
     TextView txtOnOff;
     LinearLayout imgBack;
     CircleImageView image_PersonalInfo_DP;
     Switch chkNotification;
     DatabaseReference reference;
+    RecyclerView recycler_image;
+
+    private List<Chat> mchat;
+    private UserSharedAdapter userSharedAdapter;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -47,6 +62,9 @@ public class UserProfileFragment extends Fragment {
         sharedPreference = new SharedPreference();
         userid = sharedPreference.getValue(getActivity(), WsConstant.userId);
         initViews(view);
+
+        LinearLayoutManager horizontalLayoutManagaer = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
+        recycler_image.setLayoutManager(horizontalLayoutManagaer);
 
         imgBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,6 +106,8 @@ public class UserProfileFragment extends Fragment {
             }
         });
 
+        readMesagges("QAMAMritO8gmVf7er0NLb9xtOwR2", userid);
+
         return view;
     }
 
@@ -98,5 +118,49 @@ public class UserProfileFragment extends Fragment {
         image_PersonalInfo_DP = view.findViewById(R.id.image_PersonalInfo_DP);
         txtName = view.findViewById(R.id.txtName);
         txtEmail = view.findViewById(R.id.txtEmail);
+        recycler_image = view.findViewById(R.id.recycler_image);
+        text_no_image = view.findViewById(R.id.text_no_image);
     }
+
+    private void readMesagges(final String myid, final String userid) {
+        mchat = new ArrayList<>();
+
+        reference = FirebaseDatabase.getInstance().getReference("Chats");
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                mchat.clear();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Chat chat = snapshot.getValue(Chat.class);
+                    assert chat != null;
+                    if (chat.getReceiver().equals(myid) && chat.getSender().equals(userid) ||
+                            chat.getReceiver().equals(userid) && chat.getSender().equals(myid)) {
+                        if (chat.getIsimage()){
+                            mchat.add(chat);
+                        }
+                    }
+
+                    userSharedAdapter = new UserSharedAdapter(getActivity(), mchat);
+                    recycler_image.setAdapter(userSharedAdapter);
+
+                    if (userSharedAdapter.getItemCount() > 0) {
+                        // listView not empty
+                        recycler_image.setVisibility(View.VISIBLE);
+                        text_no_image.setVisibility(View.GONE);
+                        recycler_image.setAdapter(userSharedAdapter);
+                    } else {
+                        // listView  empty
+                        recycler_image.setVisibility(View.GONE);
+                        text_no_image.setVisibility(View.VISIBLE);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
 }

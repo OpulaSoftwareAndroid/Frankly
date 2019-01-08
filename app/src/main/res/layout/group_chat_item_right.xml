@@ -54,6 +54,7 @@
 
             <hani.momanii.supernova_emoji_library.Helper.EmojiconTextView
                 android:id="@+id/show_sender"
+                android:fontFamily="@font/m"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|start"
@@ -66,6 +67,7 @@
 
             <hani.momanii.supernova_emoji_library.Helper.EmojiconTextView
                 android:id="@+id/show_message"
+                android:fontFamily="@font/m"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="start"
@@ -101,6 +103,7 @@
 
 
             <TextView
+                android:fontFamily="@font/m"
                 android:id="@+id/show_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

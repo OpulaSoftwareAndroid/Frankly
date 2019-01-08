@@ -71,6 +71,7 @@ import java.util.TimerTask;
 import de.hdodenhof.circleimageview.CircleImageView;
 import hani.momanii.supernova_emoji_library.Actions.EmojIconActions;
 import hani.momanii.supernova_emoji_library.Helper.EmojiconEditText;
+import hani.momanii.supernova_emoji_library.Helper.EmojiconTextView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -89,7 +90,8 @@ public class GroupMessageFragment extends Fragment {
     LinearLayout imgBack, groupName;
     EmojiconEditText text_send;
     ImageView emojiButton, send_image;
-    TextView txtUserName, txtCheckActive;
+    TextView txtCheckActive;
+    EmojiconTextView txtUserName;
     View rootView;
     StringBuilder commaSepValueBuilder;
     EmojIconActions emojIcon;

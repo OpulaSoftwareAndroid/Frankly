@@ -35,6 +35,7 @@
 
             <com.rengwuxian.materialedittext.MaterialEditText
                 android:id="@+id/txt_name"
+                android:fontFamily="@font/m"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/_16sdp"

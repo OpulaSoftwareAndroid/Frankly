@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
     <LinearLayout
@@ -83,8 +84,7 @@
                     android:layout_centerHorizontal="true"
                     android:layout_gravity="center"
                     android:layout_marginTop="@dimen/_6sdp"
-                    android:background="@android:color/transparent"
-                    android:src="@drawable/image_boy" />
+                    android:background="@android:color/transparent" />
 
                 <TextView
                     android:id="@+id/txtName"
@@ -95,7 +95,6 @@
                     android:layout_gravity="center"
                     android:layout_marginTop="@dimen/_6sdp"
                     android:fontFamily="@font/m"
-                    android:text="Pruthvi"
                     android:textColor="@android:color/darker_gray"
                     android:textSize="@dimen/_12sdp"
                     android:textStyle="bold" />
@@ -108,7 +107,6 @@
                     android:layout_gravity="center"
                     android:layout_marginTop="@dimen/_6sdp"
                     android:fontFamily="@font/m"
-                    android:text="Pruthvi@gmail.cocm"
                     android:textColor="@android:color/darker_gray"
                     android:textSize="@dimen/_12sdp"
                     android:textStyle="bold" />
@@ -225,13 +223,28 @@
                     xmlns:tools="http://schemas.android.com/tools"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_below="@+id/txtShared"
                     tools:context=".MainActivity">
 
-                    <android.support.v7.widget.RecyclerView
-                        android:id="@+id/recycler_view"
+                    <TextView
+                        android:visibility="gone"
+                        android:id="@+id/text_no_image"
+                        android:layout_marginTop="8dp"
+                        android:background="@drawable/border_black"
+                        android:fontFamily="@font/m"
+                        android:textSize="@dimen/_16sdp"
+                        android:textAllCaps="true"
+                        android:gravity="center"
+                        android:text="No Image Found!"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent" />
+                        android:layout_height="132dp" />
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/recycler_image"
+                        android:divider="@null"
+                        android:visibility="visible"
+                        android:layout_marginTop="8dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="132dp" />
 
                 </RelativeLayout>
             </LinearLayout>
