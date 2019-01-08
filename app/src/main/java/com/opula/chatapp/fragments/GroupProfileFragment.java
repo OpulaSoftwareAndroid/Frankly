@@ -1,5 +1,8 @@
 package com.opula.chatapp.fragments;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -20,10 +23,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -42,24 +52,25 @@ import com.google.firebase.storage.UploadTask;
 import com.opula.chatapp.MainActivity;
 import com.opula.chatapp.R;
 import com.opula.chatapp.adapter.GroupParticipantAdapter;
+import com.opula.chatapp.constant.AppGlobal;
 import com.opula.chatapp.constant.RoundCornersTransformation;
 import com.opula.chatapp.constant.SharedPreference;
 import com.opula.chatapp.constant.WsConstant;
 import com.opula.chatapp.model.GroupUser;
 import com.opula.chatapp.model.User;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
-
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 
 public class GroupProfileFragment extends Fragment {
 
-    ImageView mImageView, imgBack, groupimg_edit;
+    LinearLayout imgBack;
+    ImageView mImageView, groupimg_edit, img_edit_profile;
     TextView txtName, txtMember, txtParticipant;
     Button btnExit;
     RecyclerView recycler_view_member, recycler_view_media;
@@ -75,6 +86,7 @@ public class GroupProfileFragment extends Fragment {
     StorageReference storageReference;
     FirebaseUser firebaseUser;
     FirebaseAuth firebaseAuth;
+    ProgressBar progress_circular;
     List<String> grpList;
 
     @Override
@@ -113,6 +125,53 @@ public class GroupProfileFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 showPictureDialog();
+            }
+        });
+
+        img_edit_profile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                android.app.AlertDialog.Builder alertDialogBuilder = new android.app.AlertDialog.Builder(getContext());
+
+                LayoutInflater inflater = ((Activity) getActivity()).getLayoutInflater();
+                View dialogView = inflater.inflate(R.layout.dailog_rename_group, null);
+                alertDialogBuilder.setView(dialogView);
+                alertDialogBuilder.setCancelable(true);
+
+                final EditText text = dialogView.findViewById(R.id.text);
+                final Button save = dialogView.findViewById(R.id.btn_yes);
+                final Button cancle = dialogView.findViewById(R.id.btn_no);
+
+                final android.app.AlertDialog alertDialog = alertDialogBuilder.create();
+
+                save.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Groups").child(groupUserId);
+                        ref.child("groupName").setValue(text.getText().toString());
+
+
+//                        DatabaseReference reference1 = FirebaseDatabase.getInstance().getReference("Groups").child(groupUserId);
+////                        HashMap<String, Object> map = new HashMap<>();
+////                        map.put("groupName", text.getText());
+//                        reference1.child("groupName").setValue(text.getText());
+                        Toast.makeText(getActivity(), "Group Updated!", Toast.LENGTH_SHORT).show();
+                        alertDialog.dismiss();
+
+                    }
+                });
+
+                cancle.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        alertDialog.dismiss();
+                    }
+                });
+
+                alertDialog.show();
+
+
             }
         });
 
@@ -244,6 +303,7 @@ public class GroupProfileFragment extends Fragment {
 
         reference = FirebaseDatabase.getInstance().getReference("Groups").child(groupUserId);
         reference.addValueEventListener(new ValueEventListener() {
+            @SuppressLint("SetTextI18n")
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 user = dataSnapshot.getValue(GroupUser.class);
@@ -253,15 +313,26 @@ public class GroupProfileFragment extends Fragment {
                 txtParticipant.setText(user.getMemberList().size() + " Participants");
                 sharedPreference.save(getContext(), user.getGroupAdmin(), WsConstant.groupadminId);
                 if (user.getImageURL().equals("default")) {
-                    mImageView.setImageResource(R.drawable.image_boy);
+                    mImageView.setImageResource(R.drawable.img2);
                 } else {
                     try {
+                        progress_circular.setVisibility(View.VISIBLE);
                         Log.d("Image", user.getImageURL());
                         Picasso.get()
                                 .load(user.getImageURL())
                                 .transform(new RoundCornersTransformation(8, 00, true, false))
-                                .placeholder(R.drawable.image_boy).error(R.drawable.image_boy)
-                                .into(mImageView);
+                                .into(mImageView, new Callback() {
+                                    @Override
+                                    public void onSuccess() {
+                                        progress_circular.setVisibility(View.GONE);
+                                    }
+
+                                    @Override
+                                    public void onError(Exception e) {
+                                        progress_circular.setVisibility(View.GONE);
+                                        mImageView.setImageResource(R.drawable.img2);
+                                    }
+                                });
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -423,9 +494,11 @@ public class GroupProfileFragment extends Fragment {
         txtParticipant = view.findViewById(R.id.txtParticipant);
         txtMember = view.findViewById(R.id.txtMember);
         groupimg_edit = view.findViewById(R.id.groupimg_edit);
+        img_edit_profile = view.findViewById(R.id.img_edit_profile);
         btnExit = view.findViewById(R.id.btnExit);
         txtName = view.findViewById(R.id.txtName);
         recycler_view_member = view.findViewById(R.id.recycler_view_member);
         recycler_view_media = view.findViewById(R.id.recycler_view_media);
+        progress_circular = view.findViewById(R.id.progress_circular);
     }
 }

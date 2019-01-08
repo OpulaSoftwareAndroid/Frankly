@@ -32,6 +32,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
+import hani.momanii.supernova_emoji_library.Helper.EmojiconTextView;
+
 public class GroupMessageAdapter extends RecyclerView.Adapter<GroupMessageAdapter.ViewHolder> {
 
     public static final int MSG_TYPE_LEFT = 0;
@@ -62,13 +64,15 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<GroupMessageAdapte
     @Override
     public void onBindViewHolder(@NonNull final GroupMessageAdapter.ViewHolder holder, int position) {
 
+
+
         final Chat chat = mChat.get(position);
         Log.d("Chat_Data", chat.getSender_image() + "/");
 
         if (chat.getSender_image().equals("default")) {
             holder.profile_image.setImageResource(R.drawable.image_boy);
         } else {
-            Glide.with(mContext).load(imageurl).into(holder.profile_image);
+            Glide.with(mContext).load(chat.getSender_image()).into(holder.profile_image);
         }
 
         holder.show_sender.setText(chat.getSender_username());
@@ -166,7 +170,8 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<GroupMessageAdapte
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        public TextView show_message,show_time,show_sender;
+        EmojiconTextView show_sender,show_message;
+        public TextView show_time;
         public ImageView profile_image, img_receive, img_tick, img_dtick;
         public ProgressBar progress_circular;
         public RelativeLayout relative,txt_seen;

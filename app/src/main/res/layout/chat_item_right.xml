@@ -4,7 +4,8 @@
     android:layout_gravity="end"
     android:gravity="end"
     android:layout_height="wrap_content"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:emojicon="http://schemas.android.com/apk/res-auto">
 
     <RelativeLayout
         android:layout_width="300dp"
@@ -52,12 +53,12 @@
             </RelativeLayout>
 
 
-            <TextView
+            <hani.momanii.supernova_emoji_library.Helper.EmojiconTextView
                 android:id="@+id/show_message"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="start"
-                android:text="ggggggg"
+                emojicon:emojiconSize="22sp"
                 android:textAlignment="gravity"
                 android:textColor="@color/white"
                 android:textSize="18sp"

@@ -48,6 +48,7 @@ import com.mlsdev.rximagepicker.Sources;
 import com.opula.chatapp.MainActivity;
 import com.opula.chatapp.R;
 import com.opula.chatapp.adapter.GroupMessageAdapter;
+import com.opula.chatapp.adapter.MessageAdapter;
 import com.opula.chatapp.api.APIService;
 import com.opula.chatapp.constant.SharedPreference;
 import com.opula.chatapp.constant.WsConstant;
@@ -96,7 +97,7 @@ public class GroupMessageFragment extends Fragment {
     GroupMessageAdapter messageAdapter;
     FirebaseUser fuser;
     ValueEventListener seenListener;
-    String userusername, userimage;
+    String userusername,userimage;
     APIService apiService;
 
     //pickimage
@@ -122,12 +123,16 @@ public class GroupMessageFragment extends Fragment {
         userimage = sharedPreference.getValue(getActivity(), WsConstant.userImage);
 
 
+
+
+
         initViews(view);
         emojIcon = new EmojIconActions(getActivity(), rootView, text_send, emojiButton);
         emojIcon.ShowEmojIcon();
         emojIcon.setIconsIds(R.drawable.ic_keyboard_black_24dp, R.drawable.ic_sentiment_satisfied_black_24dp);
 
         fuser = FirebaseAuth.getInstance().getCurrentUser();
+
 
 
         recyclerView.setHasFixedSize(true);
@@ -310,6 +315,7 @@ public class GroupMessageFragment extends Fragment {
 
     private void readMesagges(final String groupid, final String imageurl) {
         mchat = new ArrayList<>();
+
         reference = FirebaseDatabase.getInstance().getReference("Chats");
         reference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -344,13 +350,11 @@ public class GroupMessageFragment extends Fragment {
                         }
 
                         mchat.add(chat);
-
                     }
 
                     messageAdapter = new GroupMessageAdapter(getActivity(), mchat, imageurl);
                     recyclerView.setAdapter(messageAdapter);
                 }
-
             }
 
             @Override

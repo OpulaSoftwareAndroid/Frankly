@@ -109,6 +109,7 @@ public class MainActivity extends AppCompatActivity {
         fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new ListChatFragment()).addToBackStack(null).commit();
 
+
         txt_list.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

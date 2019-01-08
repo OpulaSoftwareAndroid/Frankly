@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -28,13 +29,12 @@ import java.util.List;
 
 public class ListGroupChatFragment extends Fragment {
     private RecyclerView recyclerView;
-
     private GroupUserAdapter userAdapter;
     private List<GroupUser> mUsers;
     FirebaseUser fuser;
     DatabaseReference reference;
-
     private List<String> usersList;
+    LinearLayout no_chat;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -46,6 +46,7 @@ public class ListGroupChatFragment extends Fragment {
         WsConstant.ismain = "g";
 
         recyclerView = view.findViewById(R.id.recycler_view);
+        no_chat = view.findViewById(R.id.no_chat);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -98,7 +99,20 @@ public class ListGroupChatFragment extends Fragment {
                 }
                 userAdapter = new GroupUserAdapter(getContext(), mUsers, true);
                 WsConstant.check = "fragment";
-                recyclerView.setAdapter(userAdapter);
+
+                if (userAdapter.getItemCount() > 0) {
+                    // listView not empty
+                    recyclerView.setVisibility(View.VISIBLE);
+                    no_chat.setVisibility(View.GONE);
+                    recyclerView.setAdapter(userAdapter);
+                } else {
+                    // listView  empty
+                    recyclerView.setVisibility(View.GONE);
+                    no_chat.setVisibility(View.VISIBLE);
+                }
+
+
+
             }
 
             @Override

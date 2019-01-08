@@ -89,7 +89,7 @@ public class MessageFragment extends Fragment {
     List<Chat> mchat;
     RecyclerView recyclerView;
     ValueEventListener seenListener;
-    String userid,userusername,userimage;
+    String userid;
     APIService apiService;
     SharedPreference sharedPreference;
     EmojiconEditText text_send;
@@ -135,8 +135,6 @@ public class MessageFragment extends Fragment {
         });
 
         userid = sharedPreference.getValue(getActivity(), WsConstant.userId);
-        userusername = sharedPreference.getValue(getActivity(), WsConstant.userUsername);
-        userimage = sharedPreference.getValue(getActivity(), WsConstant.userImage);
         fuser = FirebaseAuth.getInstance().getCurrentUser();
 
         btn_send.setOnClickListener(new View.OnClickListener() {
@@ -422,8 +420,6 @@ public class MessageFragment extends Fragment {
         hashMap.put("isimage", isimage);
         hashMap.put("image", uri);
         hashMap.put("time", ts);
-        hashMap.put("sender_username", userusername);
-        hashMap.put("sender_image", userimage);
 
         reference.child("Chats").push().setValue(hashMap);
 
