@@ -65,12 +65,16 @@ public class ListChatFragment extends Fragment {
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                usersList.clear();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    chatlist = snapshot.getValue(Chatlist.class);
-                    usersList.add(chatlist);
+                try {
+                    usersList.clear();
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        chatlist = snapshot.getValue(Chatlist.class);
+                        usersList.add(chatlist);
+                    }
+                    chatList();
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-                chatList();
             }
 
             @Override
@@ -96,30 +100,34 @@ public class ListChatFragment extends Fragment {
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                mUsers.clear();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    User user = snapshot.getValue(User.class);
-                    for (Chatlist chatlist : usersList) {
+                try {
+                    mUsers.clear();
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        User user = snapshot.getValue(User.class);
+                        for (Chatlist chatlist : usersList) {
 
-                        Log.d("Log_Data", "/" + chatlist.getId() + "//" + chatlist.getGroup());
+                            Log.d("Log_Data", "/" + chatlist.getId() + "//" + chatlist.getGroup());
 
-                        if (user.getId().equals(chatlist.getId())) {
-                            mUsers.add(user);
+                            if (user.getId().equals(chatlist.getId())) {
+                                mUsers.add(user);
+                            }
                         }
                     }
-                }
-                userAdapter = new UserAdapter(getContext(), mUsers, true);
-                WsConstant.check = "fragment";
+                    userAdapter = new UserAdapter(getContext(), mUsers, true);
+                    WsConstant.check = "fragment";
 
-                if (userAdapter.getItemCount() > 0) {
-                    // listView not empty
-                    recyclerView.setVisibility(View.VISIBLE);
-                    no_chat.setVisibility(View.GONE);
-                    recyclerView.setAdapter(userAdapter);
-                } else {
-                    // listView  empty
-                    recyclerView.setVisibility(View.GONE);
-                    no_chat.setVisibility(View.VISIBLE);
+                    if (userAdapter.getItemCount() > 0) {
+                        // listView not empty
+                        recyclerView.setVisibility(View.VISIBLE);
+                        no_chat.setVisibility(View.GONE);
+                        recyclerView.setAdapter(userAdapter);
+                    } else {
+                        // listView  empty
+                        recyclerView.setVisibility(View.GONE);
+                        no_chat.setVisibility(View.VISIBLE);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
 
             }

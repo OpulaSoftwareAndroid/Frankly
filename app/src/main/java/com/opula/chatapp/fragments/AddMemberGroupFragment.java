@@ -16,7 +16,6 @@ import android.widget.Filter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -121,9 +120,13 @@ public class AddMemberGroupFragment extends Fragment {
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                GroupUser grpuser = dataSnapshot.getValue(GroupUser.class);
-                assert grpuser != null;
-                grpList.addAll(grpuser.getMemberList());
+                try {
+                    GroupUser grpuser = dataSnapshot.getValue(GroupUser.class);
+                    assert grpuser != null;
+                    grpList.addAll(grpuser.getMemberList());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
@@ -143,17 +146,21 @@ public class AddMemberGroupFragment extends Fragment {
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                userList.clear();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    User user = snapshot.getValue(User.class);
-                    assert user != null;
-                    if (!(grpList.contains(user.getId()))) {
-                        userList.add(user);
+                try {
+                    userList.clear();
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        User user = snapshot.getValue(User.class);
+                        assert user != null;
+                        if (!(grpList.contains(user.getId()))) {
+                            userList.add(user);
+                        }
                     }
+                    userAdapter = new MemberListAdapter(getActivity(), userList);
+                    WsConstant.check = "activity";
+                    listMember.setAdapter(userAdapter);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-                userAdapter = new MemberListAdapter(getActivity(), userList);
-                WsConstant.check = "activity";
-                listMember.setAdapter(userAdapter);
             }
 
             @Override

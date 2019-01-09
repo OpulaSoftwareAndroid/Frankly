@@ -124,17 +124,21 @@ public class CreateGrpFragment extends Fragment {
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                mUsers.clear();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    User user = snapshot.getValue(User.class);
+                try {
+                    mUsers.clear();
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        User user = snapshot.getValue(User.class);
 
-                    if (!user.getId().equals(firebaseUser.getUid())) {
-                        mUsers.add(user);
+                        if (!user.getId().equals(firebaseUser.getUid())) {
+                            mUsers.add(user);
+                        }
                     }
+                    userAdapter = new ItemsListAdapter(getActivity(), mUsers);
+                    WsConstant.check = "activity";
+                    listMember.setAdapter(userAdapter);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-                userAdapter = new ItemsListAdapter(getActivity(), mUsers);
-                WsConstant.check = "activity";
-                listMember.setAdapter(userAdapter);
             }
 
             @Override

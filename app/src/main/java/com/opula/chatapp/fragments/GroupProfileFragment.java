@@ -258,18 +258,22 @@ public class GroupProfileFragment extends Fragment {
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull final DataSnapshot d1) {
-                if (d1.exists()) {
-                    HashMap<String, Object> hashMap = new HashMap<>();
-                    GroupUser groupUser = d1.getValue(GroupUser.class);
-                    for (int i = 0; i < groupUser.getMemberList().size(); i++) {
-                        String member = groupUser.getMemberList().get(i);
-                        if (!firebaseUser.getUid().equals(member)) {
-                            String grp = member;
-                            Log.d("GroupChat2", grp + "//");
-                            grpList.add(grp);
+                try {
+                    if (d1.exists()) {
+                        HashMap<String, Object> hashMap = new HashMap<>();
+                        GroupUser groupUser = d1.getValue(GroupUser.class);
+                        for (int i = 0; i < groupUser.getMemberList().size(); i++) {
+                            String member = groupUser.getMemberList().get(i);
+                            if (!firebaseUser.getUid().equals(member)) {
+                                String grp = member;
+                                Log.d("GroupChat2", grp + "//");
+                                grpList.add(grp);
+                            }
                         }
+                        ref.child("memberList").setValue(grpList);
                     }
-                    ref.child("memberList").setValue(grpList);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
 
@@ -285,10 +289,14 @@ public class GroupProfileFragment extends Fragment {
         reference1.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    for (DataSnapshot d1 : dataSnapshot.getChildren()) {
-                        d1.getRef().removeValue();
+                try {
+                    if (dataSnapshot.exists()) {
+                        for (DataSnapshot d1 : dataSnapshot.getChildren()) {
+                            d1.getRef().removeValue();
+                        }
                     }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
 
@@ -339,40 +347,44 @@ public class GroupProfileFragment extends Fragment {
             @SuppressLint("SetTextI18n")
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                user = dataSnapshot.getValue(GroupUser.class);
-                assert user != null;
-                txtGrpName.setText(user.getGroupName());
-                txtMember.setText(user.getMemberList().size() + " member");
-                txtParticipant.setText(user.getMemberList().size() + " Participants");
-                sharedPreference.save(getContext(), user.getGroupAdmin(), WsConstant.groupadminId);
-                sharedPreference.save(getContext(), user.getGroupId(), WsConstant.groupId);
-                if (user.getImageURL().equals("default")) {
-                    mImageView.setImageResource(R.drawable.img2);
-                } else {
-                    try {
-                        progress_circular.setVisibility(View.VISIBLE);
-                        Log.d("Image", user.getImageURL());
-                        Picasso.get()
-                                .load(user.getImageURL())
-                                .transform(new RoundCornersTransformation(50, 0, true, false))
-                                .into(mImageView, new Callback() {
-                                    @Override
-                                    public void onSuccess() {
-                                        progress_circular.setVisibility(View.GONE);
-                                    }
+                try {
+                    user = dataSnapshot.getValue(GroupUser.class);
+                    assert user != null;
+                    txtGrpName.setText(user.getGroupName());
+                    txtMember.setText(user.getMemberList().size() + " member");
+                    txtParticipant.setText(user.getMemberList().size() + " Participants");
+                    sharedPreference.save(getContext(), user.getGroupAdmin(), WsConstant.groupadminId);
+                    sharedPreference.save(getContext(), user.getGroupId(), WsConstant.groupId);
+                    if (user.getImageURL().equals("default")) {
+                        mImageView.setImageResource(R.drawable.img2);
+                    } else {
+                        try {
+                            progress_circular.setVisibility(View.VISIBLE);
+                            Log.d("Image", user.getImageURL());
+                            Picasso.get()
+                                    .load(user.getImageURL())
+                                    .transform(new RoundCornersTransformation(50, 0, true, false))
+                                    .into(mImageView, new Callback() {
+                                        @Override
+                                        public void onSuccess() {
+                                            progress_circular.setVisibility(View.GONE);
+                                        }
 
-                                    @Override
-                                    public void onError(Exception e) {
-                                        progress_circular.setVisibility(View.GONE);
-                                        mImageView.setImageResource(R.drawable.img2);
-                                    }
-                                });
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                                        @Override
+                                        public void onError(Exception e) {
+                                            progress_circular.setVisibility(View.GONE);
+                                            mImageView.setImageResource(R.drawable.img2);
+                                        }
+                                    });
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
-                }
 
-                groupMember();
+                    groupMember();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
@@ -496,21 +508,25 @@ public class GroupProfileFragment extends Fragment {
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                mUsers.clear();
-                for (DataSnapshot d1 : dataSnapshot.getChildren()) {
-                    User u1 = d1.getValue(User.class);
-                    for (int i = 0; i < user.getMemberList().size(); i++) {
-                        String id = user.getMemberList().get(i);
-                        if (u1.getId().equals(id)) {
+                try {
+                    mUsers.clear();
+                    for (DataSnapshot d1 : dataSnapshot.getChildren()) {
+                        User u1 = d1.getValue(User.class);
+                        for (int i = 0; i < user.getMemberList().size(); i++) {
+                            String id = user.getMemberList().get(i);
+                            if (u1.getId().equals(id)) {
 
-                            mUsers.add(u1);
+                                mUsers.add(u1);
+                            }
                         }
                     }
+                    Log.d("Group_dataa", mUsers + "/ ");
+                    userAdapter = new GroupParticipantAdapter(getContext(), mUsers);
+                    WsConstant.check = "fragment";
+                    recycler_view_member.setAdapter(userAdapter);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-                Log.d("Group_dataa", mUsers + "/ ");
-                userAdapter = new GroupParticipantAdapter(getContext(), mUsers);
-                WsConstant.check = "fragment";
-                recycler_view_member.setAdapter(userAdapter);
             }
 
             @Override
@@ -543,29 +559,33 @@ public class GroupProfileFragment extends Fragment {
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                mchat.clear();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    Chat chat = snapshot.getValue(Chat.class);
-                    assert chat != null;
-                    if (chat.getReceiver().equals(userid)) {
-                        if (chat.getIsimage()){
-                            mchat.add(chat);
+                try {
+                    mchat.clear();
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        Chat chat = snapshot.getValue(Chat.class);
+                        assert chat != null;
+                        if (chat.getReceiver().equals(userid)) {
+                            if (chat.getIsimage()){
+                                mchat.add(chat);
+                            }
+                        }
+
+                        userSharedAdapter = new UserSharedAdapter(getActivity(), mchat);
+                        recycler_image.setAdapter(userSharedAdapter);
+
+                        if (userSharedAdapter.getItemCount() > 0) {
+                            // listView not empty
+                            recycler_image.setVisibility(View.VISIBLE);
+                            text_no_image.setVisibility(View.GONE);
+                            recycler_image.setAdapter(userSharedAdapter);
+                        } else {
+                            // listView  empty
+                            recycler_image.setVisibility(View.GONE);
+                            text_no_image.setVisibility(View.VISIBLE);
                         }
                     }
-
-                    userSharedAdapter = new UserSharedAdapter(getActivity(), mchat);
-                    recycler_image.setAdapter(userSharedAdapter);
-
-                    if (userSharedAdapter.getItemCount() > 0) {
-                        // listView not empty
-                        recycler_image.setVisibility(View.VISIBLE);
-                        text_no_image.setVisibility(View.GONE);
-                        recycler_image.setAdapter(userSharedAdapter);
-                    } else {
-                        // listView  empty
-                        recycler_image.setVisibility(View.GONE);
-                        text_no_image.setVisibility(View.VISIBLE);
-                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
 

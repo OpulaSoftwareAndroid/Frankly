@@ -142,14 +142,18 @@ public class MyProfileFragment extends Fragment {
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                User user = dataSnapshot.getValue(User.class);
-                assert user != null;
-                txtName.setText(user.getUsername());
-                txtMobile.setText(firebaseUser.getEmail());
-                if (user.getImageURL().equals("default")) {
-                    image_profile.setImageResource(R.drawable.image_boy);
-                } else {
-                    Glide.with(getActivity()).load(user.getImageURL()).into(image_profile);
+                try {
+                    User user = dataSnapshot.getValue(User.class);
+                    assert user != null;
+                    txtName.setText(user.getUsername());
+                    txtMobile.setText(firebaseUser.getEmail());
+                    if (user.getImageURL().equals("default")) {
+                        image_profile.setImageResource(R.drawable.image_boy);
+                    } else {
+                        Glide.with(getActivity()).load(user.getImageURL()).into(image_profile);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
 
@@ -295,11 +299,15 @@ public class MyProfileFragment extends Fragment {
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot child : dataSnapshot.getChildren()) {
-                    if (firebaseUser.getUid().equalsIgnoreCase(child.getKey())) {
-                        Log.d("CLose_Account_if", "/" + child.getKey());
-                        child.getRef().removeValue();
+                try {
+                    for (DataSnapshot child : dataSnapshot.getChildren()) {
+                        if (firebaseUser.getUid().equalsIgnoreCase(child.getKey())) {
+                            Log.d("CLose_Account_if", "/" + child.getKey());
+                            child.getRef().removeValue();
+                        }
                     }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
 
@@ -315,11 +323,15 @@ public class MyProfileFragment extends Fragment {
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot child : dataSnapshot.getChildren()) {
-                    if (firebaseUser.getUid().equalsIgnoreCase(child.getKey())) {
-                        Log.d("CLose_Account_if", "/" + child.getKey());
-                        child.getRef().removeValue();
+                try {
+                    for (DataSnapshot child : dataSnapshot.getChildren()) {
+                        if (firebaseUser.getUid().equalsIgnoreCase(child.getKey())) {
+                            Log.d("CLose_Account_if", "/" + child.getKey());
+                            child.getRef().removeValue();
+                        }
                     }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
 
@@ -335,11 +347,15 @@ public class MyProfileFragment extends Fragment {
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot child : dataSnapshot.getChildren()) {
-                    if (firebaseUser.getUid().equalsIgnoreCase(child.getKey())) {
-                        Log.d("CLose_Account_if", "/" + child.getKey());
-                        child.getRef().removeValue();
+                try {
+                    for (DataSnapshot child : dataSnapshot.getChildren()) {
+                        if (firebaseUser.getUid().equalsIgnoreCase(child.getKey())) {
+                            Log.d("CLose_Account_if", "/" + child.getKey());
+                            child.getRef().removeValue();
+                        }
                     }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
 

@@ -103,19 +103,23 @@ public class ListUserFragment extends Fragment {
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                mUsers.clear();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    User user = snapshot.getValue(User.class);
+                try {
+                    mUsers.clear();
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        User user = snapshot.getValue(User.class);
 
-                    assert user != null;
-                    assert fuser != null;
-                    if (!user.getId().equals(fuser.getUid())) {
-                        mUsers.add(user);
+                        assert user != null;
+                        assert fuser != null;
+                        if (!user.getId().equals(fuser.getUid())) {
+                            mUsers.add(user);
+                        }
                     }
-                }
 
-                newChatUserAdapter = new NewChatUserAdapter(getActivity(), mUsers, false);
-                recyclerView.setAdapter(newChatUserAdapter);
+                    newChatUserAdapter = new NewChatUserAdapter(getActivity(), mUsers, false);
+                    recyclerView.setAdapter(newChatUserAdapter);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
@@ -133,17 +137,21 @@ public class ListUserFragment extends Fragment {
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                mUsers.clear();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    User user = snapshot.getValue(User.class);
+                try {
+                    mUsers.clear();
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        User user = snapshot.getValue(User.class);
 
-                    if (!user.getId().equals(firebaseUser.getUid())) {
-                        mUsers.add(user);
+                        if (!user.getId().equals(firebaseUser.getUid())) {
+                            mUsers.add(user);
+                        }
                     }
+                    newChatUserAdapter = new NewChatUserAdapter(getActivity(), mUsers, false);
+                    WsConstant.check = "activity";
+                    recyclerView.setAdapter(newChatUserAdapter);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-                newChatUserAdapter = new NewChatUserAdapter(getActivity(), mUsers, false);
-                WsConstant.check = "activity";
-                recyclerView.setAdapter(newChatUserAdapter);
             }
 
             @Override

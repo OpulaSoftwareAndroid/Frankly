@@ -58,12 +58,16 @@ public class ListGroupChatFragment extends Fragment {
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    usersList.clear();
-                    for (DataSnapshot d1 : snapshot.getChildren()) {
-                        usersList.add(d1.getKey());
+                try {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        usersList.clear();
+                        for (DataSnapshot d1 : snapshot.getChildren()) {
+                            usersList.add(d1.getKey());
+                        }
+                        groupList();
                     }
-                    groupList();
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
 
@@ -83,34 +87,37 @@ public class ListGroupChatFragment extends Fragment {
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    mUsers.clear();
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        GroupUser user = snapshot.getValue(GroupUser.class);
-                        for (String list : usersList) {
-                            if (!list.equalsIgnoreCase("id")) {
-                                if (user.getGroupId().equals(list)) {
-                                    Log.d("GroupChat", list + "/");
-                                    mUsers.add(user);
+                try {
+                    if (dataSnapshot.exists()) {
+                        mUsers.clear();
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            GroupUser user = snapshot.getValue(GroupUser.class);
+                            for (String list : usersList) {
+                                if (!list.equalsIgnoreCase("id")) {
+                                    if (user.getGroupId().equals(list)) {
+                                        Log.d("GroupChat", list + "/");
+                                        mUsers.add(user);
+                                    }
                                 }
                             }
                         }
                     }
-                }
-                userAdapter = new GroupUserAdapter(getContext(), mUsers, true);
-                WsConstant.check = "fragment";
+                    userAdapter = new GroupUserAdapter(getContext(), mUsers, true);
+                    WsConstant.check = "fragment";
 
-                if (userAdapter.getItemCount() > 0) {
-                    // listView not empty
-                    recyclerView.setVisibility(View.VISIBLE);
-                    no_chat.setVisibility(View.GONE);
-                    recyclerView.setAdapter(userAdapter);
-                } else {
-                    // listView  empty
-                    recyclerView.setVisibility(View.GONE);
-                    no_chat.setVisibility(View.VISIBLE);
+                    if (userAdapter.getItemCount() > 0) {
+                        // listView not empty
+                        recyclerView.setVisibility(View.VISIBLE);
+                        no_chat.setVisibility(View.GONE);
+                        recyclerView.setAdapter(userAdapter);
+                    } else {
+                        // listView  empty
+                        recyclerView.setVisibility(View.GONE);
+                        no_chat.setVisibility(View.VISIBLE);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-
 
 
             }

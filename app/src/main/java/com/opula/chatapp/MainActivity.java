@@ -82,10 +82,14 @@ public class MainActivity extends AppCompatActivity {
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                User user = dataSnapshot.getValue(User.class);
-                assert user != null;
-                sharedPreference.save(MainActivity.this,user.getUsername(),WsConstant.userUsername);
-                sharedPreference.save(MainActivity.this,user.getImageURL(),WsConstant.userImage);
+                try {
+                    User user = dataSnapshot.getValue(User.class);
+                    assert user != null;
+                    sharedPreference.save(MainActivity.this,user.getUsername(),WsConstant.userUsername);
+                    sharedPreference.save(MainActivity.this,user.getImageURL(),WsConstant.userImage);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
@@ -237,10 +241,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static void status(String status) {
-        reference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
-        HashMap<String, Object> hashMap = new HashMap<>();
-        hashMap.put("status", status);
-        reference.updateChildren(hashMap);
+        try {
+            reference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
+            HashMap<String, Object> hashMap = new HashMap<>();
+            hashMap.put("status", status);
+            reference.updateChildren(hashMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static void hideFloatingActionButton() {

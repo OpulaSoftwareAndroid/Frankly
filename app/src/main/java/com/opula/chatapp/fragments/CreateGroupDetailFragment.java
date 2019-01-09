@@ -97,7 +97,6 @@ public class CreateGroupDetailFragment extends Fragment {
         btnCreate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 if (uploadTask != null && uploadTask.isInProgress()) {
                     Toast.makeText(getContext(), "Upload in progress", Toast.LENGTH_SHORT).show();
                 } else {

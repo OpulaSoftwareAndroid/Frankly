@@ -219,38 +219,42 @@ public class MessageFragment extends Fragment {
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                User user = dataSnapshot.getValue(User.class);
-                assert user != null;
-                txtUserName.setText(user.getUsername());
-                CheckActive = user.getStatus();
-                txtCheckActive.setText(CheckActive);
-                if (user.getImageURL().equals("default")) {
-                    imgUser.setImageResource(R.drawable.image_boy);
-                } else {
-                    //and this
-                    try {
-                        Log.d("Image", user.getImageURL());
-                        Picasso.get().load(user.getImageURL())
-                                .placeholder(R.drawable.image_boy).error(R.drawable.image_boy)
-                                .into(imgUser);
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                try {
+                    User user = dataSnapshot.getValue(User.class);
+                    assert user != null;
+                    txtUserName.setText(user.getUsername());
+                    CheckActive = user.getStatus();
+                    txtCheckActive.setText(CheckActive);
+                    if (user.getImageURL().equals("default")) {
+                        imgUser.setImageResource(R.drawable.image_boy);
+                    } else {
+                        //and this
+                        try {
+                            Log.d("Image", user.getImageURL());
+                            Picasso.get().load(user.getImageURL())
+                                    .placeholder(R.drawable.image_boy).error(R.drawable.image_boy)
+                                    .into(imgUser);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
-                }
 
-                readMesagges(fuser.getUid(), userid, user.getImageURL());
+                    readMesagges(fuser.getUid(), userid, user.getImageURL());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) { }
         });
 
-        try {
-            reference = FirebaseDatabase.getInstance().getReference("Chatlist").child(fuser.getUid()).child(userid);
-            reference.addValueEventListener(new ValueEventListener() {
-                @SuppressLint("SetTextI18n")
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+        reference = FirebaseDatabase.getInstance().getReference("Chatlist").child(fuser.getUid()).child(userid);
+        reference.addValueEventListener(new ValueEventListener() {
+            @SuppressLint("SetTextI18n")
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                try {
                     Chatlist chatlist = dataSnapshot.getValue(Chatlist.class);
                     assert chatlist != null;
                     boolean is = chatlist.getIstyping();
@@ -259,14 +263,16 @@ public class MessageFragment extends Fragment {
                     } else {
                         txtCheckActive.setText(CheckActive);
                     }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
+            }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) { }
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) { }
+        });
+
+
 
 
         seenMessage(userid);
@@ -414,13 +420,17 @@ public class MessageFragment extends Fragment {
         seenListener = reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    Chat chat = snapshot.getValue(Chat.class);
-                    if (chat.getReceiver().equals(fuser.getUid()) && chat.getSender().equals(userid)) {
-                        HashMap<String, Object> hashMap = new HashMap<>();
-                        hashMap.put("isseen", true);
-                        snapshot.getRef().updateChildren(hashMap);
+                try {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        Chat chat = snapshot.getValue(Chat.class);
+                        if (chat.getReceiver().equals(fuser.getUid()) && chat.getSender().equals(userid)) {
+                            HashMap<String, Object> hashMap = new HashMap<>();
+                            hashMap.put("isseen", true);
+                            snapshot.getRef().updateChildren(hashMap);
+                        }
                     }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
 
@@ -456,10 +466,14 @@ public class MessageFragment extends Fragment {
         chatRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (!dataSnapshot.exists()) {
-                    chatRef.child("id").setValue(userid);
-                    chatRef.child("istyping").setValue(false);
-                    chatRef.child("isnotification").setValue(false);
+                try {
+                    if (!dataSnapshot.exists()) {
+                        chatRef.child("id").setValue(userid);
+                        chatRef.child("istyping").setValue(false);
+                        chatRef.child("isnotification").setValue(false);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
 
@@ -469,10 +483,14 @@ public class MessageFragment extends Fragment {
             }
         });
 
-        final DatabaseReference chatRefReceiver = FirebaseDatabase.getInstance().getReference("Chatlist").child(userid).child(fuser.getUid());
-        chatRefReceiver.child("id").setValue(fuser.getUid());
-        chatRefReceiver.child("istyping").setValue(false);
-        chatRefReceiver.child("isnotification").setValue(true);
+        try {
+            final DatabaseReference chatRefReceiver = FirebaseDatabase.getInstance().getReference("Chatlist").child(userid).child(fuser.getUid());
+            chatRefReceiver.child("id").setValue(fuser.getUid());
+            chatRefReceiver.child("istyping").setValue(false);
+            chatRefReceiver.child("isnotification").setValue(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         final String msg = message;
 
@@ -480,11 +498,15 @@ public class MessageFragment extends Fragment {
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                User user = dataSnapshot.getValue(User.class);
-                if (notify) {
-                    sendNotifiaction(receiver, user.getUsername(), msg);
+                try {
+                    User user = dataSnapshot.getValue(User.class);
+                    if (notify) {
+                        sendNotifiaction(receiver, user.getUsername(), msg);
+                    }
+                    notify = false;
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-                notify = false;
             }
 
             @Override
@@ -500,29 +522,33 @@ public class MessageFragment extends Fragment {
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    Token token = snapshot.getValue(Token.class);
-                    Data data = new Data(fuser.getUid(), R.mipmap.ic_launcher, username + ": " + message, "New Message",
-                            userid);
+                try {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        Token token = snapshot.getValue(Token.class);
+                        Data data = new Data(fuser.getUid(), R.mipmap.ic_launcher, username + ": " + message, "New Message",
+                                userid);
 
-                    Sender sender = new Sender(data, token.getToken());
+                        Sender sender = new Sender(data, token.getToken());
 
-                    apiService.sendNotification(sender)
-                            .enqueue(new Callback<MyResponse>() {
-                                @Override
-                                public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
-                                    if (response.code() == 200) {
-                                        if (response.body().success != 1) {
-                                            Toast.makeText(getActivity(), "Failed!", Toast.LENGTH_SHORT).show();
+                        apiService.sendNotification(sender)
+                                .enqueue(new Callback<MyResponse>() {
+                                    @Override
+                                    public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
+                                        if (response.code() == 200) {
+                                            if (response.body().success != 1) {
+                                                Toast.makeText(getActivity(), "Failed!", Toast.LENGTH_SHORT).show();
+                                            }
                                         }
                                     }
-                                }
 
-                                @Override
-                                public void onFailure(Call<MyResponse> call, Throwable t) {
+                                    @Override
+                                    public void onFailure(Call<MyResponse> call, Throwable t) {
 
-                                }
-                            });
+                                    }
+                                });
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
 
@@ -540,16 +566,20 @@ public class MessageFragment extends Fragment {
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                mchat.clear();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    Chat chat = snapshot.getValue(Chat.class);
-                    if (chat.getReceiver().equals(myid) && chat.getSender().equals(userid) ||
-                            chat.getReceiver().equals(userid) && chat.getSender().equals(myid)) {
-                        mchat.add(chat);
-                    }
+                try {
+                    mchat.clear();
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        Chat chat = snapshot.getValue(Chat.class);
+                        if (chat.getReceiver().equals(myid) && chat.getSender().equals(userid) ||
+                                chat.getReceiver().equals(userid) && chat.getSender().equals(myid)) {
+                            mchat.add(chat);
+                        }
 
-                    messageAdapter = new MessageAdapter(getActivity(), mchat, imageurl);
-                    recyclerView.setAdapter(messageAdapter);
+                        messageAdapter = new MessageAdapter(getActivity(), mchat, imageurl);
+                        recyclerView.setAdapter(messageAdapter);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
 

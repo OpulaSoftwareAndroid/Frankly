@@ -86,16 +86,20 @@ public class UserProfileFragment extends Fragment {
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Log.d("DATAA", dataSnapshot.getValue() + "/");
-                String email = dataSnapshot.child("email").getValue().toString();
-                String image = dataSnapshot.child("imageURL").getValue().toString();
-                String username = dataSnapshot.child("username").getValue().toString();
-                txtEmail.setText(email);
-                txtName.setText(username);
-                if (image.equals("default")) {
-                    image_PersonalInfo_DP.setImageResource(R.drawable.image_boy);
-                } else {
-                    Glide.with(getContext()).load(image).into(image_PersonalInfo_DP);
+                try {
+                    Log.d("DATAA", dataSnapshot.getValue() + "/");
+                    String email = dataSnapshot.child("email").getValue().toString();
+                    String image = dataSnapshot.child("imageURL").getValue().toString();
+                    String username = dataSnapshot.child("username").getValue().toString();
+                    txtEmail.setText(email);
+                    txtName.setText(username);
+                    if (image.equals("default")) {
+                        image_PersonalInfo_DP.setImageResource(R.drawable.image_boy);
+                    } else {
+                        Glide.with(getContext()).load(image).into(image_PersonalInfo_DP);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
 
@@ -189,30 +193,34 @@ public class UserProfileFragment extends Fragment {
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                mchat.clear();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    Chat chat = snapshot.getValue(Chat.class);
-                    assert chat != null;
-                    if (chat.getReceiver().equals(myid) && chat.getSender().equals(userid) ||
-                            chat.getReceiver().equals(userid) && chat.getSender().equals(myid)) {
-                        if (chat.getIsimage()){
-                            mchat.add(chat);
+                try {
+                    mchat.clear();
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        Chat chat = snapshot.getValue(Chat.class);
+                        assert chat != null;
+                        if (chat.getReceiver().equals(myid) && chat.getSender().equals(userid) ||
+                                chat.getReceiver().equals(userid) && chat.getSender().equals(myid)) {
+                            if (chat.getIsimage()){
+                                mchat.add(chat);
+                            }
+                        }
+
+                        userSharedAdapter = new UserSharedAdapter(getActivity(), mchat);
+                        recycler_image.setAdapter(userSharedAdapter);
+
+                        if (userSharedAdapter.getItemCount() > 0) {
+                            // listView not empty
+                            recycler_image.setVisibility(View.VISIBLE);
+                            text_no_image.setVisibility(View.GONE);
+                            recycler_image.setAdapter(userSharedAdapter);
+                        } else {
+                            // listView  empty
+                            recycler_image.setVisibility(View.GONE);
+                            text_no_image.setVisibility(View.VISIBLE);
                         }
                     }
-
-                    userSharedAdapter = new UserSharedAdapter(getActivity(), mchat);
-                    recycler_image.setAdapter(userSharedAdapter);
-
-                    if (userSharedAdapter.getItemCount() > 0) {
-                        // listView not empty
-                        recycler_image.setVisibility(View.VISIBLE);
-                        text_no_image.setVisibility(View.GONE);
-                        recycler_image.setAdapter(userSharedAdapter);
-                    } else {
-                        // listView  empty
-                        recycler_image.setVisibility(View.GONE);
-                        text_no_image.setVisibility(View.VISIBLE);
-                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
 

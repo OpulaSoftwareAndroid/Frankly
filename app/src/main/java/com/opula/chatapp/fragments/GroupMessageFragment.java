@@ -235,22 +235,23 @@ public class GroupMessageFragment extends Fragment {
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                user = dataSnapshot.getValue(GroupUser.class);
-                assert user != null;
-                txtUserName.setText(user.getGroupName());
-                txtCheckActive.setText(user.getMemberList().size() + " Members");
-                if (user.getImageURL().equals("default")) {
-                    imgUser.setImageResource(R.drawable.image_boy);
-                } else {
-                    try {
-                        Log.d("Image", user.getImageURL());
-                        Picasso.get().load(user.getImageURL())
-                                .placeholder(R.drawable.image_boy).error(R.drawable.image_boy)
-                                .into(imgUser);
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                try {
+                    user = dataSnapshot.getValue(GroupUser.class);
+                    assert user != null;
+                    txtUserName.setText(user.getGroupName());
+                    txtCheckActive.setText(user.getMemberList().size() + " Members");
+                    if (user.getImageURL().equals("default")) {
+                        imgUser.setImageResource(R.drawable.image_boy);
+                    } else {
+                        try {
+                            Log.d("Image", user.getImageURL());
+                            Picasso.get().load(user.getImageURL())
+                                    .placeholder(R.drawable.image_boy).error(R.drawable.image_boy)
+                                    .into(imgUser);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
-                }
 
 //                for (int i = 0; i < user.getMemberList().size(); i++) {
 //                    commaSepValueBuilder = new StringBuilder();
@@ -281,7 +282,10 @@ public class GroupMessageFragment extends Fragment {
 //                }
 
 
-                readMesagges(groupUserId, user.getImageURL());
+                    readMesagges(groupUserId, user.getImageURL());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
@@ -316,40 +320,44 @@ public class GroupMessageFragment extends Fragment {
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                mchat.clear();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    final Chat chat = snapshot.getValue(Chat.class);
-                    assert chat != null;
-                    if (chat.getReceiver().equals(groupid)) {
-                        for (int i = 0; i < user.getMemberList().size(); i++) {
-                            final int finalI = i;
-                            DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users").child(String.valueOf(user.getMemberList().get(finalI)));
-                            reference.addValueEventListener(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    Log.d("Group_chat_data", dataSnapshot.getValue() + "//");
-                                    User u1 = dataSnapshot.getValue(User.class);
-                                    assert u1 != null;
-                                    if (u1.getId().equalsIgnoreCase(chat.getSender())) {
-                                        chat.setSender_image(u1.getImageURL());
-                                        chat.setSender_username(u1.getUsername());
+                try {
+                    mchat.clear();
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        final Chat chat = snapshot.getValue(Chat.class);
+                        assert chat != null;
+                        if (chat.getReceiver().equals(groupid)) {
+                            for (int i = 0; i < user.getMemberList().size(); i++) {
+                                final int finalI = i;
+                                DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users").child(String.valueOf(user.getMemberList().get(finalI)));
+                                reference.addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        Log.d("Group_chat_data", dataSnapshot.getValue() + "//");
+                                        User u1 = dataSnapshot.getValue(User.class);
+                                        assert u1 != null;
+                                        if (u1.getId().equalsIgnoreCase(chat.getSender())) {
+                                            chat.setSender_image(u1.getImageURL());
+                                            chat.setSender_username(u1.getUsername());
+                                        }
+
+
                                     }
 
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                                }
+                                    }
+                                });
+                            }
 
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                }
-                            });
+                            mchat.add(chat);
                         }
 
-                        mchat.add(chat);
+                        messageAdapter = new GroupMessageAdapter(getActivity(), mchat, imageurl);
+                        recyclerView.setAdapter(messageAdapter);
                     }
-
-                    messageAdapter = new GroupMessageAdapter(getActivity(), mchat, imageurl);
-                    recyclerView.setAdapter(messageAdapter);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
 
@@ -504,11 +512,15 @@ public class GroupMessageFragment extends Fragment {
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                User user = dataSnapshot.getValue(User.class);
-                if (notify) {
-                    //sendNotifiaction(receiver, user.getUsername(), msg);
+                try {
+                    User user = dataSnapshot.getValue(User.class);
+                    if (notify) {
+                        //sendNotifiaction(receiver, user.getUsername(), msg);
+                    }
+                    notify = false;
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-                notify = false;
             }
 
             @Override
@@ -524,29 +536,33 @@ public class GroupMessageFragment extends Fragment {
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    Token token = snapshot.getValue(Token.class);
-                    Data data = new Data(fuser.getUid(), R.mipmap.ic_launcher, username + ": " + message, "New Message",
-                            groupUserId);
+                try {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        Token token = snapshot.getValue(Token.class);
+                        Data data = new Data(fuser.getUid(), R.mipmap.ic_launcher, username + ": " + message, "New Message",
+                                groupUserId);
 
-                    Sender sender = new Sender(data, token.getToken());
+                        Sender sender = new Sender(data, token.getToken());
 
-                    apiService.sendNotification(sender)
-                            .enqueue(new Callback<MyResponse>() {
-                                @Override
-                                public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
-                                    if (response.code() == 200) {
-                                        if (response.body().success != 1) {
-                                            Toast.makeText(getActivity(), "Failed!", Toast.LENGTH_SHORT).show();
+                        apiService.sendNotification(sender)
+                                .enqueue(new Callback<MyResponse>() {
+                                    @Override
+                                    public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
+                                        if (response.code() == 200) {
+                                            if (response.body().success != 1) {
+                                                Toast.makeText(getActivity(), "Failed!", Toast.LENGTH_SHORT).show();
+                                            }
                                         }
                                     }
-                                }
 
-                                @Override
-                                public void onFailure(Call<MyResponse> call, Throwable t) {
+                                    @Override
+                                    public void onFailure(Call<MyResponse> call, Throwable t) {
 
-                                }
-                            });
+                                    }
+                                });
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
 
