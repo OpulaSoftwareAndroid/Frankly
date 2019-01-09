@@ -16,6 +16,8 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -29,6 +31,7 @@ import com.opula.chatapp.adapter.UserSharedAdapter;
 import com.opula.chatapp.constant.SharedPreference;
 import com.opula.chatapp.constant.WsConstant;
 import com.opula.chatapp.model.Chat;
+import com.opula.chatapp.model.Chatlist;
 import com.opula.chatapp.model.User;
 
 import java.util.ArrayList;
@@ -49,8 +52,12 @@ public class UserProfileFragment extends Fragment {
     DatabaseReference reference;
     RecyclerView recycler_image;
 
+
     private List<Chat> mchat;
     private UserSharedAdapter userSharedAdapter;
+    FirebaseUser fuser;
+    FirebaseAuth firebaseAuth;
+    public static FirebaseUser firebaseUser;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -62,6 +69,8 @@ public class UserProfileFragment extends Fragment {
         sharedPreference = new SharedPreference();
         userid = sharedPreference.getValue(getActivity(), WsConstant.userId);
         initViews(view);
+        fuser = FirebaseAuth.getInstance().getCurrentUser();
+
 
         LinearLayoutManager horizontalLayoutManagaer = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
         recycler_image.setLayoutManager(horizontalLayoutManagaer);
@@ -96,13 +105,64 @@ public class UserProfileFragment extends Fragment {
             }
         });
 
+        /*firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        reference = FirebaseDatabase.getInstance().getReference("Chatlist").child(firebaseUser.getUid());
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Chatlist chatlist = dataSnapshot.getValue(Chatlist.class);
+                assert chatlist != null;
+                if (chatlist.getIsnotification()){
+                    chkNotification.setChecked(true);
+                } else {
+                    chkNotification.setChecked(false);
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        chkNotification.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (chkNotification.isChecked()){
+                    final DatabaseReference chatRefReceiver = FirebaseDatabase.getInstance().getReference("Chatlist").child(userid).child(fuser.getUid());
+                    chatRefReceiver.child("id").setValue(fuser.getUid());
+                    chatRefReceiver.child("isnotification").setValue(false);
+
+                    txtOnOff.setText("Off");
+                } else {
+
+                    final DatabaseReference chatRefReceiver = FirebaseDatabase.getInstance().getReference("Chatlist").child(userid).child(fuser.getUid());
+                    chatRefReceiver.child("id").setValue(fuser.getUid());
+                    chatRefReceiver.child("isnotification").setValue(true);
+
+                    txtOnOff.setText("On");
+                }
+            }
+        });*/
+
         chkNotification.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked == true)
+                if (isChecked){
+
+                    /*final DatabaseReference chatRefReceiver = FirebaseDatabase.getInstance().getReference("Chatlist").child(userid).child(fuser.getUid());
+                    chatRefReceiver.child("id").setValue(fuser.getUid());
+                    chatRefReceiver.child("isnotification").setValue(true);*/
+
                     txtOnOff.setText("On");
-                else if (isChecked == false)
+                } else {
+
+                    /*final DatabaseReference chatRefReceiver = FirebaseDatabase.getInstance().getReference("Chatlist").child(userid).child(fuser.getUid());
+                    chatRefReceiver.child("id").setValue(fuser.getUid());
+                    chatRefReceiver.child("isnotification").setValue(false);*/
+
                     txtOnOff.setText("Off");
+                }
             }
         });
 

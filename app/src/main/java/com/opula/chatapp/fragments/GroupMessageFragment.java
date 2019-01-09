@@ -179,8 +179,6 @@ public class GroupMessageFragment extends Fragment {
                 String msg = text_send.getText().toString();
                 if (!msg.equals("")) {
                     sendMessage(fuser.getUid(), groupUserId, msg, false, "default");
-                } else {
-                    Toast.makeText(getActivity(), "You can't send empty message", Toast.LENGTH_SHORT).show();
                 }
                 text_send.setText("");
             }

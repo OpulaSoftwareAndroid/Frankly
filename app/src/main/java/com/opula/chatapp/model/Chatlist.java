@@ -6,6 +6,7 @@ import java.util.ArrayList;
 public class Chatlist implements Serializable {
     public String id;
     public boolean istyping;
+    public boolean isnotification;
     public ArrayList<String> group;
 
     public String getId() {
@@ -22,6 +23,14 @@ public class Chatlist implements Serializable {
 
     public void setIstyping(boolean istyping) {
         this.istyping = istyping;
+    }
+
+    public boolean getIsnotification() {
+        return isnotification;
+    }
+
+    public void setIsnotification(boolean isnotification) {
+        this.isnotification = isnotification;
     }
 
     public ArrayList<String> getGroup() {

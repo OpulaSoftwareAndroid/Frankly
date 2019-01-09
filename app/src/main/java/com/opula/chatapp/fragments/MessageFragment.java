@@ -52,6 +52,7 @@ import com.opula.chatapp.api.APIService;
 import com.opula.chatapp.constant.SharedPreference;
 import com.opula.chatapp.constant.WsConstant;
 import com.opula.chatapp.model.Chat;
+import com.opula.chatapp.model.Chatlist;
 import com.opula.chatapp.model.User;
 import com.opula.chatapp.notifications.Client;
 import com.opula.chatapp.notifications.Data;
@@ -102,6 +103,7 @@ public class MessageFragment extends Fragment {
     private StorageTask uploadTask;
     Uri mImageUri = null;
     int GALLERY = 1;
+    String CheckActive;
 
     boolean notify = false;
 
@@ -144,8 +146,6 @@ public class MessageFragment extends Fragment {
                 String msg = text_send.getText().toString();
                 if (!msg.equals("")) {
                     sendMessage(fuser.getUid(), userid, msg, false, "default");
-                } else {
-                    Toast.makeText(getActivity(), "You can't send empty message", Toast.LENGTH_SHORT).show();
                 }
                 text_send.setText("");
             }
@@ -214,8 +214,8 @@ public class MessageFragment extends Fragment {
                 User user = dataSnapshot.getValue(User.class);
                 assert user != null;
                 txtUserName.setText(user.getUsername());
-                String status = user.getStatus();
-                txtCheckActive.setText(status);
+                CheckActive = user.getStatus();
+                txtCheckActive.setText(CheckActive);
                 if (user.getImageURL().equals("default")) {
                     imgUser.setImageResource(R.drawable.image_boy);
                 } else {
@@ -234,10 +234,30 @@ public class MessageFragment extends Fragment {
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
+            public void onCancelled(@NonNull DatabaseError databaseError) { }
         });
+
+        reference = FirebaseDatabase.getInstance().getReference("Chatlist").child(fuser.getUid()).child(userid);
+        reference.addValueEventListener(new ValueEventListener() {
+            @SuppressLint("SetTextI18n")
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Chatlist chatlist = dataSnapshot.getValue(Chatlist.class);
+                assert chatlist != null;
+                boolean is = chatlist.getIstyping();
+                if (is) {
+                    txtCheckActive.setText("typing..");
+                } else {
+                    txtCheckActive.setText(CheckActive);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) { }
+        });
+
+
+
 
         seenMessage(userid);
 
