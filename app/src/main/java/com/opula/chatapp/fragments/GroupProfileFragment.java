@@ -260,8 +260,12 @@ public class GroupProfileFragment extends Fragment {
                             String member = groupUser.getMemberList().get(i);
                             if (!firebaseUser.getUid().equals(member)) {
                                 String grp = member;
-                                Log.d("GroupChat2", grp + "//");
                                 grpList.add(grp);
+                            }
+                            if(groupUser.getMemberList().size()<=1)
+                            {
+                                ref.getRef().removeValue();
+                                Log.d("GroupChat2",   "//");
                             }
                         }
                         ref.child("memberList").setValue(grpList);
@@ -287,6 +291,7 @@ public class GroupProfileFragment extends Fragment {
                     if (dataSnapshot.exists()) {
                         for (DataSnapshot d1 : dataSnapshot.getChildren()) {
                             String id = d1.getKey();
+                            assert id != null;
                             if (id.equalsIgnoreCase(groupUserId)) {
                                 Log.d("Remove_data", d1.getValue() + "/");
                                 d1.getRef().removeValue();

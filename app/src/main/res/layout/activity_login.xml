@@ -91,7 +91,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:text="Forgot you password?"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="@dimen/_16sdp"
                     android:layout_gravity="end"
                     android:textStyle="bold"
                     android:id="@+id/forgot_password"

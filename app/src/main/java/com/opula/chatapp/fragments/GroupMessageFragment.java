@@ -137,7 +137,6 @@ public class GroupMessageFragment extends Fragment {
         linearLayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(linearLayoutManager);
 
-
         imgBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -148,7 +147,6 @@ public class GroupMessageFragment extends Fragment {
         groupName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                sharedPreference.save(getContext(), user.getGroupId(), WsConstant.groupUserId);
                 MainActivity.hideFloatingActionButton();
                 MainActivity.checkChatTheme(getContext());
                 MainActivity.showpart2();
@@ -160,7 +158,6 @@ public class GroupMessageFragment extends Fragment {
         imgUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                sharedPreference.save(getContext(), user.getGroupId(), WsConstant.groupUserId);
                 MainActivity.hideFloatingActionButton();
                 MainActivity.checkChatTheme(getContext());
                 MainActivity.showpart2();

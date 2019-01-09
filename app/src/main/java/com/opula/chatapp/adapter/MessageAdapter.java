@@ -94,7 +94,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
                         }
                     })
                     .into(holder.img_receive);
-            //Glide.with(mContext).load(chat.getImage()).into(holder.img_receive);
         }
         if (chat.getImage().equalsIgnoreCase("default")) {
             holder.img_receive.setVisibility(View.GONE);
