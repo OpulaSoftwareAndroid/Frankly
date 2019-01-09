@@ -311,7 +311,7 @@ public class GroupProfileFragment extends Fragment {
     }
 
     private void showPictureDialog() {
-        AlertDialog.Builder pictureDialog = new AlertDialog.Builder(getContext());
+        AlertDialog.Builder pictureDialog = new AlertDialog.Builder(Objects.requireNonNull(getContext()));
         pictureDialog.setTitle("Choose Image");
         String[] pictureDialogItems = {
                 "Gallery",
