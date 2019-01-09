@@ -5,7 +5,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,10 +16,7 @@ import android.widget.Filter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -38,7 +35,7 @@ import java.util.List;
 public class AddMemberGroupFragment extends Fragment {
     private ListView listMember;
     private MemberListAdapter userAdapter;
-    private ArrayList<User> mUsers;
+    private ArrayList<User> userList;
     LinearLayout createNewGrpLayout;
     int count = 0;
     Button btnNext;
@@ -60,45 +57,49 @@ public class AddMemberGroupFragment extends Fragment {
 
         sharedPreference = new SharedPreference();
         groupUserId = sharedPreference.getValue(getActivity(), WsConstant.groupUserId);
-        mUsers = new ArrayList<>();
+
         readUsers();
+
         commaSepValueBuilder = new StringBuilder();
-        txtSelectedCount.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                for (int i = 0; i < mUsers.size(); i++) {
-                    if (mUsers.get(i).isChecked()) {
-                        commaSepValueBuilder.append(mUsers.get(i).getId());
-                        if (i != mUsers.size()) {
-                            commaSepValueBuilder.append(",");
-                        }
-                    }
-                }
-                if (commaSepValueBuilder.length() > 0) {
-                    commaSepValueBuilder.deleteCharAt(commaSepValueBuilder.lastIndexOf(","));
-                }
 
-            }
-        });
+//        txtSelectedCount.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                for (int i = 0; i < userList.size(); i++) {
+//                    if (userList.get(i).isChecked()) {
+//                        commaSepValueBuilder.append(userList.get(i).getId());
+//                        if (i != userList.size()) {
+//                            commaSepValueBuilder.append(",");
+//                        }
+//                    }
+//                }
+//                if (commaSepValueBuilder.length() > 0) {
+//                    commaSepValueBuilder.deleteCharAt(commaSepValueBuilder.lastIndexOf(","));
+//                }
+//
+//            }
+//        });
+//
+//        btnNext.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                txtSelectedCount.performClick();
+//                if (commaSepValueBuilder.toString().equalsIgnoreCase("")) {
+//                    Toast.makeText(getContext(), "Please select members", Toast.LENGTH_SHORT).show();
+//                } else {
+//                    CreateGroupDetailFragment ldf = new CreateGroupDetailFragment();
+//                    FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+//                    Bundle args = new Bundle();
+//                    args.putString("GrpList", commaSepValueBuilder.toString());
+//                    ldf.setArguments(args);
+//                    fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, ldf).addToBackStack(null).commit();
+//                }
+//            }
+//        });
 
-        btnNext.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                txtSelectedCount.performClick();
-                if (commaSepValueBuilder.toString().equalsIgnoreCase("")) {
-                    Toast.makeText(getContext(), "Please select members", Toast.LENGTH_SHORT).show();
-                } else {
-                    CreateGroupDetailFragment ldf = new CreateGroupDetailFragment();
-                    FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                    Bundle args = new Bundle();
-                    args.putString("GrpList", commaSepValueBuilder.toString());
-                    ldf.setArguments(args);
-                    fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, ldf).addToBackStack(null).commit();
-                }
-            }
-        });
 
         return view;
+
 
     }
 
@@ -123,7 +124,6 @@ public class AddMemberGroupFragment extends Fragment {
                 GroupUser grpuser = dataSnapshot.getValue(GroupUser.class);
                 assert grpuser != null;
                 grpList.addAll(grpuser.getMemberList());
-                compareMember();
             }
 
             @Override
@@ -132,25 +132,29 @@ public class AddMemberGroupFragment extends Fragment {
             }
         });
 
+        compareMember();
 
     }
 
+
     private void compareMember() {
-        final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        userList = new ArrayList<>();
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users");
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                mUsers.clear();
+                userList.clear();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     User user = snapshot.getValue(User.class);
-                    for (String list : grpList) {
-                        if (!user.getId().equals(list)) {
-                            mUsers.add(user);
+                    for (int ij = 0; ij < grpList.size(); ij++) {
+                        Log.d("Group_Member", user.getId() + "/");
+                        if (!(grpList.get(ij).equalsIgnoreCase(user.getId()))) {
+                            userList.add(user);
                         }
                     }
                 }
-                userAdapter = new MemberListAdapter(getActivity(), mUsers);
+
+                userAdapter = new MemberListAdapter(getActivity(), userList);
                 WsConstant.check = "activity";
                 listMember.setAdapter(userAdapter);
             }
@@ -159,7 +163,9 @@ public class AddMemberGroupFragment extends Fragment {
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
+
         });
+
     }
 
 
@@ -167,13 +173,11 @@ public class AddMemberGroupFragment extends Fragment {
 
         private Context context;
         private ArrayList<User> oricoininfo;
-        private ArrayList<User> origPlanetList;
         private Filter planetFilter;
 
         MemberListAdapter(Context c, ArrayList<User> l) {
             context = c;
             oricoininfo = l;
-            origPlanetList = l;
         }
 
         @Override
@@ -181,9 +185,6 @@ public class AddMemberGroupFragment extends Fragment {
             return oricoininfo.size();
         }
 
-        public void resetData() {
-            oricoininfo = origPlanetList;
-        }
 
         @Override
         public Object getItem(int position) {
