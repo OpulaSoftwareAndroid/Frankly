@@ -52,19 +52,50 @@ public class ListGroupChatFragment extends Fragment {
 
         fuser = FirebaseAuth.getInstance().getCurrentUser();
 
+        mUsers = new ArrayList<>();
         usersList = new ArrayList<>();
 
-        reference = FirebaseDatabase.getInstance().getReference("Chatlist").child(fuser.getUid());
-        reference.addValueEventListener(new ValueEventListener() {
+
+        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference().child("Chatlist");
+        rootRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 try {
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        usersList.clear();
-                        for (DataSnapshot d1 : snapshot.getChildren()) {
-                            usersList.add(d1.getKey());
+                    if (dataSnapshot.hasChild(fuser.getUid())) {
+                        reference = FirebaseDatabase.getInstance().getReference("Chatlist").child(fuser.getUid());
+                        reference.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                try {
+                                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                        usersList.clear();
+                                        for (DataSnapshot d1 : snapshot.getChildren()) {
+                                            usersList.add(d1.getKey());
+                                        }
+                                        groupList();
+                                    }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+
+                    }else
+                    {
+                        if (mUsers.size() > 0) {
+                            // listView not empty
+                            recyclerView.setVisibility(View.VISIBLE);
+                            no_chat.setVisibility(View.GONE);
+                        } else {
+                            // listView  empty
+                            recyclerView.setVisibility(View.GONE);
+                            no_chat.setVisibility(View.VISIBLE);
                         }
-                        groupList();
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -83,8 +114,8 @@ public class ListGroupChatFragment extends Fragment {
 
     private void groupList() {
         mUsers = new ArrayList<>();
-        reference = FirebaseDatabase.getInstance().getReference("Groups");
-        reference.addValueEventListener(new ValueEventListener() {
+        DatabaseReference referenceq = FirebaseDatabase.getInstance().getReference("Groups");
+        referenceq.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 try {

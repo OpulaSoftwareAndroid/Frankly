@@ -6,7 +6,6 @@ public class GroupUser {
 
     private String groupName;
     private String groupId;
-    private String memberCount;
     private String imageURL;
     private String groupAdmin;
     private ArrayList<String> memberList;
@@ -17,14 +16,6 @@ public class GroupUser {
 
     public void setGroupName(String groupName) {
         this.groupName = groupName;
-    }
-
-    public String getMemberCount() {
-        return memberCount;
-    }
-
-    public void setMemberCount(String memberCount) {
-        this.memberCount = memberCount;
     }
 
     public String getImageURL() {

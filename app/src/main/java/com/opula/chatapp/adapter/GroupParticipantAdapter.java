@@ -57,7 +57,7 @@ public class GroupParticipantAdapter extends RecyclerView.Adapter<GroupParticipa
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(mContext).inflate(R.layout.participant_user_item, parent, false);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.adapter_participant_user_item, parent, false);
         return new GroupParticipantAdapter.ViewHolder(view);
     }
 
@@ -69,20 +69,19 @@ public class GroupParticipantAdapter extends RecyclerView.Adapter<GroupParticipa
         groupAdminID = sharedPreference.getValue(mContext, WsConstant.groupadminId);
         groupID = sharedPreference.getValue(mContext, WsConstant.groupId);
 
-        final User user = mUsers.get(position);
-
         if (!user.getId().equals(firebaseUser.getUid()) && !(user.getId().equals(groupAdminID))) {
             holder.username.setText(user.getUsername());
         }
-        if (user.getId().equals(firebaseUser.getUid())) {
-            holder.username.setText("you");
-            holder.last_msg.setVisibility(View.INVISIBLE);
-        }
         if (user.getId().equals(groupAdminID)) {
-            holder.username.setText(user.getUsername() + "  (admin)");
+            holder.username.setText(user.getUsername() + " (admin)");
         }
-        if (user.getId().equals(groupAdminID) && user.getId().equals(firebaseUser.getUid())) {
-            holder.username.setText("you (admin)");
+        if (user.getId().equals(firebaseUser.getUid())) {
+            if (user.getId().equals(groupAdminID)) {
+                holder.username.setText("You" + " (admin)");
+            } else {
+                holder.username.setText("You");
+            }
+            holder.last_msg.setVisibility(View.INVISIBLE);
         }
 
         holder.last_msg.setText(user.getEmail());

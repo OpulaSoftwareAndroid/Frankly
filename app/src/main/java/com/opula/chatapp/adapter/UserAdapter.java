@@ -52,7 +52,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(mContext).inflate(R.layout.user_item, parent, false);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.adapter_user_item, parent, false);
         return new UserAdapter.ViewHolder(view);
     }
 
@@ -169,7 +169,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
                 switch (theLastMessage) {
                     case "default":
-                        last_msg.setText("No Message");
+                        last_msg.setText("No Messages");
                         break;
 
                     default:

@@ -39,9 +39,9 @@ dependencies {
     implementation 'com.google.firebase:firebase-core:16.0.1'
     implementation 'com.google.firebase:firebase-storage:16.0.1'
     implementation 'com.google.firebase:firebase-messaging:17.3.1'
+    implementation 'com.crashlytics.sdk.android:crashlytics:2.9.8'
 
     //extra
-    implementation 'com.rengwuxian.materialedittext:library:2.1.4'
     implementation 'de.hdodenhof:circleimageview:2.2.0'
     implementation 'com.intuit.sdp:sdp-android:1.0.5'
 
@@ -78,3 +78,4 @@ dependencies {
 }
 
 apply plugin: 'com.google.gms.google-services'
+apply plugin: 'io.fabric'

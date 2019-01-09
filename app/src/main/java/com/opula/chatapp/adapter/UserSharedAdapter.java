@@ -4,31 +4,21 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
-import com.opula.chatapp.MainActivity;
 import com.opula.chatapp.R;
 import com.opula.chatapp.constant.AppGlobal;
-import com.opula.chatapp.constant.SharedPreference;
-import com.opula.chatapp.constant.WsConstant;
-import com.opula.chatapp.fragments.MessageFragment;
-import com.opula.chatapp.fragments.UserProfileFragment;
 import com.opula.chatapp.model.Chat;
-import com.opula.chatapp.model.User;
 
 import java.util.List;
 
@@ -45,7 +35,7 @@ public class UserSharedAdapter extends RecyclerView.Adapter<UserSharedAdapter.Vi
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(mContext).inflate(R.layout.user_shared_image, parent, false);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.adapter_user_shared_image, parent, false);
         return new UserSharedAdapter.ViewHolder(view);
     }
 

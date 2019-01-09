@@ -204,8 +204,6 @@ public class CreateGroupDetailFragment extends Fragment {
                         Uri downloadUri = task.getResult();
                         mUri = downloadUri.toString();
 
-//                        group chat
-
                         String grpName = txt_name.getText().toString();
                         final DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
                         final HashMap<String, Object> hashMap = new HashMap<>();
@@ -393,10 +391,9 @@ public class CreateGroupDetailFragment extends Fragment {
                     pd.dismiss();
                 }
             });
-        } else
-
-        {
-            Toast.makeText(getContext(), "No image selected", Toast.LENGTH_SHORT).show();
+        } else {
+            pd.dismiss();
+            Toast.makeText(getContext(), "Please select group image!", Toast.LENGTH_SHORT).show();
         }
 
     }

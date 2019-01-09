@@ -25,7 +25,6 @@ import com.opula.chatapp.constant.SharedPreference;
 import com.opula.chatapp.constant.WsConstant;
 import com.opula.chatapp.fragments.GroupMessageFragment;
 import com.opula.chatapp.fragments.GroupProfileFragment;
-import com.opula.chatapp.fragments.UserProfileFragment;
 import com.opula.chatapp.model.Chat;
 import com.opula.chatapp.model.GroupUser;
 
@@ -53,7 +52,7 @@ public class GroupUserAdapter extends RecyclerView.Adapter<GroupUserAdapter.View
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(mContext).inflate(R.layout.user_item, parent, false);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.adapter_user_item, parent, false);
         return new GroupUserAdapter.ViewHolder(view);
     }
 
@@ -153,7 +152,7 @@ public class GroupUserAdapter extends RecyclerView.Adapter<GroupUserAdapter.View
 
                 switch (theLastMessage) {
                     case "default":
-                        last_msg.setText("No Message");
+                        last_msg.setText("No Messages");
                         break;
 
                     default:

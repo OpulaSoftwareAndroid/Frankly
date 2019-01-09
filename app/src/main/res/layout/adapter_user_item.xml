@@ -65,11 +65,14 @@
 
             <hani.momanii.supernova_emoji_library.Helper.EmojiconTextView
                 android:id="@+id/username"
+                android:textStyle="bold"
+                android:textColor="@color/mainscreen_black"
                 android:fontFamily="@font/m"
                 emojicon:emojiconSize="22sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="18sp" />
+s
 
             <hani.momanii.supernova_emoji_library.Helper.EmojiconTextView
                 android:id="@+id/last_msg"
@@ -89,6 +92,7 @@
             android:orientation="vertical">
 
             <TextView
+                android:textColor="@color/mainscreen_black"
                 android:fontFamily="@font/m"
                 android:id="@+id/time"
                 android:layout_width="wrap_content"

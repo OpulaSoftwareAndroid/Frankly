@@ -26,12 +26,10 @@ import com.opula.chatapp.constant.AppGlobal;
 import com.opula.chatapp.model.Chat;
 
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.TimeZone;
 
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHolder> {
@@ -54,10 +52,10 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     @Override
     public MessageAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (viewType == MSG_TYPE_RIGHT) {
-            View view = LayoutInflater.from(mContext).inflate(R.layout.chat_item_right, parent, false);
+            View view = LayoutInflater.from(mContext).inflate(R.layout.adapter_chat_item_right, parent, false);
             return new MessageAdapter.ViewHolder(view);
         } else {
-            View view = LayoutInflater.from(mContext).inflate(R.layout.chat_item_left, parent, false);
+            View view = LayoutInflater.from(mContext).inflate(R.layout.adapter_chat_item_left, parent, false);
             return new MessageAdapter.ViewHolder(view);
         }
     }

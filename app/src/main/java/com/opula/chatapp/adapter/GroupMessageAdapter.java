@@ -53,10 +53,10 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<GroupMessageAdapte
     @Override
     public GroupMessageAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (viewType == MSG_TYPE_RIGHT) {
-            View view = LayoutInflater.from(mContext).inflate(R.layout.group_chat_item_right, parent, false);
+            View view = LayoutInflater.from(mContext).inflate(R.layout.adapter_group_chat_item_right, parent, false);
             return new GroupMessageAdapter.ViewHolder(view);
         } else {
-            View view = LayoutInflater.from(mContext).inflate(R.layout.group_chat_item_left, parent, false);
+            View view = LayoutInflater.from(mContext).inflate(R.layout.adapter_group_chat_item_left, parent, false);
             return new GroupMessageAdapter.ViewHolder(view);
         }
     }

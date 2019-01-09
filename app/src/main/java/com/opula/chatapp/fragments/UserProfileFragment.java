@@ -170,7 +170,7 @@ public class UserProfileFragment extends Fragment {
             }
         });
 
-        readMesagges("QAMAMritO8gmVf7er0NLb9xtOwR2", userid);
+        readMesagges(fuser.getUid(), userid);
 
         return view;
     }

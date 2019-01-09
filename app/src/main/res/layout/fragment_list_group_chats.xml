@@ -17,7 +17,7 @@
             android:layout_height="match_parent"
             android:divider="@null"
             android:visibility="visible"
-            android:scrollbars="none" />
+            android:scrollbars="vertical" />
 
         <LinearLayout
             android:id="@+id/no_chat"

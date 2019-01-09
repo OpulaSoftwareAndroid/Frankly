@@ -1,6 +1,5 @@
 package com.opula.chatapp.adapter;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
@@ -14,27 +13,15 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.opula.chatapp.MainActivity;
 import com.opula.chatapp.R;
 import com.opula.chatapp.constant.SharedPreference;
 import com.opula.chatapp.constant.WsConstant;
 import com.opula.chatapp.fragments.MessageFragment;
 import com.opula.chatapp.fragments.UserProfileFragment;
-import com.opula.chatapp.model.Chat;
 import com.opula.chatapp.model.User;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 public class NewChatUserAdapter extends RecyclerView.Adapter<NewChatUserAdapter.ViewHolder> {
 
@@ -52,7 +39,7 @@ public class NewChatUserAdapter extends RecyclerView.Adapter<NewChatUserAdapter.
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(mContext).inflate(R.layout.new_chat_user, parent, false);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.adapter_new_chat_user, parent, false);
         return new NewChatUserAdapter.ViewHolder(view);
     }
 

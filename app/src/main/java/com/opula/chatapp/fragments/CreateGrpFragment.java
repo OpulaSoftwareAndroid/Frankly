@@ -88,12 +88,18 @@ public class CreateGrpFragment extends Fragment {
                 if (commaSepValueBuilder.toString().equalsIgnoreCase("") ) {
                     Toast.makeText(getContext(), "Please select members", Toast.LENGTH_SHORT).show();
                 } else {
-                    CreateGroupDetailFragment ldf = new CreateGroupDetailFragment();
-                    FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                    Bundle args = new Bundle();
-                    args.putString("GrpList", commaSepValueBuilder.toString());
-                    ldf.setArguments(args);
-                    fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, ldf).addToBackStack(null).commit();
+                    int i = commaSepValueBuilder.length();
+                    if (!(i<57)){
+                        CreateGroupDetailFragment ldf = new CreateGroupDetailFragment();
+                        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                        Bundle args = new Bundle();
+                        args.putString("GrpList", commaSepValueBuilder.toString());
+                        ldf.setArguments(args);
+                        fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, ldf).addToBackStack(null).commit();
+                    } else {
+                        Toast.makeText(getActivity(), "Please select more than one member!", Toast.LENGTH_SHORT).show();
+                    }
+
                 }
             }
         });

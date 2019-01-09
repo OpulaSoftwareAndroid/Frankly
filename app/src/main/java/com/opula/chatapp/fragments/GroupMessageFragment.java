@@ -190,45 +190,6 @@ public class GroupMessageFragment extends Fragment {
             }
         });
 
-        text_send.addTextChangedListener(new TextWatcher() {
-
-            boolean isTyping = false;
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-
-            private Timer timer = new Timer();
-            private final long DELAY = 1500; // milliseconds
-
-            @Override
-            public void afterTextChanged(final Editable s) {
-                Log.d("", "");
-                if (!isTyping) {
-                    Log.d("typing", "started typing");
-                    // Send notification for start typing event
-                    isTyping = true;
-                }
-                timer.cancel();
-                timer = new Timer();
-                timer.schedule(
-                        new TimerTask() {
-                            @Override
-                            public void run() {
-                                isTyping = false;
-                                Log.d("typing", "stopped typing");
-                                //send notification for stopped typing event
-                            }
-                        },
-                        DELAY
-                );
-            }
-        });
-
         reference = FirebaseDatabase.getInstance().getReference("Groups").child(groupUserId);
 
         reference.addValueEventListener(new ValueEventListener() {
@@ -413,7 +374,7 @@ public class GroupMessageFragment extends Fragment {
 
     private void uploadImage() {
         final ProgressDialog pd = new ProgressDialog(getContext());
-        pd.setMessage("Uploading");
+        pd.setMessage("Uploading...");
         pd.show();
 
         if (mImageUri != null) {

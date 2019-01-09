@@ -8,11 +8,11 @@
     //costom
     <color name="bg_main">#ecebec</color>
     <color name="white">#ffffff</color>
-    <color name="half_black">#EAEEF3</color>
-
-    //red green
     <color name="green">#12d218</color>
     <color name="black">#020202</color>
     <color name="gray">#e4e0e0</color>
+
+    <color name="mainscreen_black">#333333</color>
+    <color name="messagescrren">#eaf2f4</color>
 
 </resources>

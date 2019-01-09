@@ -339,7 +339,6 @@ public class GroupProfileFragment extends Fragment {
     }
 
     private void checkImage() {
-
         reference = FirebaseDatabase.getInstance().getReference("Groups").child(groupUserId);
         reference.addValueEventListener(new ValueEventListener() {
             @SuppressLint("SetTextI18n")
@@ -500,7 +499,6 @@ public class GroupProfileFragment extends Fragment {
     }
 
     private void groupMember() {
-
         mUsers = new ArrayList<>();
         reference = FirebaseDatabase.getInstance().getReference("Users");
         reference.addValueEventListener(new ValueEventListener() {
@@ -558,7 +556,6 @@ public class GroupProfileFragment extends Fragment {
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                try {
                     mchat.clear();
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         Chat chat = snapshot.getValue(Chat.class);
@@ -583,11 +580,7 @@ public class GroupProfileFragment extends Fragment {
                             text_no_image.setVisibility(View.VISIBLE);
                         }
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 

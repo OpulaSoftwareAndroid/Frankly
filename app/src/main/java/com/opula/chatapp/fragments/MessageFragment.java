@@ -71,6 +71,7 @@ import java.util.TimerTask;
 import de.hdodenhof.circleimageview.CircleImageView;
 import hani.momanii.supernova_emoji_library.Actions.EmojIconActions;
 import hani.momanii.supernova_emoji_library.Helper.EmojiconEditText;
+import hani.momanii.supernova_emoji_library.Helper.EmojiconTextView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -82,7 +83,8 @@ public class MessageFragment extends Fragment {
 
     CircleImageView imgUser;
     LinearLayout imgBack;
-    TextView txtUserName, txtCheckActive;
+    EmojiconTextView txtUserName;
+    TextView txtCheckActive;
     FirebaseUser fuser;
     DatabaseReference reference;
     RelativeLayout btn_send;
@@ -176,12 +178,11 @@ public class MessageFragment extends Fragment {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
             }
             private Timer timer = new Timer();
-            private final long DELAY = 1500;
+            private final long DELAY = 1000;
             @Override
             public void afterTextChanged(final Editable s) {
                 Log.d("", "");
                 if (!isTyping) {
-                    Log.d("typing", "started typing");
 
                     try {
                         final DatabaseReference chatRefReceiver = FirebaseDatabase.getInstance().getReference("Chatlist").child(userid).child(fuser.getUid());
@@ -199,7 +200,6 @@ public class MessageFragment extends Fragment {
                             @Override
                             public void run() {
                                 isTyping = false;
-                                Log.d("typing", "stopped typing");
 
                                 try {
                                     final DatabaseReference chatRefReceiver = FirebaseDatabase.getInstance().getReference("Chatlist").child(userid).child(fuser.getUid());
@@ -366,7 +366,7 @@ public class MessageFragment extends Fragment {
 
     private void uploadImage() {
         final ProgressDialog pd = new ProgressDialog(getContext());
-        pd.setMessage("Uploading");
+        pd.setMessage("Uploading...");
         pd.show();
 
         if (mImageUri != null) {
