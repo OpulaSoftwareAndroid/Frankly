@@ -183,8 +183,12 @@ public class MessageFragment extends Fragment {
                 if (!isTyping) {
                     Log.d("typing", "started typing");
 
-                    final DatabaseReference chatRefReceiver = FirebaseDatabase.getInstance().getReference("Chatlist").child(userid).child(fuser.getUid());
-                    chatRefReceiver.child("istyping").setValue(true);
+                    try {
+                        final DatabaseReference chatRefReceiver = FirebaseDatabase.getInstance().getReference("Chatlist").child(userid).child(fuser.getUid());
+                        chatRefReceiver.child("istyping").setValue(true);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
 
                     isTyping = true;
                 }
@@ -197,8 +201,12 @@ public class MessageFragment extends Fragment {
                                 isTyping = false;
                                 Log.d("typing", "stopped typing");
 
-                                final DatabaseReference chatRefReceiver = FirebaseDatabase.getInstance().getReference("Chatlist").child(userid).child(fuser.getUid());
-                                chatRefReceiver.child("istyping").setValue(false);
+                                try {
+                                    final DatabaseReference chatRefReceiver = FirebaseDatabase.getInstance().getReference("Chatlist").child(userid).child(fuser.getUid());
+                                    chatRefReceiver.child("istyping").setValue(false);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
 
                             }
                         },
@@ -237,26 +245,28 @@ public class MessageFragment extends Fragment {
             public void onCancelled(@NonNull DatabaseError databaseError) { }
         });
 
-        reference = FirebaseDatabase.getInstance().getReference("Chatlist").child(fuser.getUid()).child(userid);
-        reference.addValueEventListener(new ValueEventListener() {
-            @SuppressLint("SetTextI18n")
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Chatlist chatlist = dataSnapshot.getValue(Chatlist.class);
-                assert chatlist != null;
-                boolean is = chatlist.getIstyping();
-                if (is) {
-                    txtCheckActive.setText("typing..");
-                } else {
-                    txtCheckActive.setText(CheckActive);
+        try {
+            reference = FirebaseDatabase.getInstance().getReference("Chatlist").child(fuser.getUid()).child(userid);
+            reference.addValueEventListener(new ValueEventListener() {
+                @SuppressLint("SetTextI18n")
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    Chatlist chatlist = dataSnapshot.getValue(Chatlist.class);
+                    assert chatlist != null;
+                    boolean is = chatlist.getIstyping();
+                    if (is) {
+                        txtCheckActive.setText("typing..");
+                    } else {
+                        txtCheckActive.setText(CheckActive);
+                    }
                 }
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) { }
-        });
-
-
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) { }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
 
         seenMessage(userid);

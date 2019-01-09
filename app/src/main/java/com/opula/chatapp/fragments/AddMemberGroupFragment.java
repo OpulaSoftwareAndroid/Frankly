@@ -146,14 +146,11 @@ public class AddMemberGroupFragment extends Fragment {
                 userList.clear();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     User user = snapshot.getValue(User.class);
-                    for (int ij = 0; ij < grpList.size(); ij++) {
-                        Log.d("Group_Member", user.getId() + "/");
-                        if (!(grpList.get(ij).equalsIgnoreCase(user.getId()))) {
-                            userList.add(user);
-                        }
+                    assert user != null;
+                    if (!(grpList.contains(user.getId()))) {
+                        userList.add(user);
                     }
                 }
-
                 userAdapter = new MemberListAdapter(getActivity(), userList);
                 WsConstant.check = "activity";
                 listMember.setAdapter(userAdapter);
@@ -167,6 +164,7 @@ public class AddMemberGroupFragment extends Fragment {
         });
 
     }
+
 
 
     public class MemberListAdapter extends BaseAdapter {
@@ -234,10 +232,8 @@ public class AddMemberGroupFragment extends Fragment {
                 }
             });
             return rowView;
+
+
         }
-
-
     }
-
-
 }
