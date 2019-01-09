@@ -69,6 +69,8 @@ public class GroupParticipantAdapter extends RecyclerView.Adapter<GroupParticipa
         groupAdminID = sharedPreference.getValue(mContext, WsConstant.groupadminId);
         groupID = sharedPreference.getValue(mContext, WsConstant.groupId);
 
+        final User user = mUsers.get(position);
+
         if (!user.getId().equals(firebaseUser.getUid()) && !(user.getId().equals(groupAdminID))) {
             holder.username.setText(user.getUsername());
         }
