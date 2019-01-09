@@ -182,6 +182,7 @@ public class CreateGroupDetailFragment extends Fragment {
         final ProgressDialog pd = new ProgressDialog(getContext());
         pd.setMessage("Creating Group..");
         pd.show();
+        pd.setCancelable(false);
         randomString(9);
 
         if (mImageUri != null) {

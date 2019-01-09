@@ -50,6 +50,7 @@ public class AddMemberGroupFragment extends Fragment {
     DatabaseReference reference;
     List<String> grpList;
     List<String> newMemberList;
+    LinearLayout no_chat;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -255,6 +256,7 @@ public class AddMemberGroupFragment extends Fragment {
         btnNext = view.findViewById(R.id.btnNext);
         txtSelectedCount = view.findViewById(R.id.txtSelectedCount);
         createNewGrpLayout = view.findViewById(R.id.createNewGrpLayout);
+        no_chat = view.findViewById(R.id.no_chat);
     }
 
 
@@ -306,7 +308,19 @@ public class AddMemberGroupFragment extends Fragment {
                     }
                     userAdapter = new MemberListAdapter(getActivity(), userList);
                     WsConstant.check = "activity";
-                    listMember.setAdapter(userAdapter);
+
+
+                    if (userList.size() > 0) {
+                        // listView not empty
+                        listMember.setVisibility(View.VISIBLE);
+                        no_chat.setVisibility(View.GONE);
+                        listMember.setAdapter(userAdapter);
+                    } else {
+                        // listView  empty
+                        listMember.setVisibility(View.GONE);
+                        no_chat.setVisibility(View.VISIBLE);
+                    }
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

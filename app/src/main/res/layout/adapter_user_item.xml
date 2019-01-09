@@ -24,10 +24,8 @@
             android:layout_height="15dp"
             android:layout_marginEnd="0dp"
             android:layout_marginBottom="0dp"
-            android:src="@mipmap/ic_launcher"
+            android:src="@color/green"
             android:visibility="invisible"
-            app:civ_border_color="#05df29"
-            app:civ_border_width="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
@@ -37,10 +35,8 @@
             android:layout_height="15dp"
             android:layout_marginEnd="0dp"
             android:layout_marginBottom="0dp"
-            android:src="@mipmap/ic_launcher"
+            android:src="@color/grayone"
             android:visibility="invisible"
-            app:civ_border_color="#bfbfbf"
-            app:civ_border_width="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             tools:ignore="MissingConstraints" />
@@ -72,7 +68,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="18sp" />
-s
 
             <hani.momanii.supernova_emoji_library.Helper.EmojiconTextView
                 android:id="@+id/last_msg"

@@ -32,10 +32,10 @@
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:paddingBottom="16dp"
-                    android:paddingTop="16dp"
+                    android:paddingBottom="8dp"
+                    android:paddingTop="8dp"
                     android:id="@+id/img_chat"
-                    android:layout_width="@dimen/_18sdp"
+                    android:layout_width="@dimen/_22sdp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/_8sdp"
                     android:layout_weight="0"
@@ -93,8 +93,8 @@
 
                 <ImageView
                     android:id="@+id/img_setting"
-                    android:layout_width="@dimen/_19sdp"
-                    android:layout_height="wrap_content"
+                    android:layout_width="@dimen/_22sdp"
+                    android:layout_height="@dimen/_22sdp"
                     android:layout_marginLeft="@dimen/_8sdp"
                     android:layout_marginRight="@dimen/_8sdp"
                     android:layout_weight="0"

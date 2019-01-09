@@ -125,6 +125,7 @@ public class ListGroupChatFragment extends Fragment {
                             GroupUser user = snapshot.getValue(GroupUser.class);
                             for (String list : usersList) {
                                 if (!list.equalsIgnoreCase("id")) {
+                                    assert user != null;
                                     if (user.getGroupId().equals(list)) {
                                         Log.d("GroupChat", list + "/");
                                         mUsers.add(user);

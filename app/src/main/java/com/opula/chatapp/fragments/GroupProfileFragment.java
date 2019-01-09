@@ -458,6 +458,7 @@ public class GroupProfileFragment extends Fragment {
         final ProgressDialog pd = new ProgressDialog(getContext());
         pd.setMessage("Uploading");
         pd.show();
+        pd.setCancelable(false);
 
         if (mImageUri != null) {
             final StorageReference fileReference = storageReference.child(System.currentTimeMillis()

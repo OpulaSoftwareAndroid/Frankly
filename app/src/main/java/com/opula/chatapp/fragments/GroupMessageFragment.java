@@ -374,6 +374,7 @@ public class GroupMessageFragment extends Fragment {
         final ProgressDialog pd = new ProgressDialog(getContext());
         pd.setMessage("Uploading...");
         pd.show();
+        pd.setCancelable(false);
 
         if (mImageUri != null) {
 

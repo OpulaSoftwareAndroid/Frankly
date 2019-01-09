@@ -65,7 +65,7 @@ public class NewChatUserAdapter extends RecyclerView.Adapter<NewChatUserAdapter.
                 MainActivity.checkChatTheme(mContext);
                 MainActivity.showpart1();
                 FragmentManager fragmentManager = ((FragmentActivity) mContext).getSupportFragmentManager();
-                fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new MessageFragment()).addToBackStack(null).commit();
+                fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new MessageFragment()).commit();
 
             }
         });
