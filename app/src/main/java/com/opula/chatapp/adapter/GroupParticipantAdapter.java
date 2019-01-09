@@ -66,20 +66,23 @@ public class GroupParticipantAdapter extends RecyclerView.Adapter<GroupParticipa
 
         sharedPreference = new SharedPreference();
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-
-        final User user = mUsers.get(position);
         groupAdminID = sharedPreference.getValue(mContext, WsConstant.groupadminId);
         groupID = sharedPreference.getValue(mContext, WsConstant.groupId);
+
+        final User user = mUsers.get(position);
 
         if (!user.getId().equals(firebaseUser.getUid()) && !(user.getId().equals(groupAdminID))) {
             holder.username.setText(user.getUsername());
         }
-        if (user.getId().equals(groupAdminID)) {
-            holder.username.setText(user.getUsername() + "  (admin)");
-        }
         if (user.getId().equals(firebaseUser.getUid())) {
             holder.username.setText("you");
             holder.last_msg.setVisibility(View.INVISIBLE);
+        }
+        if (user.getId().equals(groupAdminID)) {
+            holder.username.setText(user.getUsername() + "  (admin)");
+        }
+        if (user.getId().equals(groupAdminID) && user.getId().equals(firebaseUser.getUid())) {
+            holder.username.setText("you (admin)");
         }
 
         holder.last_msg.setText(user.getEmail());

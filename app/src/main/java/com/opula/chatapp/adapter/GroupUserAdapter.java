@@ -58,7 +58,7 @@ public class GroupUserAdapter extends RecyclerView.Adapter<GroupUserAdapter.View
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
 
         sharedPreference = new SharedPreference();
 
@@ -80,8 +80,8 @@ public class GroupUserAdapter extends RecyclerView.Adapter<GroupUserAdapter.View
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MainActivity.hideFloatingActionButton();
                 sharedPreference.save(mContext, user.getGroupId(), WsConstant.groupUserId);
+                MainActivity.hideFloatingActionButton();
                 MainActivity.checkChatTheme(mContext);
                 MainActivity.showpart1();
                 FragmentManager fragmentManager = ((FragmentActivity) mContext).getSupportFragmentManager();
@@ -94,9 +94,7 @@ public class GroupUserAdapter extends RecyclerView.Adapter<GroupUserAdapter.View
             @Override
             public void onClick(View view) {
                 sharedPreference.save(mContext, user.getGroupId(), WsConstant.groupUserId);
-
                 MainActivity.showpart2();
-
                 FragmentManager fragmentManager = ((FragmentActivity) mContext).getSupportFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new GroupProfileFragment()).addToBackStack(null).commit();
 

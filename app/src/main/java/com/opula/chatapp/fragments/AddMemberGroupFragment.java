@@ -14,10 +14,12 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.Filter;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -91,15 +93,6 @@ public class AddMemberGroupFragment extends Fragment {
                     public void onDataChange(@NonNull final DataSnapshot d1) {
                         try {
                             if (d1.exists()) {
-                                GroupUser groupUser = d1.getValue(GroupUser.class);
-//                                for (int i = 0; i < groupUser.getMemberList().size(); i++) {
-//                                    String member = groupUser.getMemberList().get(i);
-//                                    if (!firebaseUser.getUid().equals(member)) {
-//                                        String grp = member;
-//                                        Log.d("GroupChat2", grp + "//");
-//                                        grpList.add(grp);
-//                                    }
-//                                }
                                 ref.child("memberList").setValue(grpList);
                             }
                         } catch (Exception e) {
@@ -151,15 +144,9 @@ public class AddMemberGroupFragment extends Fragment {
                                                 @Override
                                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot1) {
                                                     if (dataSnapshot1.getValue() == null) {
-//                                                        grpList.add(sb.toString());
-//                                                        for (String s : grpList) {
                                                         reference2.child(groupUserId).setValue(groupUserId);
-//                                                        }
                                                     } else {
-//                                                        grpList.add(sb.toString());
-//                                                        for (String s : grpList) {
                                                         reference2.child(groupUserId).setValue(groupUserId);
-//                                                        }
                                                     }
                                                 }
 
@@ -250,21 +237,10 @@ public class AddMemberGroupFragment extends Fragment {
                         }
                     });
                 }
-                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new GroupProfileFragment()).addToBackStack(null).commit();
+                getActivity().onBackPressed();
+//                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+//                fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new GroupProfileFragment()).addToBackStack(null).commit();
 
-
-//                if (commaSepValueBuilder.length()>grpList.size()) {
-//                    Toast.makeText(getContext(), "Please select members", Toast.LENGTH_SHORT).show();
-//                }
-//                else {
-//                    GroupProfileFragment ldf = new GroupProfileFragment();
-//                    FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-//                    Bundle args = new Bundle();
-//                    args.putString("GrpList", commaSepValueBuilder.toString());
-//                    ldf.setArguments(args);
-//                    fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, ldf).addToBackStack(null).commit();
-//                }
             }
         });
 
@@ -285,6 +261,7 @@ public class AddMemberGroupFragment extends Fragment {
     static class ViewHolder {
         CheckBox checkBox;
         TextView txtName, txtNumber;
+        ImageView item_profile;
     }
 
     private void readUsers() {
@@ -388,6 +365,7 @@ public class AddMemberGroupFragment extends Fragment {
                 viewHolder.checkBox = (CheckBox) rowView.findViewById(R.id.rowCheckBox);
                 viewHolder.txtNumber = (TextView) rowView.findViewById(R.id.txtNumber);
                 viewHolder.txtName = (TextView) rowView.findViewById(R.id.txtName);
+                viewHolder.item_profile = (ImageView) rowView.findViewById(R.id.item_profile);
                 rowView.setTag(viewHolder);
             } else {
                 viewHolder = (ViewHolder) rowView.getTag();
@@ -395,6 +373,11 @@ public class AddMemberGroupFragment extends Fragment {
             viewHolder.checkBox.setChecked(oricoininfo.get(position).checked);
             viewHolder.txtName.setText(oricoininfo.get(position).getUsername() + "");
             viewHolder.txtNumber.setText(oricoininfo.get(position).getEmail() + "");
+            if (oricoininfo.get(position).getImageURL().equals("default")) {
+                viewHolder.item_profile.setImageResource(R.drawable.image_boy);
+            } else {
+                Glide.with(context).load(oricoininfo.get(position).getImageURL()).into(viewHolder.item_profile);
+            }
             viewHolder.checkBox.setTag(position);
             viewHolder.checkBox.setOnClickListener(new View.OnClickListener() {
                 @Override

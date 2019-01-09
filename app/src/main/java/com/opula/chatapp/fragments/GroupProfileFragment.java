@@ -196,8 +196,8 @@ public class GroupProfileFragment extends Fragment {
         img_add_person.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MainActivity.hideFloatingActionButton();
                 sharedPreference.save(getContext(), user.getGroupId(), WsConstant.groupUserId);
+                MainActivity.hideFloatingActionButton();
                 MainActivity.checkChatTheme(getContext());
                 MainActivity.showpart2();
                 FragmentManager fragmentManager = ((FragmentActivity) getContext()).getSupportFragmentManager();
@@ -291,8 +291,6 @@ public class GroupProfileFragment extends Fragment {
                                 Log.d("Remove_data", d1.getValue() + "/");
                                 d1.getRef().removeValue();
                             }
-
-//
                         }
                     }
                 } catch (Exception e) {

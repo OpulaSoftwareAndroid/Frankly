@@ -131,8 +131,6 @@ public class GroupMessageFragment extends Fragment {
 
         fuser = FirebaseAuth.getInstance().getCurrentUser();
 
-
-
         recyclerView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(Objects.requireNonNull(getActivity()).getApplicationContext());
         linearLayoutManager.setStackFromEnd(true);
@@ -149,10 +147,10 @@ public class GroupMessageFragment extends Fragment {
         groupName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                sharedPreference.save(getContext(), user.getGroupId(), WsConstant.groupUserId);
                 MainActivity.hideFloatingActionButton();
                 MainActivity.checkChatTheme(getContext());
                 MainActivity.showpart2();
-
                 FragmentManager fragmentManager = ((FragmentActivity) getContext()).getSupportFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new GroupProfileFragment()).addToBackStack(null).commit();
 
@@ -161,6 +159,7 @@ public class GroupMessageFragment extends Fragment {
         imgUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                sharedPreference.save(getContext(), user.getGroupId(), WsConstant.groupUserId);
                 MainActivity.hideFloatingActionButton();
                 MainActivity.checkChatTheme(getContext());
                 MainActivity.showpart2();
