@@ -64,8 +64,6 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<GroupMessageAdapte
     @Override
     public void onBindViewHolder(@NonNull final GroupMessageAdapter.ViewHolder holder, int position) {
 
-
-
         final Chat chat = mChat.get(position);
         Log.d("Chat_Data", chat.getSender_image() + "/");
 

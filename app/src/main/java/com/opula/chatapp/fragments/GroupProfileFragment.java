@@ -196,7 +196,7 @@ public class GroupProfileFragment extends Fragment {
         img_add_person.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                sharedPreference.save(getContext(), user.getGroupId(), WsConstant.groupUserId);
+//                sharedPreference.save(getContext(), user.getGroupId(), WsConstant.groupUserId);
                 MainActivity.hideFloatingActionButton();
                 MainActivity.checkChatTheme(getContext());
                 MainActivity.showpart2();

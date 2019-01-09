@@ -120,6 +120,7 @@ public class GroupMessageFragment extends Fragment {
         MainActivity.hideFloatingActionButton();
 
         sharedPreference = new SharedPreference();
+
         groupUserId = sharedPreference.getValue(getActivity(), WsConstant.groupUserId);
         userusername = sharedPreference.getValue(getActivity(), WsConstant.userUsername);
         userimage = sharedPreference.getValue(getActivity(), WsConstant.userImage);
@@ -147,7 +148,7 @@ public class GroupMessageFragment extends Fragment {
         groupName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                sharedPreference.save(getContext(), user.getGroupId(), WsConstant.groupUserId);
+//                sharedPreference.save(getContext(), user.getGroupId(), WsConstant.groupUserId);
                 MainActivity.hideFloatingActionButton();
                 MainActivity.checkChatTheme(getContext());
                 MainActivity.showpart2();
@@ -159,11 +160,10 @@ public class GroupMessageFragment extends Fragment {
         imgUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                sharedPreference.save(getContext(), user.getGroupId(), WsConstant.groupUserId);
+//                sharedPreference.save(getContext(), user.getGroupId(), WsConstant.groupUserId);
                 MainActivity.hideFloatingActionButton();
                 MainActivity.checkChatTheme(getContext());
                 MainActivity.showpart2();
-
                 FragmentManager fragmentManager = ((FragmentActivity) getContext()).getSupportFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new GroupProfileFragment()).addToBackStack(null).commit();
 
@@ -200,6 +200,7 @@ public class GroupMessageFragment extends Fragment {
                     assert user != null;
                     txtUserName.setText(user.getGroupName());
                     txtCheckActive.setText(user.getMemberList().size() + " Members");
+                    sharedPreference.save(getContext(),user.getGroupAdmin(), WsConstant.groupadminId);
                     if (user.getImageURL().equals("default")) {
                         imgUser.setImageResource(R.drawable.image_boy);
                     } else {
