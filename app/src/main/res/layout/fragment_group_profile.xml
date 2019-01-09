@@ -204,6 +204,7 @@
                                 android:layout_height="@dimen/_20sdp"
                                 android:layout_alignParentEnd="true"
                                 android:layout_gravity="center"
+                                android:visibility="gone"
                                 android:adjustViewBounds="true"
                                 android:src="@drawable/ic_person_add" />
 

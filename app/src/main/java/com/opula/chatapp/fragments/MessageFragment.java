@@ -215,6 +215,8 @@ public class MessageFragment extends Fragment {
             }
         });
 
+
+
         reference = FirebaseDatabase.getInstance().getReference("Users").child(userid);
         reference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -271,9 +273,6 @@ public class MessageFragment extends Fragment {
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) { }
         });
-
-
-
 
         seenMessage(userid);
 

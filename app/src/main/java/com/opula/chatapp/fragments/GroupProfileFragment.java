@@ -8,25 +8,16 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.Rect;
-import android.graphics.RectF;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -59,7 +50,6 @@ import com.opula.chatapp.MainActivity;
 import com.opula.chatapp.R;
 import com.opula.chatapp.adapter.GroupParticipantAdapter;
 import com.opula.chatapp.adapter.UserSharedAdapter;
-import com.opula.chatapp.constant.AppGlobal;
 import com.opula.chatapp.constant.RoundCornersTransformation;
 import com.opula.chatapp.constant.SharedPreference;
 import com.opula.chatapp.constant.WsConstant;
@@ -73,7 +63,6 @@ import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
 import java.util.Objects;
 
 import hani.momanii.supernova_emoji_library.Helper.EmojiconTextView;
@@ -85,12 +74,12 @@ public class GroupProfileFragment extends Fragment {
 
     LinearLayout imgBack;
     ImageView mImageView, groupimg_edit, img_edit_profile, img_add_person;
-    TextView  txtMember, txtParticipant;
+    TextView txtMember, txtParticipant;
     EmojiconTextView txtGrpName;
     Button btnExit;
     RecyclerView recycler_view_member, recycler_image;
     SharedPreference sharedPreference;
-    String groupUserId;
+    String groupUserId, groupAdminID;
     DatabaseReference reference;
     GroupUser user;
     List<User> mUsers;
@@ -117,6 +106,7 @@ public class GroupProfileFragment extends Fragment {
 
         sharedPreference = new SharedPreference();
         groupUserId = sharedPreference.getValue(getActivity(), WsConstant.groupUserId);
+        groupAdminID = sharedPreference.getValue(getContext(), WsConstant.groupadminId);
         grpList = new ArrayList<>();
 
         initViews(view);
@@ -124,6 +114,11 @@ public class GroupProfileFragment extends Fragment {
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         storageReference = FirebaseStorage.getInstance().getReference("Group_profile");
+
+
+        if (groupAdminID.equals(firebaseUser.getUid())) {
+            img_add_person.setVisibility(View.VISIBLE);
+        }
 
         recycler_view_member.setHasFixedSize(true);
         recycler_view_member.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -260,7 +255,6 @@ public class GroupProfileFragment extends Fragment {
             public void onDataChange(@NonNull final DataSnapshot d1) {
                 try {
                     if (d1.exists()) {
-                        HashMap<String, Object> hashMap = new HashMap<>();
                         GroupUser groupUser = d1.getValue(GroupUser.class);
                         for (int i = 0; i < groupUser.getMemberList().size(); i++) {
                             String member = groupUser.getMemberList().get(i);
@@ -292,7 +286,13 @@ public class GroupProfileFragment extends Fragment {
                 try {
                     if (dataSnapshot.exists()) {
                         for (DataSnapshot d1 : dataSnapshot.getChildren()) {
-                            d1.getRef().removeValue();
+                            String id = d1.getKey();
+                            if (id.equalsIgnoreCase(groupUserId)) {
+                                Log.d("Remove_data", d1.getValue() + "/");
+                                d1.getRef().removeValue();
+                            }
+
+//
                         }
                     }
                 } catch (Exception e) {
@@ -520,10 +520,11 @@ public class GroupProfileFragment extends Fragment {
                             }
                         }
                     }
-                    Log.d("Group_dataa", mUsers + "/ ");
+
                     userAdapter = new GroupParticipantAdapter(getContext(), mUsers);
                     WsConstant.check = "fragment";
                     recycler_view_member.setAdapter(userAdapter);
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -565,7 +566,7 @@ public class GroupProfileFragment extends Fragment {
                         Chat chat = snapshot.getValue(Chat.class);
                         assert chat != null;
                         if (chat.getReceiver().equals(userid)) {
-                            if (chat.getIsimage()){
+                            if (chat.getIsimage()) {
                                 mchat.add(chat);
                             }
                         }

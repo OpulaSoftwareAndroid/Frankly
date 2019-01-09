@@ -279,9 +279,6 @@ public class CreateGroupDetailFragment extends Fragment {
 
                                                         }
                                                     });
-//                                                }
-//                                            }
-//                                        }
                                                 }
 
                                             }
@@ -379,7 +376,7 @@ public class CreateGroupDetailFragment extends Fragment {
 
                         }
                         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                        fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new ListChatFragment()).addToBackStack(null).commit();
+                        fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new ListGroupChatFragment()).addToBackStack(null).commit();
 
                         pd.dismiss();
                     } else

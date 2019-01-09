@@ -70,15 +70,18 @@ public class GroupParticipantAdapter extends RecyclerView.Adapter<GroupParticipa
         final User user = mUsers.get(position);
         groupAdminID = sharedPreference.getValue(mContext, WsConstant.groupadminId);
         groupID = sharedPreference.getValue(mContext, WsConstant.groupId);
+
+        if (!user.getId().equals(firebaseUser.getUid()) && !(user.getId().equals(groupAdminID))) {
+            holder.username.setText(user.getUsername());
+        }
         if (user.getId().equals(groupAdminID)) {
             holder.username.setText(user.getUsername() + "  (admin)");
         }
         if (user.getId().equals(firebaseUser.getUid())) {
             holder.username.setText("you");
             holder.last_msg.setVisibility(View.INVISIBLE);
-        } else {
-            holder.username.setText(user.getUsername());
         }
+
         holder.last_msg.setText(user.getEmail());
         if (user.getImageURL().equals("default")) {
             holder.profile_image.setImageResource(R.drawable.image_boy);
@@ -185,7 +188,12 @@ public class GroupParticipantAdapter extends RecyclerView.Adapter<GroupParticipa
             public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
                     for (DataSnapshot d1 : dataSnapshot.getChildren()) {
-                        d1.getRef().removeValue();
+                        String id = d1.getKey();
+                        if (id.equalsIgnoreCase(groupID)) {
+                            Log.d("Remove_member", d1.getValue() + "/");
+                            d1.getRef().removeValue();
+                        }
+
                     }
                 }
             }
