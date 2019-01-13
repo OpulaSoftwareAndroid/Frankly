@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
     <LinearLayout
@@ -28,10 +27,10 @@
                 tools:targetApi="lollipop">
 
                 <LinearLayout
-                    android:layout_centerVertical="true"
                     android:id="@+id/imgBack"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
                     android:layout_gravity="center"
                     android:paddingStart="@dimen/_8sdp"
                     android:paddingTop="@dimen/_8sdp"
@@ -68,186 +67,252 @@
                 android:layout_below="@id/toolbarLayout"
                 android:background="@color/gray" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_below="@id/toolbarLayout"
-                android:layout_marginLeft="@dimen/_8sdp"
-                android:layout_marginRight="@dimen/_8sdp"
-                android:orientation="vertical">
 
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/image_PersonalInfo_DP"
-                    android:layout_width="@dimen/_90sdp"
-                    android:layout_height="@dimen/_90sdp"
-                    android:layout_below="@id/toolbarLayout"
-                    android:layout_centerHorizontal="true"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="@dimen/_6sdp"
-                    android:background="@android:color/transparent" />
-
-                <TextView
-                    android:id="@+id/txtName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/image_PersonalInfo_DP"
-                    android:layout_centerHorizontal="true"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="@dimen/_6sdp"
-                    android:fontFamily="@font/m"
-                    android:textColor="@android:color/darker_gray"
-                    android:textSize="@dimen/_12sdp"
-                    android:textStyle="bold" />
-                <TextView
-                    android:id="@+id/txtEmail"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/image_PersonalInfo_DP"
-                    android:layout_centerHorizontal="true"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="@dimen/_6sdp"
-                    android:fontFamily="@font/m"
-                    android:textColor="@android:color/darker_gray"
-                    android:textSize="@dimen/_12sdp"
-                    android:textStyle="bold" />
-
-                <View
-                    android:id="@+id/v1"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/_1sdp"
-                    android:layout_below="@id/txtName"
-                    android:layout_marginTop="@dimen/_12sdp"
-                    android:background="@color/gray" />
-
-                <TextView
-                    android:id="@+id/txtSetting"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/v1"
-                    android:layout_marginTop="@dimen/_6sdp"
-                    android:fontFamily="@font/m"
-                    android:text="SETTINGS"
-                    android:textColor="@color/colorPrimary"
-                    android:textSize="@dimen/_12sdp"
-                    android:textStyle="bold" />
+            <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_below="@id/toolbarLayout">
 
                 <LinearLayout
-                    android:id="@+id/notification"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/txtSetting"
-                    android:layout_marginTop="@dimen/_10sdp"
-                    android:gravity="center"
-                    android:orientation="horizontal"
-                    android:weightSum="1">
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="@dimen/_8sdp"
+                    android:layout_marginRight="@dimen/_8sdp"
+                    android:orientation="vertical">
+
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/image_PersonalInfo_DP"
+                        android:layout_width="@dimen/_90sdp"
+                        android:layout_height="@dimen/_90sdp"
+                        android:layout_below="@id/toolbarLayout"
+                        android:layout_centerHorizontal="true"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="@dimen/_6sdp"
+                        android:background="@android:color/transparent" />
 
                     <TextView
+                        android:id="@+id/txtName"
                         android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_below="@id/image_PersonalInfo_DP"
                         android:layout_centerHorizontal="true"
                         android:layout_gravity="center"
-                        android:layout_weight="1"
-                        android:drawableLeft="@drawable/ic_notifications"
-                        android:drawablePadding="@dimen/_8sdp"
+                        android:layout_marginTop="@dimen/_12sdp"
+                        android:fontFamily="@font/m"
+                        android:textColor="@android:color/black"
+                        android:textSize="@dimen/_12sdp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/txtEmail"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/image_PersonalInfo_DP"
+                        android:layout_centerHorizontal="true"
+                        android:layout_gravity="center"
+                        android:fontFamily="@font/m"
+                        android:textColor="@android:color/darker_gray"
+                        android:textSize="@dimen/_10sdp" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_1sdp"
+                        android:layout_below="@id/txtName"
+                        android:layout_marginTop="@dimen/_24sdp"
+                        android:background="@color/gray" />
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:id="@+id/txtShared"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_10sdp"
+                            android:fontFamily="@font/m"
+                            android:text="MEDIA"
+                            android:letterSpacing="0.1"
+                            android:textColor="@color/colorPrimary"
+                            android:textSize="@dimen/_12sdp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/txtViewAll"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_marginTop="@dimen/_10sdp"
+                            android:fontFamily="@font/m"
+                            android:gravity="end"
+                            android:text="View All"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/_8sdp"
+                            android:textStyle="bold" />
+                    </RelativeLayout>
+
+                    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                        xmlns:tools="http://schemas.android.com/tools"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        tools:context=".MainActivity">
+
+                        <TextView
+                            android:id="@+id/text_no_image"
+                            android:layout_width="match_parent"
+                            android:layout_height="132dp"
+                            android:layout_marginTop="8dp"
+                            android:background="@drawable/border_black"
+                            android:fontFamily="@font/m"
+                            android:gravity="center"
+                            android:text="No Image Found!"
+                            android:textAllCaps="true"
+                            android:textSize="@dimen/_16sdp"
+                            android:visibility="gone" />
+
+                        <android.support.v7.widget.RecyclerView
+                            android:id="@+id/recycler_image"
+                            android:layout_width="match_parent"
+                            android:layout_height="132dp"
+                            android:layout_marginTop="8dp"
+                            android:divider="@null"
+                            android:visibility="visible" />
+
+                    </RelativeLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_1sdp"
+                        android:layout_below="@id/txtName"
+                        android:layout_marginTop="@dimen/_12sdp"
+                        android:layout_marginBottom="@dimen/_6sdp"
+                        android:background="@color/gray" />
+
+                    <LinearLayout
+                        android:id="@+id/notification"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal"
+                        android:weightSum="1">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_below="@id/image_PersonalInfo_DP"
+                            android:layout_centerHorizontal="true"
+                            android:layout_gravity="center"
+                            android:layout_weight="1"
+                            android:drawablePadding="@dimen/_8sdp"
+                            android:fontFamily="@font/m"
+                            android:gravity="center|left"
+                            android:text="Mute Notification"
+                            android:textColor="@android:color/black"
+                            android:textSize="@dimen/_12sdp" />
+
+                        <TextView
+                            android:id="@+id/txtOnOff"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center"
+                            android:fontFamily="@font/m"
+                            android:gravity="center"
+                            android:paddingRight="@dimen/_6sdp"
+                            android:text="On"
+                            android:textColor="@android:color/darker_gray"
+                            android:textSize="@dimen/_12sdp" />
+
+                        <Switch
+                            android:id="@+id/chkNotification"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/tvStateDefault"
+                            android:layout_centerHorizontal="true"
+                            android:checked="true"
+                            android:textOff="OFF"
+                            android:textOn="ON"
+                            android:thumb="@drawable/customswitchselector"
+                            android:track="@drawable/custom_track" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_1sdp"
+                        android:layout_below="@id/txtName"
+                        android:layout_marginTop="@dimen/_6sdp"
+                        android:layout_marginBottom="@dimen/_6sdp"
+                        android:background="@color/gray" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:drawableRight="@drawable/ic_navigate_next"
                         android:fontFamily="@font/m"
                         android:gravity="center|left"
-                        android:text="Notifications"
+                        android:text="Custom Notification"
                         android:textColor="@android:color/black"
                         android:textSize="@dimen/_12sdp" />
 
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_1sdp"
+                        android:layout_below="@id/txtName"
+                        android:layout_marginTop="@dimen/_6sdp"
+                        android:layout_marginBottom="@dimen/_6sdp"
+                        android:background="@color/gray" />
+
                     <TextView
-                        android:id="@+id/txtOnOff"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="center"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:drawableRight="@drawable/ic_navigate_next"
                         android:fontFamily="@font/m"
-                        android:gravity="center"
-                        android:paddingRight="@dimen/_6sdp"
-                        android:text="On"
-                        android:textColor="@android:color/darker_gray"
+                        android:gravity="center|left"
+                        android:text="Wallpaper"
+                        android:textColor="@android:color/black"
                         android:textSize="@dimen/_12sdp" />
 
-                    <Switch
-                        android:id="@+id/chkNotification"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/tvStateDefault"
-                        android:layout_centerHorizontal="true"
-                        android:checked="true"
-                        android:textOff="OFF"
-                        android:textOn="ON"
-                        android:thumb="@drawable/customswitchselector"
-                        android:track="@drawable/custom_track" />
-                </LinearLayout>
-
-                <!-- <LinearLayout
-                     android:id="@+id/blockLayout"
-                     android:layout_width="match_parent"
-                     android:layout_height="wrap_content"
-                     android:layout_below="@id/notification"
-                     android:layout_marginLeft="@dimen/_2sdp"
-                     android:layout_marginTop="@dimen/_10sdp"
-                     android:gravity="center"
-                     android:orientation="horizontal"
-                     android:weightSum="1">
-
-                     <TextView
-                         android:layout_width="wrap_content"
-                         android:layout_height="match_parent"
-                         android:layout_below="@id/image_PersonalInfo_DP"
-                         android:layout_centerHorizontal="true"
-                         android:layout_gravity="center"
-                         android:layout_weight="1"
-                         android:drawableLeft="@drawable/ic_block"
-                         android:drawablePadding="@dimen/_8sdp"
-                         android:fontFamily="@font/m"
-                         android:gravity="center|left"
-                         android:text="Block"
-                         android:textColor="@android:color/black"
-                         android:textSize="@dimen/_12sdp" />
-                 </LinearLayout>-->
-
-                <TextView
-                    android:id="@+id/txtShared"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_10sdp"
-                    android:fontFamily="@font/m"
-                    android:text="SHARED"
-                    android:textColor="@color/colorPrimary"
-                    android:textSize="@dimen/_12sdp"
-                    android:textStyle="bold" />
-
-                <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                    xmlns:tools="http://schemas.android.com/tools"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    tools:context=".MainActivity">
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_1sdp"
+                        android:layout_below="@id/txtName"
+                        android:layout_marginTop="@dimen/_6sdp"
+                        android:layout_marginBottom="@dimen/_6sdp"
+                        android:background="@color/gray" />
 
                     <TextView
-                        android:visibility="gone"
-                        android:id="@+id/text_no_image"
-                        android:layout_marginTop="8dp"
-                        android:background="@drawable/border_black"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:drawableLeft="@drawable/ic_block_"
+                        android:drawablePadding="@dimen/_6sdp"
                         android:fontFamily="@font/m"
-                        android:textSize="@dimen/_16sdp"
-                        android:textAllCaps="true"
-                        android:gravity="center"
-                        android:text="No Image Found!"
-                        android:layout_width="match_parent"
-                        android:layout_height="132dp" />
+                        android:gravity="center|left"
+                        android:text="Block"
+                        android:textColor="@android:color/holo_red_dark"
+                        android:textSize="@dimen/_11sdp" />
 
-                    <android.support.v7.widget.RecyclerView
-                        android:id="@+id/recycler_image"
-                        android:divider="@null"
-                        android:visibility="visible"
-                        android:layout_marginTop="8dp"
-                        android:layout_width="match_parent"
-                        android:layout_height="132dp" />
 
-                </RelativeLayout>
-            </LinearLayout>
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_1sdp"
+                        android:layout_below="@id/txtName"
+                        android:layout_marginTop="@dimen/_6sdp"
+                        android:layout_marginBottom="@dimen/_6sdp"
+                        android:background="@color/gray" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/_18sdp"
+                        android:drawableLeft="@drawable/ic_thumb"
+                        android:drawablePadding="@dimen/_6sdp"
+                        android:fontFamily="@font/m"
+                        android:gravity="center|left"
+                        android:text="Report Contact"
+                        android:textColor="@android:color/holo_red_dark"
+                        android:textSize="@dimen/_11sdp" />
+                </LinearLayout>
+            </ScrollView>
         </RelativeLayout>
     </LinearLayout>
 </LinearLayout>

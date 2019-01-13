@@ -447,7 +447,6 @@ public class GroupProfileFragment extends Fragment {
         return Uri.parse(path);
     }
 
-
     private String getFileExtension(Uri uri) {
         ContentResolver contentResolver = getContext().getContentResolver();
         MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
