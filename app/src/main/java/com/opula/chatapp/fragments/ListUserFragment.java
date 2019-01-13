@@ -36,7 +36,7 @@ public class ListUserFragment extends Fragment {
     private RecyclerView recyclerView;
     private NewChatUserAdapter newChatUserAdapter;
     private List<User> mUsers;
-    LinearLayout createNewGrpLayout,imgBack;
+    LinearLayout createNewGrpLayout,imgBack,createNewBroadcast;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -49,6 +49,7 @@ public class ListUserFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recycler_view);
 
         createNewGrpLayout = view.findViewById(R.id.createNewGrpLayout);
+        createNewBroadcast = view.findViewById(R.id.createNewBroadcast);
         imgBack = view.findViewById(R.id.imgBack);
 
         imgBack.setOnClickListener(new View.OnClickListener() {
@@ -70,6 +71,15 @@ public class ListUserFragment extends Fragment {
                 MainActivity.hideFloatingActionButton();
                 FragmentManager fragmentManager = Objects.requireNonNull(getActivity()).getSupportFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new CreateGrpFragment()).addToBackStack(null).commit();
+            }
+        });
+
+        createNewBroadcast.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MainActivity.hideFloatingActionButton();
+                FragmentManager fragmentManager = Objects.requireNonNull(getActivity()).getSupportFragmentManager();
+                fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new CreateBroadcastFragment()).addToBackStack(null).commit();
             }
         });
 

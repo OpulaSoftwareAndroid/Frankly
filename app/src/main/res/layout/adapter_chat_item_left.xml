@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_gravity="start"
     android:gravity="start"
+    android:id="@+id/linmain"
     android:layout_height="wrap_content"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:emojicon="http://schemas.android.com/apk/res-auto">
@@ -24,6 +25,8 @@
                 android:layout_height="24dp" />
 
             <LinearLayout
+                android:id="@+id/linear_chat"
+                android:clickable="true"
                 android:layout_marginLeft="4dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -33,7 +36,8 @@
                 android:paddingTop="4dp"
                 android:paddingRight="8dp"
                 android:paddingBottom="4dp"
-                android:visibility="visible">
+                android:visibility="visible"
+                android:focusable="true">
 
                 <RelativeLayout
                     android:visibility="gone"
@@ -97,6 +101,12 @@
                     <ImageView
                         android:id="@+id/img_dtick"
                         android:src="@drawable/ic_double_tick_indicator"
+                        android:layout_width="12dp"
+                        android:layout_height="12dp" />
+
+                    <ImageView
+                        android:id="@+id/img_dstick"
+                        android:src="@drawable/ic_double_tick_send_indicator"
                         android:layout_width="12dp"
                         android:layout_height="12dp" />
 

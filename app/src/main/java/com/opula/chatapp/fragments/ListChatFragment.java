@@ -23,6 +23,7 @@ import com.opula.chatapp.MainActivity;
 import com.opula.chatapp.R;
 import com.opula.chatapp.adapter.UserAdapter;
 import com.opula.chatapp.constant.WsConstant;
+import com.opula.chatapp.model.BroadcastUser;
 import com.opula.chatapp.model.Chatlist;
 import com.opula.chatapp.model.User;
 import com.opula.chatapp.notifications.Token;
@@ -36,10 +37,12 @@ public class ListChatFragment extends Fragment {
     private RecyclerView recyclerView;
     private UserAdapter userAdapter;
     private List<User> mUsers;
+    private List<BroadcastUser> mBroadcast;
     FirebaseUser fuser;
     DatabaseReference reference;
     Chatlist chatlist;
     private List<Chatlist> usersList;
+    private List<String> broadcastList;
     LinearLayout no_chat;
 
     @Override
@@ -60,7 +63,18 @@ public class ListChatFragment extends Fragment {
         fuser = FirebaseAuth.getInstance().getCurrentUser();
 
         usersList = new ArrayList<>();
+        broadcastList = new ArrayList<>();
 
+        getChats();
+
+
+
+        updateToken(FirebaseInstanceId.getInstance().getToken());
+
+        return view;
+    }
+
+    public void getChats(){
         reference = FirebaseDatabase.getInstance().getReference("Chatlist").child(fuser.getUid());
         reference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -70,6 +84,31 @@ public class ListChatFragment extends Fragment {
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         chatlist = snapshot.getValue(Chatlist.class);
                         usersList.add(chatlist);
+                    }
+
+                    getBroadcast();
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public void getBroadcast(){
+        reference = FirebaseDatabase.getInstance().getReference("Chatlist").child(fuser.getUid()).child("broadcast");
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                try {
+                    broadcastList.clear();
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        broadcastList.add(snapshot.getKey());
                     }
                     chatList();
                 } catch (Exception e) {
@@ -82,10 +121,6 @@ public class ListChatFragment extends Fragment {
 
             }
         });
-
-        updateToken(FirebaseInstanceId.getInstance().getToken());
-
-        return view;
     }
 
     private void updateToken(String token) {
@@ -96,6 +131,8 @@ public class ListChatFragment extends Fragment {
 
     private void chatList() {
         mUsers = new ArrayList<>();
+        mBroadcast = new ArrayList<>();
+
         reference = FirebaseDatabase.getInstance().getReference("Users");
         reference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -105,27 +142,46 @@ public class ListChatFragment extends Fragment {
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         User user = snapshot.getValue(User.class);
                         for (Chatlist chatlist : usersList) {
-
-                            Log.d("Log_Data", "/" + chatlist.getId() + "//" + chatlist.getGroup());
-
+                            assert user != null;
                             if (user.getId().equals(chatlist.getId())) {
                                 mUsers.add(user);
                             }
                         }
                     }
-                    userAdapter = new UserAdapter(getContext(), mUsers, true);
-                    WsConstant.check = "fragment";
 
-                    if (userAdapter.getItemCount() > 0) {
-                        // listView not empty
-                        recyclerView.setVisibility(View.VISIBLE);
-                        no_chat.setVisibility(View.GONE);
-                        recyclerView.setAdapter(userAdapter);
-                    } else {
-                        // listView  empty
-                        recyclerView.setVisibility(View.GONE);
-                        no_chat.setVisibility(View.VISIBLE);
-                    }
+                    DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Broadcast");
+                    reference.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            try {
+                                mBroadcast.clear();
+                                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                    BroadcastUser user = snapshot.getValue(BroadcastUser.class);
+                                    for (String list : broadcastList) {
+                                        assert user != null;
+                                        if (user.getBroadcastId().equals(list)) {
+                                            mBroadcast.add(user);
+                                        }
+                                    }
+                                }
+
+                                userAdapter = new UserAdapter(getContext(), mUsers, mBroadcast,true);
+                                WsConstant.check = "fragment";
+
+                                setAdapter(userAdapter);
+
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -137,6 +193,19 @@ public class ListChatFragment extends Fragment {
 
             }
         });
+    }
+
+    public void setAdapter(UserAdapter userAdapter){
+        if (userAdapter.getItemCount() > 0) {
+            // listView not empty
+            recyclerView.setVisibility(View.VISIBLE);
+            no_chat.setVisibility(View.GONE);
+            recyclerView.setAdapter(userAdapter);
+        } else {
+            // listView  empty
+            recyclerView.setVisibility(View.GONE);
+            no_chat.setVisibility(View.VISIBLE);
+        }
     }
 
 }

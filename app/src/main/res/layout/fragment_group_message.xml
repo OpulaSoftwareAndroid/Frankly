@@ -64,7 +64,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/m"
                 android:gravity="center"
-                android:textColor="@color/warm_grey"
+                android:textColor="@color/grayone"
                 android:textSize="@dimen/_10sdp" />
         </LinearLayout>
 

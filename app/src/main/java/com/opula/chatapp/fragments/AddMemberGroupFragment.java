@@ -40,7 +40,6 @@ public class AddMemberGroupFragment extends Fragment {
     private ListView listMember;
     private MemberListAdapter userAdapter;
     private ArrayList<User> userList;
-    LinearLayout createNewGrpLayout;
     int count = 0;
     Button btnNext;
     TextView txtSelectedCount;
@@ -66,7 +65,6 @@ public class AddMemberGroupFragment extends Fragment {
         groupUserId = sharedPreference.getValue(getActivity(), WsConstant.groupUserId);
 
         readUsers();
-
 
         txtSelectedCount.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -255,7 +253,6 @@ public class AddMemberGroupFragment extends Fragment {
         listMember = view.findViewById(R.id.listMember);
         btnNext = view.findViewById(R.id.btnNext);
         txtSelectedCount = view.findViewById(R.id.txtSelectedCount);
-        createNewGrpLayout = view.findViewById(R.id.createNewGrpLayout);
         no_chat = view.findViewById(R.id.no_chat);
     }
 

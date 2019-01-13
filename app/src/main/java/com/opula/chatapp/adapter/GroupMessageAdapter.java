@@ -189,6 +189,7 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<GroupMessageAdapte
             img_dtick = itemView.findViewById(R.id.img_dtick);
 
 
+
         }
     }
 
@@ -204,15 +205,15 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<GroupMessageAdapte
     }
 
     public String getDateCurrentTimeZone(long timestamp) {
-        try{
+        try {
             Calendar calendar = Calendar.getInstance();
-            TimeZone tz = TimeZone.getDefault();
+            TimeZone tz = calendar.getTimeZone();//get your local time zone.
             calendar.setTimeInMillis(timestamp * 1000);
-            calendar.add(Calendar.MILLISECOND, tz.getOffset(calendar.getTimeInMillis()));
-            @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a");
+            SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a");
+            sdf.setTimeZone(tz);
             Date currenTimeZone = (Date) calendar.getTime();
             return sdf.format(currenTimeZone);
-        }catch (Exception e) {
+        } catch (Exception e) {
         }
         return "";
     }

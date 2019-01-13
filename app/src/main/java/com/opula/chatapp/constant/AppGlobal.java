@@ -669,6 +669,7 @@ public class AppGlobal {
         ClipboardManager clipboard = (ClipboardManager) mContext.getSystemService(CLIPBOARD_SERVICE);
         ClipData clip = ClipData.newPlainText("label", data);
         clipboard.setPrimaryClip(clip);
+        Toast.makeText(mContext, "Copied to clipboard!", Toast.LENGTH_SHORT).show();
     }
 
     public static String pasteData(Context mContext) {

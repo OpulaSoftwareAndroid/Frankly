@@ -42,7 +42,6 @@ public class CreateGrpFragment extends Fragment {
     private ListView listMember;
     private ItemsListAdapter userAdapter;
     private ArrayList<User> mUsers;
-    LinearLayout createNewGrpLayout;
     int count = 0;
     Button btnNext;
     TextView txtSelectedCount;
@@ -95,7 +94,7 @@ public class CreateGrpFragment extends Fragment {
                         Bundle args = new Bundle();
                         args.putString("GrpList", commaSepValueBuilder.toString());
                         ldf.setArguments(args);
-                        fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, ldf).addToBackStack(null).commit();
+                        fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, ldf).commit();
                     } else {
                         Toast.makeText(getActivity(), "Please select more than one member!", Toast.LENGTH_SHORT).show();
                     }
@@ -112,7 +111,6 @@ public class CreateGrpFragment extends Fragment {
         listMember = view.findViewById(R.id.listMember);
         btnNext = view.findViewById(R.id.btnNext);
         txtSelectedCount = view.findViewById(R.id.txtSelectedCount);
-        createNewGrpLayout = view.findViewById(R.id.createNewGrpLayout);
     }
 
 
@@ -156,25 +154,17 @@ public class CreateGrpFragment extends Fragment {
 
 
     public class ItemsListAdapter extends BaseAdapter {
-
         private Context context;
         private ArrayList<User> oricoininfo;
-        private ArrayList<User> origPlanetList;
-        private Filter planetFilter;
 
         ItemsListAdapter(Context c, ArrayList<User> l) {
             context = c;
             oricoininfo = l;
-            origPlanetList = l;
         }
 
         @Override
         public int getCount() {
             return oricoininfo.size();
-        }
-
-        public void resetData() {
-            oricoininfo = origPlanetList;
         }
 
         @Override
@@ -185,10 +175,6 @@ public class CreateGrpFragment extends Fragment {
         @Override
         public long getItemId(int position) {
             return position;
-        }
-
-        public boolean isChecked(int position) {
-            return oricoininfo.get(position).checked;
         }
 
         @Override

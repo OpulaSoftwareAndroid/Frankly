@@ -24,6 +24,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.opula.chatapp.adapter.MessageAdapter;
 import com.opula.chatapp.adapter.UserAdapter;
 import com.opula.chatapp.constant.SharedPreference;
 import com.opula.chatapp.constant.WsConstant;
@@ -32,6 +33,7 @@ import com.opula.chatapp.fragments.ListGroupChatFragment;
 import com.opula.chatapp.fragments.ListUserFragment;
 import com.opula.chatapp.fragments.MessageFragment;
 import com.opula.chatapp.fragments.MyProfileFragment;
+import com.opula.chatapp.model.Chat;
 import com.opula.chatapp.model.Chatlist;
 import com.opula.chatapp.model.User;
 
@@ -47,11 +49,13 @@ public class MainActivity extends AppCompatActivity {
     public static FirebaseUser firebaseUser;
     public static DatabaseReference reference;
     public static FloatingActionButton fab;
-    public static LinearLayout part1, part2;
+    public static LinearLayout part1, part2, part3;
     FirebaseUser mUser;
     FirebaseDatabase mFirebaseInstance;
     FirebaseAuth firebaseAuth;
     SharedPreference sharedPreference;
+    LinearLayout imgBack,imgTrash,imgCopy,imgForward,imgStar;
+    public static FirebaseUser fuser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +63,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         sharedPreference = new SharedPreference();
+        fuser = FirebaseAuth.getInstance().getCurrentUser();
+
 
         txt_list = findViewById(R.id.txt_list);
         txt_chats = findViewById(R.id.txt_chats);
@@ -68,12 +74,18 @@ public class MainActivity extends AppCompatActivity {
         part1 = findViewById(R.id.part1);
         part2 = findViewById(R.id.part2);
 
+        part3 = findViewById(R.id.part3);
+        imgBack = findViewById(R.id.imgBack);
+        imgTrash = findViewById(R.id.imgTrash);
+        imgCopy = findViewById(R.id.imgCopy);
+        imgForward = findViewById(R.id.imgForward);
+        imgStar = findViewById(R.id.imgStar);
+
         mUser = FirebaseAuth.getInstance().getCurrentUser();
         mFirebaseInstance = FirebaseDatabase.getInstance();
 
         showFloatingActionButton();
         showpart1();
-
 
         //save userdata
         firebaseAuth = FirebaseAuth.getInstance();
@@ -98,6 +110,47 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        //sendMessage();
+
+        imgBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showpart1();
+            }
+        });
+
+        imgCopy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showpart1();
+                MessageAdapter.copyMessage(MainActivity.this);
+            }
+        });
+
+        imgTrash.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showpart1();
+                MessageAdapter.deletemessage(MainActivity.this);
+            }
+        });
+
+        imgStar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showpart1();
+            }
+        });
+
+        imgForward.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showpart1();
+                MessageAdapter.forwardMessage(MainActivity.this);
+            }
+        });
+
+
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -118,7 +171,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 checkListTheme(MainActivity.this);
-
                 String ismain = WsConstant.ismain;
                 if (ismain.equalsIgnoreCase("p")) {
                     FragmentManager fragmentGroup = getSupportFragmentManager();
@@ -143,11 +195,8 @@ public class MainActivity extends AppCompatActivity {
         img_chat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 checkListTheme(MainActivity.this);
-
                 String ismain = WsConstant.ismain;
-
                 if (ismain.equalsIgnoreCase("p")) {
                     img_chat.setImageDrawable(getResources().getDrawable(R.drawable.personal));
                     showpart1();
@@ -159,7 +208,6 @@ public class MainActivity extends AppCompatActivity {
                     FragmentManager fragmentPersonal = getSupportFragmentManager();
                     fragmentPersonal.beginTransaction().replace(R.id.frame_mainactivity, new ListChatFragment()).addToBackStack(null).commit();
                 }
-
             }
         });
     }
@@ -167,11 +215,19 @@ public class MainActivity extends AppCompatActivity {
     public static void showpart1() {
         part1.setVisibility(View.VISIBLE);
         part2.setVisibility(View.GONE);
+        part3.setVisibility(View.GONE);
     }
 
     public static void showpart2() {
         part1.setVisibility(View.GONE);
         part2.setVisibility(View.VISIBLE);
+        part3.setVisibility(View.GONE);
+    }
+
+    public static void showpart3() {
+        part1.setVisibility(View.GONE);
+        part2.setVisibility(View.GONE);
+        part3.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -231,13 +287,17 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        status("offline");
+        Long tsLong = (System.currentTimeMillis() / 1000);
+        String ts = tsLong.toString();
+        status(ts);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        status("offline");
+        Long tsLong = (System.currentTimeMillis() / 1000);
+        String ts = tsLong.toString();
+        status(ts);
     }
 
     public static void status(String status) {
@@ -259,4 +319,32 @@ public class MainActivity extends AppCompatActivity {
     public static void showFloatingActionButton() {
         fab.show();
     }
+
+    /*private void sendMessage() {
+        reference = FirebaseDatabase.getInstance().getReference("Chats");
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                try {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        Chat chat = snapshot.getValue(Chat.class);
+                        if (chat.getReceiver().equals(fuser.getUid())) {
+                            HashMap<String, Object> hashMap = new HashMap<>();
+                            hashMap.put("issend", true);
+                            snapshot.getRef().updateChildren(hashMap);
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }*/
+
+
 }

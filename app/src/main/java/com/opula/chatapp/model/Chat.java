@@ -2,15 +2,25 @@ package com.opula.chatapp.model;
 
 public class Chat {
 
+    private String id;
     private String sender;
     private String receiver;
     private String message;
+    private boolean issend;
     private boolean isseen;
     private boolean isimage;
     private String image;
     private String time;
     private String sender_username;
     private String sender_image;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getSender() {
         return sender;
@@ -34,6 +44,14 @@ public class Chat {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public boolean isIssend() {
+        return issend;
+    }
+
+    public void setIssend(boolean issend) {
+        this.issend = issend;
     }
 
     public boolean isIsseen() {

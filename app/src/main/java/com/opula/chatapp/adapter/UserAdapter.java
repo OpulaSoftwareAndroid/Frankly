@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,25 +27,33 @@ import com.opula.chatapp.constant.SharedPreference;
 import com.opula.chatapp.constant.WsConstant;
 import com.opula.chatapp.fragments.MessageFragment;
 import com.opula.chatapp.fragments.UserProfileFragment;
+import com.opula.chatapp.model.BroadcastUser;
 import com.opula.chatapp.model.Chat;
 import com.opula.chatapp.model.User;
+
+import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
+
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
     private Context mContext;
     private List<User> mUsers;
+    private List<BroadcastUser> mBroadcast;
     private boolean ischat;
     SharedPreference sharedPreference;
-
     String theLastMessage, thetime;
+    String AES = "AES";
 
-    public UserAdapter(Context mContext, List<User> mUsers, boolean ischat) {
+    public UserAdapter(Context mContext, List<User> mUsers , List<BroadcastUser> mBroadcast, boolean ischat) {
         this.mUsers = mUsers;
+        this.mBroadcast = mBroadcast;
         this.mContext = mContext;
         this.ischat = ischat;
     }
@@ -61,63 +70,70 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
         sharedPreference = new SharedPreference();
 
-        final User user = mUsers.get(position);
-        holder.username.setText(user.getUsername());
-        if (user.getImageURL().equals("default")) {
-            holder.profile_image.setImageResource(R.drawable.image_boy);
-        } else {
-            Glide.with(mContext).load(user.getImageURL()).into(holder.profile_image);
-        }
 
-        if (ischat) {
-            lastMessage(user.getId(), holder.last_msg, holder.time);
-        } else {
-            holder.last_msg.setVisibility(View.GONE);
-        }
+            final User user = mUsers.get(position);
+            holder.username.setText(user.getUsername());
+            if (user.getImageURL().equals("default")) {
+                holder.profile_image.setImageResource(R.drawable.image_boy);
+            } else {
+                Glide.with(mContext).load(user.getImageURL()).into(holder.profile_image);
+            }
 
-        if (ischat) {
-            if (user.getStatus().equals("online")) {
-                holder.img_on.setVisibility(View.VISIBLE);
-                holder.img_off.setVisibility(View.GONE);
+            if (ischat) {
+                lastMessage(user.getId(), holder.last_msg, holder.time);
+            } else {
+                holder.last_msg.setVisibility(View.GONE);
+            }
+
+            if (ischat) {
+                if (user.getStatus().equals("online")) {
+                    holder.img_on.setVisibility(View.VISIBLE);
+                    holder.img_off.setVisibility(View.GONE);
+                } else {
+                    holder.img_on.setVisibility(View.GONE);
+                    holder.img_off.setVisibility(View.VISIBLE);
+                }
             } else {
                 holder.img_on.setVisibility(View.GONE);
-                holder.img_off.setVisibility(View.VISIBLE);
+                holder.img_off.setVisibility(View.GONE);
             }
-        } else {
-            holder.img_on.setVisibility(View.GONE);
-            holder.img_off.setVisibility(View.GONE);
-        }
 
-        holder.click_layout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                MainActivity.hideFloatingActionButton();
-                sharedPreference.save(mContext, user.getId(), WsConstant.userId);
-                MainActivity.checkChatTheme(mContext);
-                MainActivity.showpart1();
-                FragmentManager fragmentManager = ((FragmentActivity) mContext).getSupportFragmentManager();
-                fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new MessageFragment()).addToBackStack(null).commit();
+            holder.click_layout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    MainActivity.hideFloatingActionButton();
+                    sharedPreference.save(mContext, user.getId(), WsConstant.userId);
+                    MainActivity.checkChatTheme(mContext);
+                    MainActivity.showpart1();
+                    FragmentManager fragmentManager = ((FragmentActivity) mContext).getSupportFragmentManager();
+                    fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new MessageFragment()).addToBackStack(null).commit();
 
-            }
-        });
+                }
+            });
 
-        holder.profile_image.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                sharedPreference.save(mContext, user.getId(), WsConstant.userId);
+            holder.profile_image.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    sharedPreference.save(mContext, user.getId(), WsConstant.userId);
 
-                MainActivity.showpart2();
+                    MainActivity.showpart2();
 
-                FragmentManager fragmentManager = ((FragmentActivity) mContext).getSupportFragmentManager();
-                fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new UserProfileFragment()).addToBackStack(null).commit();
+                    FragmentManager fragmentManager = ((FragmentActivity) mContext).getSupportFragmentManager();
+                    fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new UserProfileFragment()).addToBackStack(null).commit();
 
-            }
-        });
+                }
+            });
+
+
+
     }
 
     @Override
     public int getItemCount() {
-        return mUsers.size();
+        int i = mUsers.size();
+        int j = mBroadcast.size();
+        int k = i+j;
+        return i;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -173,6 +189,13 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                         break;
 
                     default:
+                        /*String decMessage = null;
+                        try {
+                            decMessage = decrypt(theLastMessage,"Jenil");
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }*/
+
                         last_msg.setText(theLastMessage);
                         break;
                 }
@@ -185,6 +208,25 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
             }
         });
+    }
+
+    private String decrypt(String outputString, String Password) throws Exception{
+        SecretKeySpec key = genrateKey(Password);
+        Cipher cipher = Cipher.getInstance(AES);
+        cipher.init(Cipher.DECRYPT_MODE,key);
+        byte[] encyptedValue = Base64.decode(outputString,Base64.DEFAULT);
+        byte[] decValue = cipher.doFinal(encyptedValue);
+        String decyptedValue = new String(decValue);
+        return decyptedValue;
+    }
+
+    private SecretKeySpec genrateKey(String password) throws Exception{
+        final MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        byte[] bytes = password.getBytes("UTF-8");
+        digest.update(bytes,0, bytes.length);
+        byte[] key = digest.digest();
+        SecretKeySpec secretKeySpec = new SecretKeySpec(key,"AES");
+        return  secretKeySpec;
     }
 
     public String getDateCurrentTimeZone(long timestamp) {

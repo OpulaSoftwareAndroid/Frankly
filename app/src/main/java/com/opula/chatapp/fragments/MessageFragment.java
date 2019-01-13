@@ -3,6 +3,7 @@ package com.opula.chatapp.fragments;
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -16,6 +17,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -49,6 +51,7 @@ import com.opula.chatapp.MainActivity;
 import com.opula.chatapp.R;
 import com.opula.chatapp.adapter.MessageAdapter;
 import com.opula.chatapp.api.APIService;
+import com.opula.chatapp.constant.AppGlobal;
 import com.opula.chatapp.constant.SharedPreference;
 import com.opula.chatapp.constant.WsConstant;
 import com.opula.chatapp.model.Chat;
@@ -61,12 +64,22 @@ import com.opula.chatapp.notifications.Sender;
 import com.opula.chatapp.notifications.Token;
 import com.squareup.picasso.Picasso;
 
+import java.security.MessageDigest;
+import java.security.SecureRandom;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import hani.momanii.supernova_emoji_library.Actions.EmojIconActions;
@@ -85,29 +98,33 @@ public class MessageFragment extends Fragment {
     LinearLayout imgBack;
     EmojiconTextView txtUserName;
     TextView txtCheckActive;
-    FirebaseUser fuser;
+    public static FirebaseUser fuser;
     DatabaseReference reference;
     RelativeLayout btn_send;
     MessageAdapter messageAdapter;
     List<Chat> mchat;
     RecyclerView recyclerView;
     ValueEventListener seenListener;
-    String userid;
-    APIService apiService;
+    public static String userid;
+    public static APIService apiService;
     SharedPreference sharedPreference;
     EmojiconEditText text_send;
     ImageView emojiButton, send_image;
     View rootView;
     EmojIconActions emojIcon;
-
-    //pickimage
+    //pickimae
     StorageReference storageReference;
     private StorageTask uploadTask;
     Uri mImageUri = null;
     int GALLERY = 1;
     String CheckActive;
+    public static boolean notify = false;
+    static final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    static SecureRandom rnd = new SecureRandom();
+    public static StringBuilder sb;
+    String AES = "AES";
 
-    boolean notify = false;
+    ValueEventListener mSendEventListner;
 
 
     @Override
@@ -124,7 +141,6 @@ public class MessageFragment extends Fragment {
         emojIcon = new EmojIconActions(getActivity(), rootView, text_send, emojiButton);
         emojIcon.ShowEmojIcon();
         emojIcon.setIconsIds(R.drawable.ic_keyboard_black_24dp, R.drawable.ic_sentiment_satisfied_black_24dp);
-
 
         recyclerView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(Objects.requireNonNull(getActivity()).getApplicationContext());
@@ -147,7 +163,7 @@ public class MessageFragment extends Fragment {
                 notify = true;
                 String msg = text_send.getText().toString();
                 if (!msg.equals("")) {
-                    sendMessage(fuser.getUid(), userid, msg, false, "default");
+                    sendMessage(getActivity(),fuser.getUid(), userid, msg, false, "default");
                 }
                 text_send.setText("");
             }
@@ -169,7 +185,7 @@ public class MessageFragment extends Fragment {
             }
         });
 
-        text_send.addTextChangedListener(new TextWatcher() {
+        /*text_send.addTextChangedListener(new TextWatcher() {
             boolean isTyping = false;
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -213,7 +229,7 @@ public class MessageFragment extends Fragment {
                         DELAY
                 );
             }
-        });
+        });*/
 
 
 
@@ -226,7 +242,15 @@ public class MessageFragment extends Fragment {
                     assert user != null;
                     txtUserName.setText(user.getUsername());
                     CheckActive = user.getStatus();
-                    txtCheckActive.setText(CheckActive);
+
+                    if (user.getStatus().equalsIgnoreCase("online")){
+                        txtCheckActive.setText(user.getStatus());
+                    } else {
+                        String str = getDateCurrentTimeZone(Long.parseLong(user.getStatus()));
+                        txtCheckActive.setText("Last seen : " + str);
+                    }
+
+
                     if (user.getImageURL().equals("default")) {
                         imgUser.setImageResource(R.drawable.image_boy);
                     } else {
@@ -251,7 +275,7 @@ public class MessageFragment extends Fragment {
             public void onCancelled(@NonNull DatabaseError databaseError) { }
         });
 
-        reference = FirebaseDatabase.getInstance().getReference("Chatlist").child(fuser.getUid()).child(userid);
+        /*reference = FirebaseDatabase.getInstance().getReference("Chatlist").child(fuser.getUid()).child(userid);
         reference.addValueEventListener(new ValueEventListener() {
             @SuppressLint("SetTextI18n")
             @Override
@@ -272,12 +296,36 @@ public class MessageFragment extends Fragment {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) { }
-        });
+        });*/
 
-        seenMessage(userid);
+        sendMessage(userid);
+        //seenMessage(userid);
 
         return view;
     }
+
+    public static String randomString(int len) {
+        sb = new StringBuilder(len);
+        for (int i = 0; i < len; i++)
+            sb.append(AB.charAt(rnd.nextInt(AB.length())));
+        return sb.toString();
+    }
+
+    public String getDateCurrentTimeZone(long timestamp) {
+        try {
+            Calendar calendar = Calendar.getInstance();
+            TimeZone tz = calendar.getTimeZone();//get your local time zone.
+            calendar.setTimeInMillis(timestamp * 1000);
+            SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a dd-MM-yyyy");
+            sdf.setTimeZone(tz);
+            Date currenTimeZone = (Date) calendar.getTime();
+            return sdf.format(currenTimeZone);
+        } catch (Exception e) {
+        }
+        return "";
+    }
+
+
 
     private void initViews(View view) {
 
@@ -394,7 +442,7 @@ public class MessageFragment extends Fragment {
                         Uri downloadUri = task.getResult();
                         String mUri = downloadUri.toString();
 
-                        sendMessage(fuser.getUid(), userid, "Image", true, mUri);
+                        sendMessage(getActivity(),fuser.getUid(), userid, "Image", true, mUri);
 
                         pd.dismiss();
                     } else {
@@ -414,10 +462,10 @@ public class MessageFragment extends Fragment {
         }
     }
 
-
-    private void seenMessage(final String userid) {
+    public void seenMessage(final String userid) {
         reference = FirebaseDatabase.getInstance().getReference("Chats");
-        seenListener = reference.addValueEventListener(new ValueEventListener() {
+        ValueEventListener valueEventListener = new ValueEventListener()
+        {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 try {
@@ -436,29 +484,123 @@ public class MessageFragment extends Fragment {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
+                //
+            }
+        };
+        reference.addValueEventListener(valueEventListener);
+        mSendEventListner = valueEventListener;
+    }
+
+    private void sendMessage(final String userid) {
+        reference = FirebaseDatabase.getInstance().getReference("Chats");
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                try {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        Chat chat = snapshot.getValue(Chat.class);
+                        if (chat.getReceiver().equals(fuser.getUid()) && chat.getSender().equals(userid)) {
+                            HashMap<String, Object> hashMap = new HashMap<>();
+                            hashMap.put("issend", true);
+                            snapshot.getRef().updateChildren(hashMap);
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
         });
     }
 
-    private void sendMessage(String sender, final String receiver, String message, boolean isimage, String uri) {
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (mSendEventListner != null) {
+            reference.removeEventListener(mSendEventListner);
+        }
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        seenMessage(userid);
+    }
+
+
+
+    private String encrypt(String Data, String Password) throws Exception{
+        SecretKeySpec key = genrateKey(Password);
+        Cipher cipher = Cipher.getInstance(AES);
+        cipher.init(Cipher.ENCRYPT_MODE,key);
+        byte[] encVal = cipher.doFinal(Data.getBytes());
+        String encyptedValue = Base64.encodeToString(encVal,Base64.DEFAULT);
+        return encyptedValue;
+    }
+
+    private String decrypt(String outputString, String Password) throws Exception{
+        SecretKeySpec key = genrateKey(Password);
+        Cipher cipher = Cipher.getInstance(AES);
+        cipher.init(Cipher.DECRYPT_MODE,key);
+        byte[] encyptedValue = Base64.decode(outputString,Base64.DEFAULT);
+        byte[] decValue = cipher.doFinal(encyptedValue);
+        String decyptedValue = new String(decValue);
+        return decyptedValue;
+    }
+
+    private SecretKeySpec genrateKey(String password) throws Exception{
+        final MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        byte[] bytes = password.getBytes("UTF-8");
+        digest.update(bytes,0, bytes.length);
+        byte[] key = digest.digest();
+        SecretKeySpec secretKeySpec = new SecretKeySpec(key,"AES");
+        return  secretKeySpec;
+    }
+
+    public static void sendMessage(final Context context,String sender, final String receiver, String message, boolean isimage, String uri) {
 
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+        randomString(9);
+        /*String encMessage = null;
+        try {
+            encMessage = encrypt(message,"Jenil");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }*/
 
-        Long tsLong = (System.currentTimeMillis() / 1000 + 66600);
+        Long tsLong = (System.currentTimeMillis() / 1000);
         String ts = tsLong.toString();
 
         HashMap<String, Object> hashMap = new HashMap<>();
-        hashMap.put("sender", sender);
-        hashMap.put("receiver", receiver);
-        hashMap.put("message", message);
-        hashMap.put("isseen", false);
-        hashMap.put("isimage", isimage);
-        hashMap.put("image", uri);
-        hashMap.put("time", ts);
+
+        if (AppGlobal.isNetwork(context)){
+            hashMap.put("id", sb.toString());
+            hashMap.put("sender", sender);
+            hashMap.put("receiver", receiver);
+            hashMap.put("message", message);
+            hashMap.put("issend", true);
+            hashMap.put("isseen", false);
+            hashMap.put("isimage", isimage);
+            hashMap.put("image", uri);
+            hashMap.put("time", ts);
+        } else {
+            hashMap.put("id", sb.toString());
+            hashMap.put("sender", sender);
+            hashMap.put("receiver", receiver);
+            hashMap.put("message", message);
+            hashMap.put("issend", false);
+            hashMap.put("isseen", false);
+            hashMap.put("isimage", isimage);
+            hashMap.put("image", uri);
+            hashMap.put("time", ts);
+        }
 
         reference.child("Chats").push().setValue(hashMap);
-
 
         // add user to chat fragment
         final DatabaseReference chatRef = FirebaseDatabase.getInstance().getReference("Chatlist").child(fuser.getUid()).child(userid);
@@ -501,7 +643,7 @@ public class MessageFragment extends Fragment {
                 try {
                     User user = dataSnapshot.getValue(User.class);
                     if (notify) {
-                        sendNotifiaction(receiver, user.getUsername(), msg);
+                        sendNotifiaction(context,receiver, user.getUsername(), msg);
                     }
                     notify = false;
                 } catch (Exception e) {
@@ -516,7 +658,7 @@ public class MessageFragment extends Fragment {
         });
     }
 
-    private void sendNotifiaction(String receiver, final String username, final String message) {
+    private static void sendNotifiaction(final Context context,String receiver, final String username, final String message) {
         DatabaseReference tokens = FirebaseDatabase.getInstance().getReference("Tokens");
         Query query = tokens.orderByKey().equalTo(receiver);
         query.addValueEventListener(new ValueEventListener() {
@@ -536,7 +678,7 @@ public class MessageFragment extends Fragment {
                                     public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
                                         if (response.code() == 200) {
                                             if (response.body().success != 1) {
-                                                Toast.makeText(getActivity(), "Failed!", Toast.LENGTH_SHORT).show();
+                                                Toast.makeText(context, "Failed!", Toast.LENGTH_SHORT).show();
                                             }
                                         }
                                     }
@@ -574,10 +716,9 @@ public class MessageFragment extends Fragment {
                                 chat.getReceiver().equals(userid) && chat.getSender().equals(myid)) {
                             mchat.add(chat);
                         }
-
-                        messageAdapter = new MessageAdapter(getActivity(), mchat, imageurl);
-                        recyclerView.setAdapter(messageAdapter);
                     }
+                    messageAdapter = new MessageAdapter(getActivity(), mchat, imageurl);
+                    recyclerView.setAdapter(messageAdapter);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

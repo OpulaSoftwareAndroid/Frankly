@@ -290,12 +290,16 @@ public class GroupMessageFragment extends Fragment {
                                 reference.addValueEventListener(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                        Log.d("Group_chat_data", dataSnapshot.getValue() + "//");
-                                        User u1 = dataSnapshot.getValue(User.class);
-                                        assert u1 != null;
-                                        if (u1.getId().equalsIgnoreCase(chat.getSender())) {
-                                            chat.setSender_image(u1.getImageURL());
-                                            chat.setSender_username(u1.getUsername());
+                                        try {
+                                            Log.d("Group_chat_data", dataSnapshot.getValue() + "//");
+                                            User u1 = dataSnapshot.getValue(User.class);
+                                            assert u1 != null;
+                                            if (u1.getId().equalsIgnoreCase(chat.getSender())) {
+                                                chat.setSender_image(u1.getImageURL());
+                                                chat.setSender_username(u1.getUsername());
+                                            }
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
                                         }
 
 
@@ -451,7 +455,7 @@ public class GroupMessageFragment extends Fragment {
 
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
 
-        Long tsLong = (System.currentTimeMillis() / 1000 + 66600);
+        Long tsLong = (System.currentTimeMillis() / 1000);
         String ts = tsLong.toString();
 
         HashMap<String, Object> hashMap = new HashMap<>();

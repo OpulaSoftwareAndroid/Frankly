@@ -59,21 +59,36 @@ public class ListGroupChatFragment extends Fragment {
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference().child("Chatlist");
         rootRef.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            public void onDataChange(@NonNull final DataSnapshot dataSnapshott) {
                 try {
-                    if (dataSnapshot.hasChild(fuser.getUid())) {
-                        reference = FirebaseDatabase.getInstance().getReference("Chatlist").child(fuser.getUid());
+                    if (dataSnapshott.hasChild(fuser.getUid())) {
+                        reference = FirebaseDatabase.getInstance().getReference("Chatlist").child(fuser.getUid()).child("group");
                         reference.addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                usersList.clear();
                                 try {
-                                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                                        usersList.clear();
-                                        for (DataSnapshot d1 : snapshot.getChildren()) {
-                                            usersList.add(d1.getKey());
+                                    if (dataSnapshott.child(fuser.getUid()).hasChild("group")){
+                                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+
+//                                        for (DataSnapshot d1 : snapshot.getChildren()) {
+                                            usersList.add(snapshot.getKey());
+//                                        }
+                                            groupList();
                                         }
-                                        groupList();
+                                    } else {
+                                        if (mUsers.size() > 0) {
+                                            // listView not empty
+                                            recyclerView.setVisibility(View.VISIBLE);
+                                            no_chat.setVisibility(View.GONE);
+                                        } else {
+                                            // listView  empty
+                                            recyclerView.setVisibility(View.GONE);
+                                            no_chat.setVisibility(View.VISIBLE);
+                                        }
                                     }
+
+
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }

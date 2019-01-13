@@ -7,7 +7,6 @@ public class Chatlist implements Serializable {
     public String id;
     public boolean istyping;
     public boolean isnotification;
-    public ArrayList<String> group;
 
     public String getId() {
         return id;
@@ -31,13 +30,5 @@ public class Chatlist implements Serializable {
 
     public void setIsnotification(boolean isnotification) {
         this.isnotification = isnotification;
-    }
-
-    public ArrayList<String> getGroup() {
-        return group;
-    }
-
-    public void setGroup(ArrayList<String> group) {
-        this.group = group;
     }
 }

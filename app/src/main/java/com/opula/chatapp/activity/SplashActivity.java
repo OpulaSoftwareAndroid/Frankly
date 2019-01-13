@@ -19,20 +19,7 @@ import com.opula.chatapp.constant.SharedPreference;
 public class SplashActivity extends AppCompatActivity {
 
     public static int REQUEST_CAMERA = 101;
-    private SharedPreference sharedPreference;
     FirebaseUser firebaseUser;
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-
-        //check if user is null
-        if (firebaseUser != null){
-            initView("1");
-        }
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,38 +29,40 @@ public class SplashActivity extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_splash);
 
-        sharedPreference = new SharedPreference();
+        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        if (ActivityCompat.checkSelfPermission(SplashActivity.this, Manifest.permission.CAMERA)
-                != PackageManager.PERMISSION_GRANTED ||
-                ActivityCompat.checkSelfPermission(SplashActivity.this, Manifest.permission.ACCESS_NETWORK_STATE)
-                        != PackageManager.PERMISSION_GRANTED ||
-                ActivityCompat.checkSelfPermission(SplashActivity.this, Manifest.permission.READ_CONTACTS)
-                        != PackageManager.PERMISSION_GRANTED ||
-                ActivityCompat.checkSelfPermission(SplashActivity.this, Manifest.permission.ACCESS_WIFI_STATE)
-                        != PackageManager.PERMISSION_GRANTED ||
-                ActivityCompat.checkSelfPermission(SplashActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                        != PackageManager.PERMISSION_GRANTED ||
-                ActivityCompat.checkSelfPermission(SplashActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)
-                        != PackageManager.PERMISSION_GRANTED ||
-                ActivityCompat.checkSelfPermission(SplashActivity.this, Manifest.permission.READ_PHONE_STATE)
-                        != PackageManager.PERMISSION_GRANTED) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-
-                requestPermissions(new String[]{Manifest.permission.CAMERA,
-                        Manifest.permission.ACCESS_NETWORK_STATE,
-                        Manifest.permission.READ_CONTACTS,
-                        Manifest.permission.ACCESS_WIFI_STATE,
-                        Manifest.permission.READ_EXTERNAL_STORAGE,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.READ_PHONE_STATE}, REQUEST_CAMERA);
-            }
+        //check if user is null
+        if (firebaseUser != null){
+            initView("1");
         } else {
-            initView("0");
+            if (ActivityCompat.checkSelfPermission(SplashActivity.this, Manifest.permission.CAMERA)
+                    != PackageManager.PERMISSION_GRANTED ||
+                    ActivityCompat.checkSelfPermission(SplashActivity.this, Manifest.permission.ACCESS_NETWORK_STATE)
+                            != PackageManager.PERMISSION_GRANTED ||
+                    ActivityCompat.checkSelfPermission(SplashActivity.this, Manifest.permission.READ_CONTACTS)
+                            != PackageManager.PERMISSION_GRANTED ||
+                    ActivityCompat.checkSelfPermission(SplashActivity.this, Manifest.permission.ACCESS_WIFI_STATE)
+                            != PackageManager.PERMISSION_GRANTED ||
+                    ActivityCompat.checkSelfPermission(SplashActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                            != PackageManager.PERMISSION_GRANTED ||
+                    ActivityCompat.checkSelfPermission(SplashActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                            != PackageManager.PERMISSION_GRANTED ||
+                    ActivityCompat.checkSelfPermission(SplashActivity.this, Manifest.permission.READ_PHONE_STATE)
+                            != PackageManager.PERMISSION_GRANTED) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
+                    requestPermissions(new String[]{Manifest.permission.CAMERA,
+                            Manifest.permission.ACCESS_NETWORK_STATE,
+                            Manifest.permission.READ_CONTACTS,
+                            Manifest.permission.ACCESS_WIFI_STATE,
+                            Manifest.permission.READ_EXTERNAL_STORAGE,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                            Manifest.permission.READ_PHONE_STATE}, REQUEST_CAMERA);
+                }
+            } else {
+                initView("0");
+            }
         }
-
-
-
     }
 
     private void getPermission() {
