@@ -46,16 +46,17 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
     private Context mContext;
     private List<User> mUsers;
     private List<BroadcastUser> mBroadcast;
-    private boolean ischat;
+    private boolean ischat,is;
     SharedPreference sharedPreference;
     String theLastMessage, thetime;
     String AES = "AES";
 
-    public UserAdapter(Context mContext, List<User> mUsers , List<BroadcastUser> mBroadcast, boolean ischat) {
+    public UserAdapter(Context mContext, List<User> mUsers , List<BroadcastUser> mBroadcast, boolean ischat, boolean is) {
         this.mUsers = mUsers;
         this.mBroadcast = mBroadcast;
         this.mContext = mContext;
         this.ischat = ischat;
+        this.is = is;
     }
 
     @NonNull
@@ -70,7 +71,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
         sharedPreference = new SharedPreference();
 
-
+        if (is){
             final User user = mUsers.get(position);
             holder.username.setText(user.getUsername());
             if (user.getImageURL().equals("default")) {
@@ -123,6 +124,26 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
                 }
             });
+        } else {
+            final BroadcastUser user = mBroadcast.get(position);
+            holder.username.setText(user.getBroadcastName());
+
+            holder.profile_image.setImageResource(R.drawable.broadcast);
+
+            holder.click_layout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    MainActivity.hideFloatingActionButton();
+                    sharedPreference.save(mContext, user.getBroadcastId(), WsConstant.broadcastId);
+                    MainActivity.checkChatTheme(mContext);
+                    MainActivity.showpart1();
+                    FragmentManager fragmentManager = ((FragmentActivity) mContext).getSupportFragmentManager();
+                    fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new MessageFragment()).addToBackStack(null).commit();
+
+                }
+            });
+        }
+
 
 
 
@@ -130,10 +151,11 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
     @Override
     public int getItemCount() {
-        int i = mUsers.size();
-        int j = mBroadcast.size();
-        int k = i+j;
-        return i;
+        if (is){
+            return mUsers.size();
+        } else {
+            return mBroadcast.size();
+        }
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

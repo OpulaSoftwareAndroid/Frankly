@@ -93,13 +93,13 @@ public class GroupUserAdapter extends RecyclerView.Adapter<GroupUserAdapter.View
             @Override
             public void onClick(View view) {
                 sharedPreference.save(mContext, user.getGroupId(), WsConstant.groupUserId);
+                sharedPreference.save(mContext, user.getGroupAdmin(), WsConstant.groupadminId);
                 MainActivity.showpart2();
                 FragmentManager fragmentManager = ((FragmentActivity) mContext).getSupportFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new GroupProfileFragment()).addToBackStack(null).commit();
 
             }
         });
-
 
     }
 

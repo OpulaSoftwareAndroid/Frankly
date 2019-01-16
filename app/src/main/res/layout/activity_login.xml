@@ -53,6 +53,8 @@
                 android:padding="16dp"
                 android:layout_height="match_parent">
 
+
+
                 <com.rengwuxian.materialedittext.MaterialEditText
                     android:layout_width="match_parent"
                     android:fontFamily="@font/m"
@@ -63,15 +65,19 @@
                     app:met_floatingLabel="normal"
                     android:hint="Email"/>
 
-                <com.rengwuxian.materialedittext.MaterialEditText
+                <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/password"
-                    android:fontFamily="@font/m"
-                    android:inputType="textPassword"
-                    android:layout_marginTop="10dp"
-                    app:met_floatingLabel="normal"
-                    android:hint="Password"/>
+                    android:layout_marginTop="10dp">
+                    <com.scottyab.showhidepasswordedittext.ShowHidePasswordEditText
+                        android:id="@+id/password"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Password"
+                        app:drawable_hide="@drawable/ic_visibility_off_black_24dp"
+                        app:drawable_show="@drawable/ic_visibility_black_24dp"
+                        app:tint_color="#8b8b8b" />
+                </android.support.design.widget.TextInputLayout>
 
                 <Button
                     android:id="@+id/btn_login"

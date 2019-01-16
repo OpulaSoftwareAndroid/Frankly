@@ -27,6 +27,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.devlomi.record_view.OnBasketAnimationEnd;
+import com.devlomi.record_view.OnRecordListener;
+import com.devlomi.record_view.RecordButton;
+import com.devlomi.record_view.RecordView;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -60,6 +64,9 @@ import com.opula.chatapp.notifications.MyResponse;
 import com.opula.chatapp.notifications.Sender;
 import com.opula.chatapp.notifications.Token;
 import com.squareup.picasso.Picasso;
+
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -107,10 +114,13 @@ public class GroupMessageFragment extends Fragment {
     private StorageTask uploadTask;
     Uri mImageUri = null;
     int GALLERY = 1;
-
     boolean notify = false;
-
     GroupUser user;
+
+    //new library
+    RecordView recordView;
+    RecordButton recordButton;
+    RelativeLayout is_text;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -252,6 +262,73 @@ public class GroupMessageFragment extends Fragment {
             }
         });
 
+        //new library
+        recordView = (RecordView) rootView.findViewById(R.id.record_view);
+        recordButton = (RecordButton) rootView.findViewById(R.id.record_button);
+        recordButton.setRecordView(recordView);
+
+        recordView.setOnRecordListener(new OnRecordListener() {
+            @Override
+            public void onStart() {
+                //Start Recording..
+                Log.d("RecordView", "onStart");
+                is_text.setVisibility(View.GONE);
+                recordView.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onCancel() {
+                //On Swipe To Cancel
+                Log.d("RecordView", "onCancel");
+
+
+            }
+
+            @Override
+            public void onFinish(long recordTime) {
+                //Stop Recording..
+                //String time = getHumanTimeText(recordTime);
+                Log.d("RecordView", "onFinish");
+                //Log.d("RecordTime", time);
+                is_text.setVisibility(View.VISIBLE);
+                recordView.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onLessThanSecond() {
+                //When the record time is less than One Second
+                Log.d("RecordView", "onLessThanSecond");
+                is_text.setVisibility(View.VISIBLE);
+                recordView.setVisibility(View.GONE);
+            }
+        });
+
+        recordView.setOnBasketAnimationEndListener(new OnBasketAnimationEnd() {
+            @Override
+            public void onAnimationEnd() {
+                Log.d("RecordView", "Basket Animation Finished");
+                is_text.setVisibility(View.VISIBLE);
+                recordView.setVisibility(View.GONE);
+            }
+        });
+
+        KeyboardVisibilityEvent.setEventListener(
+                getActivity(),
+                new KeyboardVisibilityEventListener() {
+                    @Override
+                    public void onVisibilityChanged(boolean isOpen) {
+                        if (isOpen){
+                            recordButton.setVisibility(View.GONE);
+                            send_image.setVisibility(View.GONE);
+                        } else {
+                            recordButton.setVisibility(View.VISIBLE);
+                            send_image.setVisibility(View.VISIBLE);
+                        }
+                    }
+                });
+
+
+
 
         return view;
     }
@@ -269,6 +346,7 @@ public class GroupMessageFragment extends Fragment {
         emojiButton = view.findViewById(R.id.emoji_btn);
         send_image = view.findViewById(R.id.send_image);
         groupName = view.findViewById(R.id.groupName);
+        is_text = view.findViewById(R.id.is_text);
     }
 
     private void readMesagges(final String groupid, final String imageurl) {

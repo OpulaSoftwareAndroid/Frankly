@@ -61,7 +61,7 @@
                 android:layout_height="match_parent">
                 <ImageView
                     android:adjustViewBounds="true"
-                    android:src="@drawable/log"
+                    android:src="@mipmap/ic_launcher"
                     android:layout_width="@dimen/_100sdp"
                     android:layout_height="wrap_content" />
                 <TextView

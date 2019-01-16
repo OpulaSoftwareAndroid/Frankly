@@ -19,22 +19,27 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.opula.chatapp.MainActivity;
 import com.opula.chatapp.R;
 import com.opula.chatapp.constant.AppGlobal;
+import com.opula.chatapp.constant.SharedPreference;
+import com.opula.chatapp.constant.WsConstant;
 import com.rengwuxian.materialedittext.MaterialEditText;
+import com.scottyab.showhidepasswordedittext.ShowHidePasswordEditText;
 
 import java.util.HashMap;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    MaterialEditText username, email, password;
+    MaterialEditText username, email;
+    ShowHidePasswordEditText password;
     Button btn_register;
-
     FirebaseAuth auth;
     DatabaseReference reference;
+    SharedPreference sharedPreference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
+        sharedPreference = new SharedPreference();
 
         username = findViewById(R.id.username);
         email = findViewById(R.id.email);
@@ -61,43 +66,51 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
-    private void register(final String username, final String email, String password){
-        AppGlobal.showProgressDialog(RegisterActivity.this);
-        auth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        AppGlobal.hideProgressDialog(RegisterActivity.this);
-                        if (task.isSuccessful()){
-                            FirebaseUser firebaseUser = auth.getCurrentUser();
-                            assert firebaseUser != null;
-                            String userid = firebaseUser.getUid();
+    private void register(final String username, final String email, final String password){
+        if (AppGlobal.isNetwork(RegisterActivity.this)){
+            AppGlobal.showProgressDialog(RegisterActivity.this);
+            auth.createUserWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            AppGlobal.hideProgressDialog(RegisterActivity.this);
+                            if (task.isSuccessful()){
 
-                            reference = FirebaseDatabase.getInstance().getReference("Users").child(userid);
+                                sharedPreference.save(RegisterActivity.this,password,WsConstant.password);
 
-                            HashMap<String, String> hashMap = new HashMap<>();
-                            hashMap.put("id", userid);
-                            hashMap.put("username", username);
-                            hashMap.put("imageURL", "default");
-                            hashMap.put("status", "offline");
-                            hashMap.put("email", email);
-                            hashMap.put("search", username.toLowerCase());
+                                FirebaseUser firebaseUser = auth.getCurrentUser();
+                                assert firebaseUser != null;
+                                String userid = firebaseUser.getUid();
 
-                            reference.setValue(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if (task.isSuccessful()){
-                                        Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
-                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                                        startActivity(intent);
-                                        finish();
+                                reference = FirebaseDatabase.getInstance().getReference("Users").child(userid);
+
+                                HashMap<String, String> hashMap = new HashMap<>();
+                                hashMap.put("id", userid);
+                                hashMap.put("username", username);
+                                hashMap.put("imageURL", "default");
+                                hashMap.put("status", "online");
+                                hashMap.put("email", email);
+                                hashMap.put("search", username.toLowerCase());
+
+                                reference.setValue(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()){
+                                            Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
+                                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                            startActivity(intent);
+                                            finish();
+                                        }
                                     }
-                                }
-                            });
-                        } else {
-                            Toast.makeText(RegisterActivity.this, "You can't register woth this email or password", Toast.LENGTH_SHORT).show();
+                                });
+                            } else {
+                                Toast.makeText(RegisterActivity.this, "You can't register woth this email or password", Toast.LENGTH_SHORT).show();
+                            }
                         }
-                    }
-                });
+                    });
+        } else {
+            Toast.makeText(RegisterActivity.this, "There is no internet connection!", Toast.LENGTH_SHORT).show();
+        }
+
     }
 }

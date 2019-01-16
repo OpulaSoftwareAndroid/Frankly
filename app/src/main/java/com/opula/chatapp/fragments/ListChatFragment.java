@@ -2,6 +2,7 @@ package com.opula.chatapp.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -34,8 +35,8 @@ import java.util.List;
 
 public class ListChatFragment extends Fragment {
 
-    private RecyclerView recyclerView;
-    private UserAdapter userAdapter;
+    private RecyclerView recyclerView,recycler_view1;
+    private UserAdapter userAdapter,broadcastAdapter;
     private List<User> mUsers;
     private List<BroadcastUser> mBroadcast;
     FirebaseUser fuser;
@@ -43,6 +44,7 @@ public class ListChatFragment extends Fragment {
     Chatlist chatlist;
     private List<Chatlist> usersList;
     private List<String> broadcastList;
+    ConstraintLayout task_list;
     LinearLayout no_chat;
 
     @Override
@@ -55,10 +57,14 @@ public class ListChatFragment extends Fragment {
         WsConstant.ismain = "p";
 
         recyclerView = view.findViewById(R.id.recycler_view);
+        recycler_view1 = view.findViewById(R.id.recycler_view1);
+        task_list = view.findViewById(R.id.task_list);
         no_chat = view.findViewById(R.id.no_chat);
 
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recycler_view1.setHasFixedSize(true);
+        recycler_view1.setLayoutManager(new LinearLayoutManager(getContext()));
 
         fuser = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -66,8 +72,6 @@ public class ListChatFragment extends Fragment {
         broadcastList = new ArrayList<>();
 
         getChats();
-
-
 
         updateToken(FirebaseInstanceId.getInstance().getToken());
 
@@ -149,8 +153,9 @@ public class ListChatFragment extends Fragment {
                         }
                     }
 
+
                     DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Broadcast");
-                    reference.addValueEventListener(new ValueEventListener() {
+                    reference.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             try {
@@ -165,10 +170,11 @@ public class ListChatFragment extends Fragment {
                                     }
                                 }
 
-                                userAdapter = new UserAdapter(getContext(), mUsers, mBroadcast,true);
+                                userAdapter = new UserAdapter(getContext(), mUsers, mBroadcast,true,true);
+                                broadcastAdapter = new UserAdapter(getContext(), mUsers, mBroadcast,true,false);
                                 WsConstant.check = "fragment";
 
-                                setAdapter(userAdapter);
+                                setAdapter(userAdapter,broadcastAdapter);
 
                             } catch (Exception e) {
                                 e.printStackTrace();
@@ -195,15 +201,16 @@ public class ListChatFragment extends Fragment {
         });
     }
 
-    public void setAdapter(UserAdapter userAdapter){
-        if (userAdapter.getItemCount() > 0) {
-            // listView not empty
-            recyclerView.setVisibility(View.VISIBLE);
+    public void setAdapter(UserAdapter userAdapter,UserAdapter broadcastAdapter){
+        if (userAdapter.getItemCount() > 0 && broadcastAdapter.getItemCount() > 0) {
+//             listView not empty
+            task_list.setVisibility(View.VISIBLE);
             no_chat.setVisibility(View.GONE);
             recyclerView.setAdapter(userAdapter);
+            recycler_view1.setAdapter(broadcastAdapter);
         } else {
             // listView  empty
-            recyclerView.setVisibility(View.GONE);
+            task_list.setVisibility(View.GONE);
             no_chat.setVisibility(View.VISIBLE);
         }
     }

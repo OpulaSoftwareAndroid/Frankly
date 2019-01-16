@@ -46,6 +46,7 @@ dependencies {
     implementation 'com.intuit.sdp:sdp-android:1.0.5'
     implementation 'com.devlomi.record-view:record-view:2.0.1'
     implementation 'net.yslibrary.keyboardvisibilityevent:keyboardvisibilityevent:2.2.0'
+    implementation 'com.github.scottyab:showhidepasswordedittext:0.6'
 
     //Web Service
     implementation 'com.google.code.gson:gson:2.6.2'

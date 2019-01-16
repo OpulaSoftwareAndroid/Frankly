@@ -135,7 +135,7 @@ public class MessageFragment extends Fragment{
 
     //new library
     RecordView recordView;
-    //RecordButton recordButton;
+    RecordButton recordButton;
 
 
     @Override
@@ -288,10 +288,8 @@ public class MessageFragment extends Fragment{
 
         //new library
         recordView = (RecordView) rootView.findViewById(R.id.record_view);
-        /*recordButton = (RecordButton) rootView.findViewById(R.id.record_button);
-        recordButton.setRecordView(recordView);*/
-
-
+        recordButton = (RecordButton) rootView.findViewById(R.id.record_button);
+        recordButton.setRecordView(recordView);
 
         recordView.setOnRecordListener(new OnRecordListener() {
             @Override
@@ -337,6 +335,21 @@ public class MessageFragment extends Fragment{
                 recordView.setVisibility(View.GONE);
             }
         });
+
+        KeyboardVisibilityEvent.setEventListener(
+                getActivity(),
+                new KeyboardVisibilityEventListener() {
+                    @Override
+                    public void onVisibilityChanged(boolean isOpen) {
+                        if (isOpen){
+                            recordButton.setVisibility(View.GONE);
+                            send_image.setVisibility(View.GONE);
+                        } else {
+                            recordButton.setVisibility(View.VISIBLE);
+                            send_image.setVisibility(View.VISIBLE);
+                        }
+                    }
+                });
 
 
 
