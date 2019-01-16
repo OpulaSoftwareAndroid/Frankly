@@ -68,6 +68,7 @@ import com.squareup.picasso.Picasso;
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -114,8 +115,11 @@ public class GroupMessageFragment extends Fragment {
     private StorageTask uploadTask;
     Uri mImageUri = null;
     int GALLERY = 1;
+    public static StringBuilder sb;
     boolean notify = false;
+    static final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     GroupUser user;
+    static SecureRandom rnd = new SecureRandom();
 
     //new library
     RecordView recordView;
@@ -312,8 +316,7 @@ public class GroupMessageFragment extends Fragment {
             }
         });
 
-        KeyboardVisibilityEvent.setEventListener(
-                getActivity(),
+        KeyboardVisibilityEvent.setEventListener(Objects.requireNonNull(getActivity()),
                 new KeyboardVisibilityEventListener() {
                     @Override
                     public void onVisibilityChanged(boolean isOpen) {
@@ -329,8 +332,14 @@ public class GroupMessageFragment extends Fragment {
 
 
 
-
         return view;
+    }
+
+    public static String randomString(int len) {
+        sb = new StringBuilder(len);
+        for (int i = 0; i < len; i++)
+            sb.append(AB.charAt(rnd.nextInt(AB.length())));
+        return sb.toString();
     }
 
     private void initViews(View view) {
@@ -361,36 +370,38 @@ public class GroupMessageFragment extends Fragment {
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         final Chat chat = snapshot.getValue(Chat.class);
                         assert chat != null;
-                        if (chat.getReceiver().equals(groupid)) {
-                            for (int i = 0; i < user.getMemberList().size(); i++) {
-                                final int finalI = i;
-                                DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users").child(String.valueOf(user.getMemberList().get(finalI)));
-                                reference.addValueEventListener(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                        try {
-                                            Log.d("Group_chat_data", dataSnapshot.getValue() + "//");
-                                            User u1 = dataSnapshot.getValue(User.class);
-                                            assert u1 != null;
-                                            if (u1.getId().equalsIgnoreCase(chat.getSender())) {
-                                                chat.setSender_image(u1.getImageURL());
-                                                chat.setSender_username(u1.getUsername());
+                        if (chat.getTo().equalsIgnoreCase("group")){
+                            if (chat.getReceiver().equals(groupid)) {
+                                for (int i = 0; i < user.getMemberList().size(); i++) {
+                                    final int finalI = i;
+                                    DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users").child(String.valueOf(user.getMemberList().get(finalI)));
+                                    reference.addValueEventListener(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                            try {
+                                                Log.d("Group_chat_data", dataSnapshot.getValue() + "//");
+                                                User u1 = dataSnapshot.getValue(User.class);
+                                                assert u1 != null;
+                                                if (u1.getId().equalsIgnoreCase(chat.getSender())) {
+                                                    chat.setSender_image(u1.getImageURL());
+                                                    chat.setSender_username(u1.getUsername());
+                                                }
+                                            } catch (Exception e) {
+                                                e.printStackTrace();
                                             }
-                                        } catch (Exception e) {
-                                            e.printStackTrace();
+
+
                                         }
 
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                                    }
+                                        }
+                                    });
+                                }
 
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                    }
-                                });
+                                mchat.add(chat);
                             }
-
-                            mchat.add(chat);
                         }
 
                         messageAdapter = new GroupMessageAdapter(getActivity(), mchat, imageurl);
@@ -532,11 +543,14 @@ public class GroupMessageFragment extends Fragment {
     private void sendMessage(String sender, final String receiver, String message, boolean isimage, String uri) {
 
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+        randomString(9);
 
         Long tsLong = (System.currentTimeMillis() / 1000);
         String ts = tsLong.toString();
 
         HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("id", sb.toString());
+        hashMap.put("to", "group");
         hashMap.put("sender", sender);
         hashMap.put("receiver", receiver);
         hashMap.put("message", message);

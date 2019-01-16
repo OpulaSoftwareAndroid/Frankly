@@ -200,7 +200,7 @@ public class UserProfileFragment extends Fragment {
                         assert chat != null;
                         if (chat.getReceiver().equals(myid) && chat.getSender().equals(userid) ||
                                 chat.getReceiver().equals(userid) && chat.getSender().equals(myid)) {
-                            if (chat.getIsimage()){
+                            if (chat.isIsimage()){
                                 mchat.add(chat);
                             }
                         }

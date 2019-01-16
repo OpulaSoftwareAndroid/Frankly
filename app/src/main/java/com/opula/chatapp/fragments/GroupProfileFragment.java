@@ -566,7 +566,7 @@ public class GroupProfileFragment extends Fragment {
                         Chat chat = snapshot.getValue(Chat.class);
                         assert chat != null;
                         if (chat.getReceiver().equals(userid)) {
-                            if (chat.getIsimage()) {
+                            if (chat.isIsimage()) {
                                 mchat.add(chat);
                             }
                         }

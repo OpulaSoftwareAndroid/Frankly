@@ -35,8 +35,8 @@ import java.util.List;
 
 public class ListChatFragment extends Fragment {
 
-    private RecyclerView recyclerView,recycler_view1;
-    private UserAdapter userAdapter,broadcastAdapter;
+    private RecyclerView recyclerView, recycler_view1;
+    private UserAdapter userAdapter, broadcastAdapter;
     private List<User> mUsers;
     private List<BroadcastUser> mBroadcast;
     FirebaseUser fuser;
@@ -78,7 +78,7 @@ public class ListChatFragment extends Fragment {
         return view;
     }
 
-    public void getChats(){
+    public void getChats() {
         reference = FirebaseDatabase.getInstance().getReference("Chatlist").child(fuser.getUid());
         reference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -104,7 +104,7 @@ public class ListChatFragment extends Fragment {
         });
     }
 
-    public void getBroadcast(){
+    public void getBroadcast() {
         reference = FirebaseDatabase.getInstance().getReference("Chatlist").child(fuser.getUid()).child("broadcast");
         reference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -170,11 +170,11 @@ public class ListChatFragment extends Fragment {
                                     }
                                 }
 
-                                userAdapter = new UserAdapter(getContext(), mUsers, mBroadcast,true,true);
-                                broadcastAdapter = new UserAdapter(getContext(), mUsers, mBroadcast,true,false);
+                                userAdapter = new UserAdapter(getContext(), mUsers, mBroadcast, true, true);
+                                broadcastAdapter = new UserAdapter(getContext(), mUsers, mBroadcast, true, false);
                                 WsConstant.check = "fragment";
 
-                                setAdapter(userAdapter,broadcastAdapter);
+                                setAdapter(userAdapter, broadcastAdapter);
 
                             } catch (Exception e) {
                                 e.printStackTrace();
@@ -201,13 +201,19 @@ public class ListChatFragment extends Fragment {
         });
     }
 
-    public void setAdapter(UserAdapter userAdapter,UserAdapter broadcastAdapter){
-        if (userAdapter.getItemCount() > 0 && broadcastAdapter.getItemCount() > 0) {
+    public void setAdapter(UserAdapter userAdapter, UserAdapter broadcastAdapter) {
+        if (userAdapter.getItemCount() > 0) {
+            if (broadcastAdapter.getItemCount() > 0) {
 //             listView not empty
-            task_list.setVisibility(View.VISIBLE);
-            no_chat.setVisibility(View.GONE);
-            recyclerView.setAdapter(userAdapter);
-            recycler_view1.setAdapter(broadcastAdapter);
+                task_list.setVisibility(View.VISIBLE);
+                no_chat.setVisibility(View.GONE);
+                recyclerView.setAdapter(userAdapter);
+                recycler_view1.setAdapter(broadcastAdapter);
+            } else {
+                task_list.setVisibility(View.VISIBLE);
+                no_chat.setVisibility(View.GONE);
+                recyclerView.setAdapter(userAdapter);
+            }
         } else {
             // listView  empty
             task_list.setVisibility(View.GONE);

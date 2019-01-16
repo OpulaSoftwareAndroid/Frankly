@@ -7,6 +7,7 @@ public class BroadcastUser {
     private String broadcastId;
     private String broadcastName;
     private String sender;
+    private ArrayList<String> receiver;
 
     public String getBroadcastId() {
         return broadcastId;
@@ -39,8 +40,5 @@ public class BroadcastUser {
     public void setReceiver(ArrayList<String> receiver) {
         this.receiver = receiver;
     }
-
-    private ArrayList<String> receiver;
-
 
 }

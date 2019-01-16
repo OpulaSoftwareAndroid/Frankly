@@ -25,6 +25,7 @@ import com.opula.chatapp.MainActivity;
 import com.opula.chatapp.R;
 import com.opula.chatapp.constant.SharedPreference;
 import com.opula.chatapp.constant.WsConstant;
+import com.opula.chatapp.fragments.BroadcastMessageFragment;
 import com.opula.chatapp.fragments.MessageFragment;
 import com.opula.chatapp.fragments.UserProfileFragment;
 import com.opula.chatapp.model.BroadcastUser;
@@ -138,7 +139,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                     MainActivity.checkChatTheme(mContext);
                     MainActivity.showpart1();
                     FragmentManager fragmentManager = ((FragmentActivity) mContext).getSupportFragmentManager();
-                    fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new MessageFragment()).addToBackStack(null).commit();
+                    fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new BroadcastMessageFragment()).addToBackStack(null).commit();
 
                 }
             });
@@ -193,15 +194,20 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Chat chat = snapshot.getValue(Chat.class);
-                    if (firebaseUser != null && chat != null) {
-                        if (chat.getReceiver().equals(firebaseUser.getUid()) && chat.getSender().equals(userid) ||
-                                chat.getReceiver().equals(userid) && chat.getSender().equals(firebaseUser.getUid())) {
-                            theLastMessage = chat.getMessage();
+                    assert firebaseUser != null;
+                    firebaseUser.getUid();
+                    if (chat != null) {
+                        if (chat.getTo().equalsIgnoreCase("personal")){
+                            if (chat.getReceiver().equals(firebaseUser.getUid()) && chat.getSender().equals(userid) ||
+                                    chat.getReceiver().equals(userid) && chat.getSender().equals(firebaseUser.getUid())) {
+                                theLastMessage = chat.getMessage();
 
-                            String tiime = getDateCurrentTimeZone(Long.parseLong(chat.getTime()));
-                            time.setText(tiime);
+                                String tiime = getDateCurrentTimeZone(Long.parseLong(chat.getTime()));
+                                time.setText(tiime);
 
+                            }
                         }
+
                     }
                 }
 

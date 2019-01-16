@@ -3,6 +3,7 @@ package com.opula.chatapp.model;
 public class Chat {
 
     private String id;
+    private String to;
     private String sender;
     private String receiver;
     private String message;
@@ -20,6 +21,14 @@ public class Chat {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getTo() {
+        return to;
+    }
+
+    public void setTo(String to) {
+        this.to = to;
     }
 
     public String getSender() {
@@ -62,7 +71,7 @@ public class Chat {
         this.isseen = isseen;
     }
 
-    public boolean getIsimage() {
+    public boolean isIsimage() {
         return isimage;
     }
 

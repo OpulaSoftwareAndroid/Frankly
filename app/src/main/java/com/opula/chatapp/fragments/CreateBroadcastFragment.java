@@ -135,7 +135,6 @@ public class CreateBroadcastFragment extends Fragment {
     private void createBroadcast() {
         fuser = FirebaseAuth.getInstance().getCurrentUser();
         myList = new ArrayList<>(Arrays.asList(commaSepValueBuilder.toString().split(",")));
-        myList.add(fuser.getUid());
         grpList = new ArrayList<>();
         randomString(9);
 

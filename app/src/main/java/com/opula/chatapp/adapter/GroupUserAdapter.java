@@ -139,15 +139,16 @@ public class GroupUserAdapter extends RecyclerView.Adapter<GroupUserAdapter.View
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Chat chat = snapshot.getValue(Chat.class);
-                    if (firebaseUser != null && chat != null) {
-                        if (chat.getReceiver().equals(userid)) {
-                            theLastMessage = chat.getMessage();
-
-                            String tiime = getDateCurrentTimeZone(Long.parseLong(chat.getTime()));
-                            time.setText(tiime);
-
+                    if (chat.getTo().equalsIgnoreCase("group")){
+                        if (firebaseUser != null && chat != null) {
+                            if (chat.getReceiver().equals(userid)) {
+                                theLastMessage = chat.getMessage();
+                                String tiime = getDateCurrentTimeZone(Long.parseLong(chat.getTime()));
+                                time.setText(tiime);
+                            }
                         }
                     }
+
                 }
 
                 switch (theLastMessage) {
