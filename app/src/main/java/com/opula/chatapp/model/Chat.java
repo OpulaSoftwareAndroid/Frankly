@@ -14,6 +14,7 @@ public class Chat {
     private String time;
     private String sender_username;
     private String sender_image;
+    private String table_id;
 
     public String getId() {
         return id;
@@ -109,5 +110,13 @@ public class Chat {
 
     public void setSender_image(String sender_image) {
         this.sender_image = sender_image;
+    }
+
+    public String getTable_id() {
+        return table_id;
+    }
+
+    public void setTable_id(String table_id) {
+        this.table_id = table_id;
     }
 }

@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -142,7 +143,10 @@ public class MessageFragment extends Fragment{
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_message, container, false);
-
+        if (android.os.Build.VERSION.SDK_INT > 9) {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+        }
         MainActivity.hideFloatingActionButton();
 
         sharedPreference = new SharedPreference();
@@ -614,7 +618,7 @@ public class MessageFragment extends Fragment{
 
     public static void sendMessage(final Context context,String sender, final String receiver, String message, boolean isimage, String uri) {
 
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Chats").push();
         randomString(9);
         /*String encMessage = null;
         try {
@@ -639,6 +643,8 @@ public class MessageFragment extends Fragment{
             hashMap.put("isimage", isimage);
             hashMap.put("image", uri);
             hashMap.put("time", ts);
+            hashMap.put("table_id", reference.getKey());
+            hashMap.put("storage_uri", "default");
         } else {
             hashMap.put("id", sb.toString());
             hashMap.put("to", "personal");
@@ -649,10 +655,12 @@ public class MessageFragment extends Fragment{
             hashMap.put("isseen", false);
             hashMap.put("isimage", isimage);
             hashMap.put("image", uri);
-            hashMap.put("time", ts);
+            hashMap.put("table_id", reference.getKey());
+            hashMap.put("storage_uri","default");
         }
 
-        reference.child("Chats").push().setValue(hashMap);
+        reference.setValue(hashMap);
+
 
         // add user to chat fragment
         final DatabaseReference chatRef = FirebaseDatabase.getInstance().getReference("Chatlist").child(fuser.getUid()).child(userid);

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout android:orientation="horizontal"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:emojicon="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/linmain"
     android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:layout_gravity="start"
     android:gravity="start"
-    android:id="@+id/linmain"
-    android:layout_height="wrap_content"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:emojicon="http://schemas.android.com/apk/res-auto">
+    android:orientation="horizontal">
 
     <RelativeLayout
         android:layout_width="300dp"
@@ -14,101 +14,129 @@
         android:padding="4dp">
 
         <LinearLayout
-            android:orientation="horizontal"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/profile_image"
                 android:layout_width="24dp"
-                android:layout_weight="0"
-                android:layout_height="24dp" />
+                android:layout_height="24dp"
+                android:layout_weight="0" />
 
             <LinearLayout
                 android:id="@+id/linear_chat"
-                android:clickable="true"
-                android:layout_marginLeft="4dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
                 android:background="@drawable/background_left"
+                android:clickable="true"
+                android:focusable="true"
                 android:orientation="vertical"
                 android:paddingLeft="8dp"
                 android:paddingTop="4dp"
                 android:paddingRight="8dp"
                 android:paddingBottom="4dp"
-                android:visibility="visible"
-                android:focusable="true">
+                android:visibility="visible">
 
                 <RelativeLayout
-                    android:visibility="gone"
                     android:id="@+id/relative"
-                    android:layout_marginTop="4dp"
                     android:layout_width="300dp"
-                    android:layout_height="300dp">
+                    android:layout_height="300dp"
+                    android:layout_marginTop="4dp"
+                    android:visibility="gone">
 
                     <ProgressBar
-                        android:visibility="gone"
                         android:id="@+id/progress_circular"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentStart="true"
                         android:layout_centerVertical="true"
-                        android:layout_marginStart="98dp" />
+                        android:layout_marginStart="98dp"
+                        android:visibility="gone" />
+
                     <ImageView
                         android:id="@+id/img_receive"
                         android:layout_width="300dp"
                         android:layout_height="300dp"
                         android:adjustViewBounds="true"
                         android:scaleType="centerCrop"
-                        android:visibility="gone" />
+                        android:src="@drawable/ic_edit"
+                        android:visibility="visible" />
+
+                    <RelativeLayout
+                        android:id="@+id/img_blur"
+                        android:layout_width="300dp"
+                        android:layout_height="300dp">
+
+                        <ImageView
+                            android:layout_width="300dp"
+                            android:layout_height="300dp"
+                            android:adjustViewBounds="true"
+                            android:alpha="0.9"
+                            android:background="@drawable/gradient_bg"
+                            android:scaleType="centerCrop"
+                            android:visibility="visible" />
+
+                        <ImageView
+                            android:id="@+id/img_download"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentStart="true"
+                            android:layout_centerVertical="true"
+                            android:layout_marginStart="110dp"
+                            android:src="@drawable/ic_downward"
+                            android:visibility="visible" />
+                    </RelativeLayout>
+
                 </RelativeLayout>
 
                 <hani.momanii.supernova_emoji_library.Helper.EmojiconTextView
                     android:id="@+id/show_message"
-                    android:fontFamily="@font/m"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:fontFamily="@font/m"
                     android:gravity="start"
-                    emojicon:emojiconSize="22sp"
                     android:textAlignment="gravity"
                     android:textSize="18sp"
-                    android:visibility="visible" />
+                    android:visibility="visible"
+                    emojicon:emojiconSize="22sp" />
 
                 <TextView
-                    android:fontFamily="@font/m"
                     android:id="@+id/show_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom|end"
                     android:layout_marginTop="2dp"
+                    android:fontFamily="@font/m"
                     android:textSize="10sp"
                     android:visibility="visible" />
 
                 <RelativeLayout
-                    android:visibility="gone"
                     android:id="@+id/txt_seen"
                     android:layout_width="12dp"
+                    android:layout_height="12dp"
                     android:layout_gravity="bottom|end"
                     android:layout_marginTop="2dp"
-                    android:layout_height="12dp">
+                    android:visibility="gone">
 
                     <ImageView
                         android:id="@+id/img_tick"
-                        android:src="@drawable/ic_checked"
                         android:layout_width="12dp"
-                        android:layout_height="12dp" />
+                        android:layout_height="12dp"
+                        android:src="@drawable/ic_checked" />
 
                     <ImageView
                         android:id="@+id/img_dtick"
-                        android:src="@drawable/ic_double_tick_indicator"
                         android:layout_width="12dp"
-                        android:layout_height="12dp" />
+                        android:layout_height="12dp"
+                        android:src="@drawable/ic_double_tick_indicator" />
 
                     <ImageView
                         android:id="@+id/img_dstick"
-                        android:src="@drawable/ic_double_tick_send_indicator"
                         android:layout_width="12dp"
-                        android:layout_height="12dp" />
+                        android:layout_height="12dp"
+                        android:src="@drawable/ic_double_tick_send_indicator" />
 
                 </RelativeLayout>
             </LinearLayout>
