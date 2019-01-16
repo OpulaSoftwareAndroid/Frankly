@@ -29,6 +29,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.devlomi.record_view.OnBasketAnimationEnd;
+import com.devlomi.record_view.OnRecordListener;
+import com.devlomi.record_view.RecordButton;
+import com.devlomi.record_view.RecordView;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -64,6 +68,9 @@ import com.opula.chatapp.notifications.Sender;
 import com.opula.chatapp.notifications.Token;
 import com.squareup.picasso.Picasso;
 
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener;
+
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.text.ParseException;
@@ -92,7 +99,7 @@ import retrofit2.Response;
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 
-public class MessageFragment extends Fragment {
+public class MessageFragment extends Fragment{
 
     CircleImageView imgUser;
     LinearLayout imgBack;
@@ -123,8 +130,12 @@ public class MessageFragment extends Fragment {
     static SecureRandom rnd = new SecureRandom();
     public static StringBuilder sb;
     String AES = "AES";
-
     ValueEventListener mSendEventListner;
+    RelativeLayout is_text;
+
+    //new library
+    RecordView recordView;
+    //RecordButton recordButton;
 
 
     @Override
@@ -231,8 +242,6 @@ public class MessageFragment extends Fragment {
             }
         });*/
 
-
-
         reference = FirebaseDatabase.getInstance().getReference("Users").child(userid);
         reference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -275,31 +284,61 @@ public class MessageFragment extends Fragment {
             public void onCancelled(@NonNull DatabaseError databaseError) { }
         });
 
-        /*reference = FirebaseDatabase.getInstance().getReference("Chatlist").child(fuser.getUid()).child(userid);
-        reference.addValueEventListener(new ValueEventListener() {
-            @SuppressLint("SetTextI18n")
+        sendMessage(userid);
+
+        //new library
+        recordView = (RecordView) rootView.findViewById(R.id.record_view);
+        /*recordButton = (RecordButton) rootView.findViewById(R.id.record_button);
+        recordButton.setRecordView(recordView);*/
+
+
+
+        recordView.setOnRecordListener(new OnRecordListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                try {
-                    Chatlist chatlist = dataSnapshot.getValue(Chatlist.class);
-                    assert chatlist != null;
-                    boolean is = chatlist.getIstyping();
-                    if (is) {
-                        txtCheckActive.setText("typing..");
-                    } else {
-                        txtCheckActive.setText(CheckActive);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+            public void onStart() {
+                //Start Recording..
+                Log.d("RecordView", "onStart");
+                is_text.setVisibility(View.GONE);
+                recordView.setVisibility(View.VISIBLE);
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) { }
-        });*/
+            public void onCancel() {
+                //On Swipe To Cancel
+                Log.d("RecordView", "onCancel");
 
-        sendMessage(userid);
-        //seenMessage(userid);
+
+            }
+
+            @Override
+            public void onFinish(long recordTime) {
+                //Stop Recording..
+                //String time = getHumanTimeText(recordTime);
+                Log.d("RecordView", "onFinish");
+                //Log.d("RecordTime", time);
+                is_text.setVisibility(View.VISIBLE);
+                recordView.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onLessThanSecond() {
+                //When the record time is less than One Second
+                Log.d("RecordView", "onLessThanSecond");
+                is_text.setVisibility(View.VISIBLE);
+                recordView.setVisibility(View.GONE);
+            }
+        });
+
+        recordView.setOnBasketAnimationEndListener(new OnBasketAnimationEnd() {
+            @Override
+            public void onAnimationEnd() {
+                Log.d("RecordView", "Basket Animation Finished");
+                is_text.setVisibility(View.VISIBLE);
+                recordView.setVisibility(View.GONE);
+            }
+        });
+
+
 
         return view;
     }
@@ -316,7 +355,7 @@ public class MessageFragment extends Fragment {
             Calendar calendar = Calendar.getInstance();
             TimeZone tz = calendar.getTimeZone();//get your local time zone.
             calendar.setTimeInMillis(timestamp * 1000);
-            SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a dd-MM-yyyy");
+            @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a dd-MM-yyyy");
             sdf.setTimeZone(tz);
             Date currenTimeZone = (Date) calendar.getTime();
             return sdf.format(currenTimeZone);
@@ -339,6 +378,7 @@ public class MessageFragment extends Fragment {
         rootView = view.findViewById(R.id.root_view);
         emojiButton = view.findViewById(R.id.emoji_btn);
         send_image = view.findViewById(R.id.send_image);
+        is_text = view.findViewById(R.id.is_text);
     }
 
     private void showPictureDialog() {

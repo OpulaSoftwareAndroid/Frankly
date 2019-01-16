@@ -9,6 +9,7 @@
     android:orientation="vertical">
 
     <LinearLayout
+        android:visibility="visible"
         android:id="@+id/toolbarLayout"
         android:layout_width="match_parent"
         android:layout_height="@dimen/_50sdp"
@@ -78,7 +79,6 @@
 
     </LinearLayout>
 
-
     <View
         android:id="@+id/vw"
         android:layout_width="match_parent"
@@ -108,18 +108,21 @@
                 android:divider="@null"
                 android:stackFromBottom="true" />
 
-
-
             <LinearLayout
                 android:background="@color/messagescrren"
                 android:layout_weight="0"
+                android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
                 <RelativeLayout
-                    android:layout_margin="4dp"
-                    android:id="@+id/bottom"
-                    android:layout_width="match_parent"
+                    android:visibility="visible"
+                    android:layout_weight="1"
+                    android:layout_marginBottom="4dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginLeft="4dp"
+                    android:id="@+id/is_text"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentBottom="true"
                     android:background="@drawable/background_chat"
@@ -144,13 +147,17 @@
                             android:layout_weight="1"
                             android:layout_gravity="center_vertical"
                             android:layout_width="match_parent"
+                            android:focusable="true"
+                            android:focusedByDefault="true"
                             android:layout_height="wrap_content">
                             <hani.momanii.supernova_emoji_library.Helper.EmojiconEditText
                                 android:imeOptions="actionSend"
                                 android:fontFamily="@font/m"
                                 android:gravity="center_vertical"
                                 android:layout_gravity="start"
+                                android:focusedByDefault="true"
                                 android:id="@+id/text_send"
+                                android:focusable="true"
                                 android:hint="@string/type_a_message"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -190,7 +197,38 @@
                                 android:src="@drawable/ic_email" />
                         </RelativeLayout>
                     </LinearLayout>
+
                 </RelativeLayout>
+
+                <com.devlomi.record_view.RecordView
+                    android:id="@+id/record_view"
+                    android:background="@drawable/background_chat"
+                    android:layout_weight="1"
+                    android:visibility="gone"
+                    android:layout_marginStart="4dp"
+                    android:layout_gravity="center"
+                    android:layout_width="match_parent"
+                    android:layout_marginBottom="4dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_height="match_parent"
+                    app:slide_to_cancel_arrow="@drawable/recv_ic_arrow"
+                    app:slide_to_cancel_arrow_color="#000000"
+                    app:slide_to_cancel_bounds="8dp"
+                    app:slide_to_cancel_margin_right="10dp"
+                    app:slide_to_cancel_text="Slide To Cancel"
+                    app:counter_time_color="#ff0000" />
+               <!-- <com.devlomi.record_view.RecordButton
+                    android:id="@+id/record_button"
+                    android:layout_width="50dp"
+                    android:layout_margin="4dp"
+                    android:layout_weight="0"
+                    android:visibility="gone"
+                    android:layout_gravity="center"
+                    android:layout_height="50dp"
+                    android:background="@drawable/recv_bg_mic"
+                    android:scaleType="centerInside"
+                    app:mic_icon="@drawable/recv_ic_mic_white" />-->
+
             </LinearLayout>
         </LinearLayout>
     </RelativeLayout>

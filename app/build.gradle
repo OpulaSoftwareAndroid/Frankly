@@ -45,6 +45,7 @@ dependencies {
     implementation 'de.hdodenhof:circleimageview:2.2.0'
     implementation 'com.intuit.sdp:sdp-android:1.0.5'
     implementation 'com.devlomi.record-view:record-view:2.0.1'
+    implementation 'net.yslibrary.keyboardvisibilityevent:keyboardvisibilityevent:2.2.0'
 
     //Web Service
     implementation 'com.google.code.gson:gson:2.6.2'
