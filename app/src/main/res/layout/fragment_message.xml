@@ -159,13 +159,14 @@
                         android:layout_gravity="start"
                         android:background="@android:color/transparent"
                         android:focusable="true"
-                        android:focusedByDefault="true"
                         android:fontFamily="@font/m"
                         android:gravity="center_vertical"
                         android:hint="@string/type_a_message"
                         android:imeOptions="actionSend"
                         android:maxLines="4"
-                        android:textColorHint="#ccc" />
+                        android:textColorHint="#ccc" >
+                        <requestFocus />
+                    </hani.momanii.supernova_emoji_library.Helper.EmojiconEditText>
                 </LinearLayout>
 
                 <ImageView

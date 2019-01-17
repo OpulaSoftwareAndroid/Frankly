@@ -72,6 +72,7 @@ public class ListChatFragment extends Fragment {
         broadcastList = new ArrayList<>();
 
         getChats();
+        getBroadcast();
 
         updateToken(FirebaseInstanceId.getInstance().getToken());
 
@@ -90,8 +91,7 @@ public class ListChatFragment extends Fragment {
                         usersList.add(chatlist);
                     }
 
-                    getBroadcast();
-
+                    chatList();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -114,7 +114,7 @@ public class ListChatFragment extends Fragment {
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         broadcastList.add(snapshot.getKey());
                     }
-                    chatList();
+                    broadcastList();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -135,8 +135,6 @@ public class ListChatFragment extends Fragment {
 
     private void chatList() {
         mUsers = new ArrayList<>();
-        mBroadcast = new ArrayList<>();
-
         reference = FirebaseDatabase.getInstance().getReference("Users");
         reference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -153,40 +151,45 @@ public class ListChatFragment extends Fragment {
                         }
                     }
 
+                    userAdapter = new UserAdapter(getContext(), mUsers, mBroadcast, true, true);
+                    WsConstant.check = "fragment";
+                    recyclerView.setAdapter(userAdapter);
 
-                    DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Broadcast");
-                    reference.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            try {
-                                mBroadcast.clear();
-                                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                                    BroadcastUser user = snapshot.getValue(BroadcastUser.class);
-                                    for (String list : broadcastList) {
-                                        assert user != null;
-                                        if (user.getBroadcastId().equals(list)) {
-                                            mBroadcast.add(user);
-                                        }
-                                    }
-                                }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
-                                userAdapter = new UserAdapter(getContext(), mUsers, mBroadcast, true, true);
-                                broadcastAdapter = new UserAdapter(getContext(), mUsers, mBroadcast, true, false);
-                                WsConstant.check = "fragment";
+            }
 
-                                setAdapter(userAdapter, broadcastAdapter);
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                            } catch (Exception e) {
-                                e.printStackTrace();
+            }
+        });
+    }
+
+    private void broadcastList() {
+        mBroadcast = new ArrayList<>();
+
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Broadcast");
+        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                try {
+                    mBroadcast.clear();
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        BroadcastUser user = snapshot.getValue(BroadcastUser.class);
+                        for (String list : broadcastList) {
+                            assert user != null;
+                            if (user.getBroadcastId().equals(list)) {
+                                mBroadcast.add(user);
                             }
-
                         }
+                    }
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                        }
-                    });
+                    broadcastAdapter = new UserAdapter(getContext(), mUsers, mBroadcast, true, false);
+                    WsConstant.check = "fragment";
+                    setAdapter(userAdapter, broadcastAdapter);
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -207,19 +210,16 @@ public class ListChatFragment extends Fragment {
 //             listView not empty
                 task_list.setVisibility(View.VISIBLE);
                 no_chat.setVisibility(View.GONE);
-                recyclerView.setAdapter(userAdapter);
                 recycler_view1.setAdapter(broadcastAdapter);
             } else {
                 task_list.setVisibility(View.VISIBLE);
                 no_chat.setVisibility(View.GONE);
-                recyclerView.setAdapter(userAdapter);
             }
         } else if (broadcastAdapter.getItemCount() > 0) {
             if (userAdapter.getItemCount() > 0) {
 //             listView not empty
                 task_list.setVisibility(View.VISIBLE);
                 no_chat.setVisibility(View.GONE);
-                recyclerView.setAdapter(userAdapter);
                 recycler_view1.setAdapter(broadcastAdapter);
             } else {
                 task_list.setVisibility(View.VISIBLE);

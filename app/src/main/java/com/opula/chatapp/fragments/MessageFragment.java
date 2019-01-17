@@ -153,6 +153,7 @@ public class MessageFragment extends Fragment{
 
         apiService = Client.getClient("https://fcm.googleapis.com/").create(APIService.class);
         initViews(view);
+
         emojIcon = new EmojIconActions(getActivity(), rootView, text_send, emojiButton);
         emojIcon.ShowEmojIcon();
         emojIcon.setIconsIds(R.drawable.ic_keyboard_black_24dp, R.drawable.ic_sentiment_satisfied_black_24dp);
