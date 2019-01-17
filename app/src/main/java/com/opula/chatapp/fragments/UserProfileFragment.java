@@ -52,7 +52,6 @@ public class UserProfileFragment extends Fragment {
     DatabaseReference reference;
     RecyclerView recycler_image;
 
-
     private List<Chat> mchat;
     private UserSharedAdapter userSharedAdapter;
     FirebaseUser fuser;
@@ -198,11 +197,15 @@ public class UserProfileFragment extends Fragment {
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         Chat chat = snapshot.getValue(Chat.class);
                         assert chat != null;
-                        if (chat.getReceiver().equals(myid) && chat.getSender().equals(userid) ||
-                                chat.getReceiver().equals(userid) && chat.getSender().equals(myid)) {
-                            if (chat.isIsimage()){
-                                mchat.add(chat);
+
+                        if (chat.getTo().equalsIgnoreCase("personal")){
+                            if (chat.getReceiver().equals(myid) && chat.getSender().equals(userid) ||
+                                    chat.getReceiver().equals(userid) && chat.getSender().equals(myid)) {
+                                if (chat.isIsimage()){
+                                    mchat.add(chat);
+                                }
                             }
+
                         }
 
                         userSharedAdapter = new UserSharedAdapter(getActivity(), mchat);

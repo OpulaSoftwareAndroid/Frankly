@@ -129,6 +129,8 @@ public class BroadcastMessageFragment extends Fragment{
     public static List<String> myList;
     RecordButton recordButton;
 
+    public static BroadcastUser user;
+
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -195,7 +197,7 @@ public class BroadcastMessageFragment extends Fragment{
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 try {
                     myList = new ArrayList<>();
-                    BroadcastUser user = dataSnapshot.getValue(BroadcastUser.class);
+                    user = dataSnapshot.getValue(BroadcastUser.class);
                     assert user != null;
                     txtUserName.setText(user.getBroadcastName());
                     txtCheckActive.setText(user.getReceiver().size() + " Members");
@@ -472,7 +474,7 @@ public class BroadcastMessageFragment extends Fragment{
 
     public static void sendMessage(final Context context,String sender, String message, boolean isimage, String uri) {
 
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Chats").push();
         randomString(9);
         /*String encMessage = null;
         try {
@@ -492,11 +494,12 @@ public class BroadcastMessageFragment extends Fragment{
             hashMap.put("sender", sender);
             hashMap.put("broadcast_receiver", myList);
             hashMap.put("message", message);
-            hashMap.put("issend", true);
+            hashMap.put("issend", false);
             hashMap.put("isseen", false);
             hashMap.put("isimage", isimage);
             hashMap.put("image", uri);
             hashMap.put("time", ts);
+            hashMap.put("table_id", reference.getKey());
         } else {
             hashMap.put("id", sb.toString());
             hashMap.put("to", "broadcast");
@@ -508,67 +511,65 @@ public class BroadcastMessageFragment extends Fragment{
             hashMap.put("isimage", isimage);
             hashMap.put("image", uri);
             hashMap.put("time", ts);
+            hashMap.put("table_id", reference.getKey());
         }
 
-        reference.child("Chats").push().setValue(hashMap);
+        reference.setValue(hashMap);
 
-        /*// add user to chat fragment
-        final DatabaseReference chatRef = FirebaseDatabase.getInstance().getReference("Chatlist").child(fuser.getUid()).child(userid);
+        for (int i=0; i<user.getReceiver().size(); i++){
+            // add user to chat fragment
+            final DatabaseReference chatRef = FirebaseDatabase.getInstance().getReference("Chatlist").child(user.getReceiver().get(i)).child(user.getSender());
 
-        chatRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                try {
-                    if (!dataSnapshot.exists()) {
-                        chatRef.child("id").setValue(userid);
-                        chatRef.child("istyping").setValue(false);
-                        chatRef.child("isnotification").setValue(false);
+            chatRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    try {
+                        if (!dataSnapshot.exists()) {
+                            chatRef.child("id").setValue(user.getSender());
+                            chatRef.child("istyping").setValue(false);
+                            chatRef.child("isnotification").setValue(true);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
 
-            }
-        });
+                }
+            });
 
-        try {
-            final DatabaseReference chatRefReceiver = FirebaseDatabase.getInstance().getReference("Chatlist").child(userid).child(fuser.getUid());
-            chatRefReceiver.child("id").setValue(fuser.getUid());
-            chatRefReceiver.child("istyping").setValue(false);
-            chatRefReceiver.child("isnotification").setValue(true);
-        } catch (Exception e) {
-            e.printStackTrace();
+
+//            final String msg = message;
+
+          /*  reference = FirebaseDatabase.getInstance().getReference("Users").child((user.getReceiver().get(i)));
+            reference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    try {
+                        User user = dataSnapshot.getValue(User.class);
+                        if (notify) {
+//                            sendNotifiaction(context,receiver, user.getUsername(), msg);
+                        }
+                        notify = false;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });*/
         }
 
-        final String msg = message;
 
-        reference = FirebaseDatabase.getInstance().getReference("Users").child(fuser.getUid());
-        reference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                try {
-                    User user = dataSnapshot.getValue(User.class);
-                    if (notify) {
-//                        sendNotifiaction(context,receiver, user.getUsername(), msg);
-                    }
-                    notify = false;
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });*/
     }
 
-   /* private static void sendNotifiaction(final Context context,String receiver, final String username, final String message) {
+    /*private static void sendNotifiaction(final Context context,String receiver, final String username, final String message) {
         DatabaseReference tokens = FirebaseDatabase.getInstance().getReference("Tokens");
         Query query = tokens.orderByKey().equalTo(receiver);
         query.addValueEventListener(new ValueEventListener() {

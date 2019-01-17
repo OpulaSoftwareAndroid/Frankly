@@ -1,11 +1,14 @@
 package com.opula.chatapp.model;
 
+import java.util.ArrayList;
+
 public class Chat {
 
     private String id;
     private String to;
     private String sender;
     private String receiver;
+    private ArrayList<String> broadcast_receiver;
     private String message;
     private boolean issend;
     private boolean isseen;
@@ -46,6 +49,14 @@ public class Chat {
 
     public void setReceiver(String receiver) {
         this.receiver = receiver;
+    }
+
+    public ArrayList<String> getBroadcast_receiver() {
+        return broadcast_receiver;
+    }
+
+    public void setBroadcast_receiver(ArrayList<String> broadcast_receiver) {
+        this.broadcast_receiver = broadcast_receiver;
     }
 
     public String getMessage() {

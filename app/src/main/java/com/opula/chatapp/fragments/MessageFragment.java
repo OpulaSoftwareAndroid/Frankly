@@ -525,10 +525,12 @@ public class MessageFragment extends Fragment{
                 try {
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         Chat chat = snapshot.getValue(Chat.class);
-                        if (chat.getReceiver().equals(fuser.getUid()) && chat.getSender().equals(userid)) {
-                            HashMap<String, Object> hashMap = new HashMap<>();
-                            hashMap.put("isseen", true);
-                            snapshot.getRef().updateChildren(hashMap);
+                        if (chat.getTo().equalsIgnoreCase("personal")){
+                            if (chat.getReceiver().equals(fuser.getUid()) && chat.getSender().equals(userid)) {
+                                HashMap<String, Object> hashMap = new HashMap<>();
+                                hashMap.put("isseen", true);
+                                snapshot.getRef().updateChildren(hashMap);
+                            }
                         }
                     }
                 } catch (Exception e) {
@@ -643,8 +645,8 @@ public class MessageFragment extends Fragment{
             hashMap.put("isimage", isimage);
             hashMap.put("image", uri);
             hashMap.put("time", ts);
-            hashMap.put("table_id", reference.getKey());
             hashMap.put("storage_uri", "default");
+            hashMap.put("table_id", reference.getKey());
         } else {
             hashMap.put("id", sb.toString());
             hashMap.put("to", "personal");
@@ -655,6 +657,7 @@ public class MessageFragment extends Fragment{
             hashMap.put("isseen", false);
             hashMap.put("isimage", isimage);
             hashMap.put("image", uri);
+            hashMap.put("time", ts);
             hashMap.put("table_id", reference.getKey());
             hashMap.put("storage_uri","default");
         }
@@ -777,6 +780,12 @@ public class MessageFragment extends Fragment{
                                     chat.getReceiver().equals(userid) && chat.getSender().equals(myid)) {
                                 mchat.add(chat);
                             }
+                        } else if (chat.getTo().equalsIgnoreCase("broadcast")){
+                            for (int i=0; i<chat.getBroadcast_receiver().size();i++){
+                                if (chat.getBroadcast_receiver().get(i).equalsIgnoreCase(myid)) {
+                                    mchat.add(chat);
+                                }
+                            }
                         }
                     }
                     messageAdapter = new MessageAdapter(getActivity(), mchat, imageurl);
@@ -792,36 +801,5 @@ public class MessageFragment extends Fragment{
             }
         });
     }
-
-   /* private void currentUser(String userid){
-        SharedPreferences.Editor editor = getActivity().getSharedPreferences("PREFS", MODE_PRIVATE).edit();
-        editor.putString("currentuser", userid);
-        editor.apply();
-    }
-
-    private void status(String status){
-        reference = FirebaseDatabase.getInstance().getReference("Users").child(fuser.getUid());
-
-        HashMap<String, Object> hashMap = new HashMap<>();
-        hashMap.put("status", status);
-
-        reference.updateChildren(hashMap);
-    }*/
-
-   /* @Override
-    public void onResume() {
-        super.onResume();
-        status("online");
-        currentUser(userid);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        reference.removeEventListener(seenListener);
-        status("offline");
-        currentUser("none");
-    }*/
-
 
 }

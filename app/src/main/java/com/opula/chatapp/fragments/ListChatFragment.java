@@ -214,6 +214,18 @@ public class ListChatFragment extends Fragment {
                 no_chat.setVisibility(View.GONE);
                 recyclerView.setAdapter(userAdapter);
             }
+        } else if (broadcastAdapter.getItemCount() > 0) {
+            if (userAdapter.getItemCount() > 0) {
+//             listView not empty
+                task_list.setVisibility(View.VISIBLE);
+                no_chat.setVisibility(View.GONE);
+                recyclerView.setAdapter(userAdapter);
+                recycler_view1.setAdapter(broadcastAdapter);
+            } else {
+                task_list.setVisibility(View.VISIBLE);
+                no_chat.setVisibility(View.GONE);
+                recycler_view1.setAdapter(broadcastAdapter);
+            }
         } else {
             // listView  empty
             task_list.setVisibility(View.GONE);

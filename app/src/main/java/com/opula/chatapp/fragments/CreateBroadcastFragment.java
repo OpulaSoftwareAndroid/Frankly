@@ -74,10 +74,11 @@ public class CreateBroadcastFragment extends Fragment {
 
         readUsers();
 
-        commaSepValueBuilder = new StringBuilder();
+
         txtSelectedCount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                commaSepValueBuilder = new StringBuilder();
                 for (int i = 0; i < mUsers.size(); i++) {
                     if (mUsers.get(i).isChecked()) {
                         commaSepValueBuilder.append(mUsers.get(i).getId());
@@ -89,7 +90,6 @@ public class CreateBroadcastFragment extends Fragment {
                 if (commaSepValueBuilder.length() > 0) {
                     commaSepValueBuilder.deleteCharAt(commaSepValueBuilder.lastIndexOf(","));
                 }
-
             }
         });
 

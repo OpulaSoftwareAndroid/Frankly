@@ -131,6 +131,12 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
             holder.profile_image.setImageResource(R.drawable.broadcast);
 
+            if (ischat) {
+                lastMessageBroadcast(user.getBroadcastId(), holder.last_msg, holder.time);
+            } else {
+                holder.last_msg.setVisibility(View.GONE);
+            }
+
             holder.click_layout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -206,8 +212,68 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                                 time.setText(tiime);
 
                             }
+                        } else if (chat.getTo().equalsIgnoreCase("broadcast")){
+                            for (int i=0; i<chat.getBroadcast_receiver().size();i++){
+                                if (chat.getBroadcast_receiver().get(i).equalsIgnoreCase(firebaseUser.getUid())) {
+                                    theLastMessage = chat.getMessage();
+
+                                    String tiime = getDateCurrentTimeZone(Long.parseLong(chat.getTime()));
+                                    time.setText(tiime);
+                                }
+                            }
                         }
 
+                    }
+                }
+
+                switch (theLastMessage) {
+                    case "default":
+                        last_msg.setText("No Messages");
+                        break;
+
+                    default:
+                        /*String decMessage = null;
+                        try {
+                            decMessage = decrypt(theLastMessage,"Jenil");
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }*/
+
+                        last_msg.setText(theLastMessage);
+                        break;
+                }
+
+                theLastMessage = "default";
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void lastMessageBroadcast(final String userid, final TextView last_msg, final TextView time) {
+        theLastMessage = "default";
+        thetime = "";
+        final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Chats");
+
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Chat chat = snapshot.getValue(Chat.class);
+                    assert firebaseUser != null;
+                    firebaseUser.getUid();
+                    if (chat != null) {
+                        if (chat.getTo().equalsIgnoreCase("broadcast")){
+                            if (chat.getSender().equalsIgnoreCase(userid)) {
+                                theLastMessage = chat.getMessage();
+                                String tiime = getDateCurrentTimeZone(Long.parseLong(chat.getTime()));
+                                time.setText(tiime);
+                            }
+                        }
                     }
                 }
 
