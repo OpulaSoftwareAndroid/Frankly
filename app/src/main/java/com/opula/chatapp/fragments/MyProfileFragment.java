@@ -12,6 +12,8 @@ import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,9 +23,9 @@ import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -44,29 +46,35 @@ import com.opula.chatapp.MainActivity;
 import com.opula.chatapp.R;
 import com.opula.chatapp.activity.LoginRegisterActivity;
 import com.opula.chatapp.constant.AppGlobal;
+import com.opula.chatapp.model.StarMessage;
 import com.opula.chatapp.model.User;
+
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
+
 import de.hdodenhof.circleimageview.CircleImageView;
+
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 
 public class MyProfileFragment extends Fragment {
 
     LinearLayout imgBack;
-    LinearLayout lin_close_account, lin_logout, lin_sync, lin_web;
+    LinearLayout lin_close_account, lin_logout, lin_sync, lin_web, lin_star_message;
     FirebaseUser firebaseUser;
     DatabaseReference reference;
     FirebaseAuth firebaseAuth;
     CircleImageView image_profile;
     ImageView img_edit_profile;
-
     StorageReference storageReference;
     private StorageTask uploadTask;
     TextView txtName, txtMobile;
     Uri mImageUri = null;
     int GALLERY = 1, CAMERA = 2;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -126,6 +134,16 @@ public class MyProfileFragment extends Fragment {
             }
         });
 
+        lin_star_message.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+//                getAllStarMessages();
+                MainActivity.showpart2();
+                FragmentManager fragmentManager = ((FragmentActivity) getContext()).getSupportFragmentManager();
+                fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new StarMessagesFragment()).addToBackStack(null).commit();
+
+            }
+        });
         imgBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -136,6 +154,7 @@ public class MyProfileFragment extends Fragment {
         return view;
 
     }
+
 
     private void checkImage() {
         reference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
@@ -219,6 +238,7 @@ public class MyProfileFragment extends Fragment {
         lin_close_account = view.findViewById(R.id.lin_close_account);
         lin_sync = view.findViewById(R.id.lin_sync);
         lin_web = view.findViewById(R.id.lin_web);
+        lin_star_message = view.findViewById(R.id.lin_star_message);
         imgBack = view.findViewById(R.id.imgBack);
         lin_logout = view.findViewById(R.id.lin_logout);
         txtName = view.findViewById(R.id.txtName);
@@ -449,7 +469,7 @@ public class MyProfileFragment extends Fragment {
                 mImageUri = data.getData();
                 image_profile.setImageURI(mImageUri);
                 if (uploadTask != null && uploadTask.isInProgress()) {
-                    Toast.makeText(getContext(), "Upload in preogress", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Upload in progress", Toast.LENGTH_SHORT).show();
                 } else {
                     uploadImage();
                 }
@@ -462,7 +482,7 @@ public class MyProfileFragment extends Fragment {
             mImageUri = getImageUri(getContext(), bitmap);
             image_profile.setImageBitmap(bitmap);
             if (uploadTask != null && uploadTask.isInProgress()) {
-                Toast.makeText(getContext(), "Upload in preogress", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Upload in progress", Toast.LENGTH_SHORT).show();
             } else {
                 uploadImage();
             }

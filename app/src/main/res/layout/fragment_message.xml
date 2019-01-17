@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/root_view"
     android:background="@drawable/border_white"
     android:orientation="vertical">
 
     <LinearLayout
-        android:layout_weight="0"
-        android:visibility="visible"
         android:id="@+id/toolbarLayout"
         android:layout_width="match_parent"
         android:layout_height="@dimen/_50sdp"
+        android:layout_weight="0"
         android:background="@drawable/border_white"
         android:clipToPadding="false"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:visibility="visible">
 
         <LinearLayout
             android:id="@+id/imgBack"
@@ -47,21 +47,21 @@
             android:orientation="vertical">
 
             <hani.momanii.supernova_emoji_library.Helper.EmojiconTextView
-                android:gravity="center"
-                android:layout_gravity="center"
                 android:id="@+id/txtUserName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:fontFamily="@font/m"
+                android:gravity="center"
                 android:textColor="@android:color/black"
                 android:textSize="@dimen/_15sdp"
                 android:textStyle="bold" />
 
             <TextView
-                android:layout_gravity="center"
                 android:id="@+id/txtCheckActive"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:fontFamily="@font/m"
                 android:gravity="center"
                 android:textColor="@color/grayone"
@@ -70,35 +70,38 @@
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/imgUser"
-            android:layout_marginRight="8dp"
             android:layout_width="@dimen/_40sdp"
             android:layout_height="match_parent"
             android:layout_marginTop="@dimen/_8sdp"
+            android:layout_marginRight="8dp"
             android:layout_marginBottom="@dimen/_8sdp"
             android:layout_weight="0" />
 
     </LinearLayout>
 
     <View
-        android:layout_weight="0"
         android:id="@+id/vw"
         android:layout_width="match_parent"
         android:layout_height="@dimen/_1sdp"
+        android:layout_weight="0"
         android:background="@color/gray" />
 
     <RelativeLayout
-        android:layout_weight="1"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
             android:src="@drawable/imeg4" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
+
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recycler_view"
                 android:layout_width="match_parent"
@@ -164,7 +167,8 @@
                         android:hint="@string/type_a_message"
                         android:imeOptions="actionSend"
                         android:maxLines="4"
-                        android:textColorHint="#ccc" >
+                        android:textColorHint="#ccc">
+
                         <requestFocus />
                     </hani.momanii.supernova_emoji_library.Helper.EmojiconEditText>
                 </LinearLayout>

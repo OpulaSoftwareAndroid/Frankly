@@ -11,7 +11,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -20,7 +19,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -29,7 +27,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.opula.chatapp.adapter.MessageAdapter;
-import com.opula.chatapp.adapter.UserAdapter;
 import com.opula.chatapp.constant.SharedPreference;
 import com.opula.chatapp.constant.WsConstant;
 import com.opula.chatapp.fragments.ListChatFragment;
@@ -37,8 +34,6 @@ import com.opula.chatapp.fragments.ListGroupChatFragment;
 import com.opula.chatapp.fragments.ListUserFragment;
 import com.opula.chatapp.fragments.MessageFragment;
 import com.opula.chatapp.fragments.MyProfileFragment;
-import com.opula.chatapp.model.Chat;
-import com.opula.chatapp.model.Chatlist;
 import com.opula.chatapp.model.User;
 
 import java.util.HashMap;
@@ -58,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
     FirebaseDatabase mFirebaseInstance;
     FirebaseAuth firebaseAuth;
     SharedPreference sharedPreference;
-    LinearLayout imgBack,imgTrash,imgCopy,imgForward,imgStar;
+    LinearLayout imgBack, imgTrash, imgCopy, imgForward, imgStar;
     public static FirebaseUser fuser;
 
     @Override
@@ -107,8 +102,8 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     User user = dataSnapshot.getValue(User.class);
                     assert user != null;
-                    sharedPreference.save(MainActivity.this,user.getUsername(),WsConstant.userUsername);
-                    sharedPreference.save(MainActivity.this,user.getImageURL(),WsConstant.userImage);
+                    sharedPreference.save(MainActivity.this, user.getUsername(), WsConstant.userUsername);
+                    sharedPreference.save(MainActivity.this, user.getImageURL(), WsConstant.userImage);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -149,6 +144,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 showpart1();
+                MessageAdapter.starMessage(MainActivity.this);
             }
         });
 
@@ -159,7 +155,6 @@ public class MainActivity extends AppCompatActivity {
                 MessageAdapter.forwardMessage(MainActivity.this);
             }
         });
-
 
 
         fab.setOnClickListener(new View.OnClickListener() {

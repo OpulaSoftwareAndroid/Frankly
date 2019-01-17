@@ -76,7 +76,7 @@
                             android:alpha="0.9"
                             android:background="@drawable/gradient_bg"
                             android:scaleType="centerCrop"
-                            android:visibility="visible" />
+                            android:visibility="gone" />
 
                         <ImageView
                             android:id="@+id/img_download"
@@ -86,7 +86,7 @@
                             android:layout_centerVertical="true"
                             android:layout_marginStart="110dp"
                             android:src="@drawable/ic_downward"
-                            android:visibility="visible" />
+                            android:visibility="gone" />
                     </RelativeLayout>
 
                 </RelativeLayout>

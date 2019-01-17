@@ -29,10 +29,10 @@
                 tools:targetApi="lollipop">
 
                 <LinearLayout
-                    android:layout_centerVertical="true"
                     android:id="@+id/imgBack"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
                     android:layout_gravity="center"
                     android:paddingStart="@dimen/_8sdp"
                     android:paddingTop="@dimen/_8sdp"
@@ -191,6 +191,40 @@
                         android:textSize="@dimen/_14sdp" />
                 </LinearLayout>
 
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="48dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@color/gray" />
+
+                <LinearLayout
+                    android:id="@+id/lin_star_message"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:weightSum="1">
+
+                    <ImageView
+                        android:layout_width="@dimen/_32sdp"
+                        android:layout_height="@dimen/_32sdp"
+                        android:layout_marginRight="@dimen/_8sdp"
+                        android:src="@drawable/web_frankly" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_centerHorizontal="true"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/m"
+                        android:gravity="center|left"
+                        android:text="Star Message"
+                        android:textColor="@android:color/black"
+                        android:textSize="@dimen/_14sdp" />
+                </LinearLayout>
 
                 <View
                     android:layout_width="match_parent"

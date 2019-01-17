@@ -1,8 +1,7 @@
 package com.opula.chatapp.adapter;
 
+import android.app.Activity;
 import android.content.Context;
-import android.net.Uri;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -23,7 +22,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -31,8 +29,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 import com.opula.chatapp.MainActivity;
 import com.opula.chatapp.R;
 import com.opula.chatapp.constant.AppGlobal;
@@ -40,13 +36,6 @@ import com.opula.chatapp.constant.WsConstant;
 import com.opula.chatapp.model.Chat;
 import com.opula.chatapp.model.User;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URL;
 import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -67,7 +56,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     public static List<Chat> mChat;
     private String imageurl;
     String AES = "AES";
-    FirebaseUser fuser;
+    public static FirebaseUser fuser;
     public static int i = 0;
     public static ForwardMessageAdapter newChatUserAdapter;
 
@@ -164,94 +153,94 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         String str = getDateCurrentTimeZone(Long.parseLong(chat.getTime()));
         holder.show_time.setText(str);
 
-        holder.img_download.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                holder.progress_circular.setVisibility(View.VISIBLE);
-                FirebaseStorage storageRef = FirebaseStorage.getInstance();
-                StorageReference dateRef = storageRef.getReferenceFromUrl(chat.getImage());
-
-                URL url = null;
-                InputStream input = null;
-                try {
-                    url = new URL(chat.getImage());
-                    input = url.openStream();
-                    File storagePath = Environment.getExternalStorageDirectory();
-                    File imageDirectory = new File(storagePath+"/Shreem Connect/images");
-                    if(!imageDirectory.exists()) {
-                        imageDirectory.mkdirs();
-                    }
-                    File file = new File(imageDirectory,  "/"+System.currentTimeMillis()+".png");
-                    Log.i("filepath:", " " + file);
-                    DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Chats").child(chat.getTable_id());
-                    HashMap<String, Object> map = new HashMap<>();
-                    map.put("storage_uri", "" + file);
-                    reference.updateChildren(map);
-                    OutputStream output = new FileOutputStream(file);
-                    try {
-                        byte[] buffer = new byte[2024];
-                        int bytesRead = 0;
-                        while ((bytesRead = input.read(buffer, 0, buffer.length)) >= 0) {
-                            output.write(buffer, 0, bytesRead);
-                        }
-                    } finally {
-                        output.close();
-                        input.close();
-                        Toast.makeText(mContext, "successfully Saved", Toast.LENGTH_SHORT).show();
-                    }
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                dateRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                    @Override
-                    public void onSuccess(Uri downloadUrl) {
-                        Toast.makeText(mContext, "successfully Download", Toast.LENGTH_SHORT).show();
-                        holder.progress_circular.setVisibility(View.INVISIBLE);
-                    }
-                });
-            }
-        });
-
-
-//        holder.img_receive.setOnClickListener(new View.OnClickListener() {
+//        holder.img_download.setOnClickListener(new View.OnClickListener() {
 //            @Override
-//            public void onClick(View v) {
-//                final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mContext);
+//            public void onClick(View view) {
+//                holder.progress_circular.setVisibility(View.VISIBLE);
+//                FirebaseStorage storageRef = FirebaseStorage.getInstance();
+//                StorageReference dateRef = storageRef.getReferenceFromUrl(chat.getImage());
 //
-//                LayoutInflater inflater = ((Activity) mContext).getLayoutInflater();
-//                View dialogView = inflater.inflate(R.layout.dailog_show_image, null);
-//                alertDialogBuilder.setView(dialogView);
-//                alertDialogBuilder.setCancelable(true);
+//                URL url = null;
+//                InputStream input = null;
+//                try {
+//                    url = new URL(chat.getImage());
+//                    input = url.openStream();
+//                    File storagePath = Environment.getExternalStorageDirectory();
+//                    File imageDirectory = new File(storagePath+"/Shreem Connect/images");
+//                    if(!imageDirectory.exists()) {
+//                        imageDirectory.mkdirs();
+//                    }
+//                    File file = new File(imageDirectory,  "/"+System.currentTimeMillis()+".png");
+//                    Log.i("filepath:", " " + file);
+//                    DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Chats").child(chat.getTable_id());
+//                    HashMap<String, Object> map = new HashMap<>();
+//                    map.put("storage_uri", "" + file);
+//                    reference.updateChildren(map);
+//                    OutputStream output = new FileOutputStream(file);
+//                    try {
+//                        byte[] buffer = new byte[2024];
+//                        int bytesRead = 0;
+//                        while ((bytesRead = input.read(buffer, 0, buffer.length)) >= 0) {
+//                            output.write(buffer, 0, bytesRead);
+//                        }
+//                    } finally {
+//                        output.close();
+//                        input.close();
+//                        Toast.makeText(mContext, "successfully Saved", Toast.LENGTH_SHORT).show();
+//                    }
+//                } catch (FileNotFoundException e) {
+//                    e.printStackTrace();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
 //
-//                final ImageView image = dialogView.findViewById(R.id.image);
-//
-//                AppGlobal.showProgressDialog(mContext);
-//                final AlertDialog alertDialog = alertDialogBuilder.create();
-//
-//                String string = chat.getImage();
-//
-//                Glide.with(mContext).load(string)
-//                        .listener(new RequestListener<String, GlideDrawable>() {
-//                            @Override
-//                            public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
-//                                AppGlobal.hideProgressDialog(mContext);
-//                                Toast.makeText(mContext, "No Image Found!" + model + "/" + e, Toast.LENGTH_SHORT).show();
-//                                return false;
-//                            }
-//
-//                            @Override
-//                            public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-//                                AppGlobal.hideProgressDialog(mContext);
-//                                alertDialog.show();
-//                                return false;
-//                            }
-//                        })
-//                        .into(image);
+//                dateRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+//                    @Override
+//                    public void onSuccess(Uri downloadUrl) {
+//                        Toast.makeText(mContext, "successfully Download", Toast.LENGTH_SHORT).show();
+//                        holder.progress_circular.setVisibility(View.INVISIBLE);
+//                    }
+//                });
 //            }
 //        });
+
+
+        holder.img_receive.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mContext);
+
+                LayoutInflater inflater = ((Activity) mContext).getLayoutInflater();
+                View dialogView = inflater.inflate(R.layout.dailog_show_image, null);
+                alertDialogBuilder.setView(dialogView);
+                alertDialogBuilder.setCancelable(true);
+
+                final ImageView image = dialogView.findViewById(R.id.image);
+
+                AppGlobal.showProgressDialog(mContext);
+                final AlertDialog alertDialog = alertDialogBuilder.create();
+
+                String string = chat.getImage();
+
+                Glide.with(mContext).load(string)
+                        .listener(new RequestListener<String, GlideDrawable>() {
+                            @Override
+                            public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                                AppGlobal.hideProgressDialog(mContext);
+                                Toast.makeText(mContext, "No Image Found!" + model + "/" + e, Toast.LENGTH_SHORT).show();
+                                return false;
+                            }
+
+                            @Override
+                            public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                                AppGlobal.hideProgressDialog(mContext);
+                                alertDialog.show();
+                                return false;
+                            }
+                        })
+                        .into(image);
+            }
+        });
 
         holder.linear_chat.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -267,6 +256,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     @Override
     public int getItemCount() {
         return mChat.size();
+//        88666922
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -429,6 +419,24 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
             }
         });
+    }
+
+    public static void starMessage(Context context) {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("StarMessages").push();
+        HashMap<String, Object> hashMap = new HashMap<>();
+
+        if (AppGlobal.isNetwork(context)) {
+            hashMap.put("id", fuser.getUid());
+            hashMap.put("sender", mChat.get(i).getSender());
+            hashMap.put("receiver", mChat.get(i).getReceiver());
+            hashMap.put("message", mChat.get(i).getMessage());
+            hashMap.put("isimage", mChat.get(i).isIsimage());
+            hashMap.put("image", mChat.get(i).getImage());
+            hashMap.put("table_id", reference.getKey());
+        }
+
+        reference.setValue(hashMap);
+
     }
 
 
