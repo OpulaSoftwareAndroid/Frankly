@@ -7,8 +7,10 @@
     <color name="colorPrimaryLightk">#d83b5998</color>
 
 
-    <color name="colorAccent">#3578e4</color>
-    <color name="colorAccentLight">#d9d9d9</color>
+    <color name="colorAccent">#eb268e</color>
+    <color name="colorAccentLight">#fdfdfe</color>
+
+    <color name="chatright">#e4fdcb</color>
 
     //costom
     <color name="bg_main">#ecebec</color>
@@ -16,11 +18,13 @@
     <color name="green">#12d218</color>
     <color name="black">#020202</color>
     <color name="gray">#e4e0e0</color>
-    <color name="grayone">#bfbfbf</color>
+    <color name="grayone">#6e6e6e</color>
 
     <color name="mainscreen_black">#333333</color>
     <color name="messagescrren">#eaf2f4</color>
     <color name="messageselect">#e1e5f0</color>
+
+    <color name="color_selecchat">#b2d9e2</color>
 
 
 </resources>

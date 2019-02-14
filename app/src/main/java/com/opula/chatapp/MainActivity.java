@@ -42,7 +42,8 @@ public class MainActivity extends AppCompatActivity {
 
     private long mBackPressed;
     private static final int TIME_INTERVAL = 2000;
-    public static TextView text, txt_list, txt_chats;
+    public static TextView text;
+    public static LinearLayout txt_globle, txt_my_wallate;
     ImageView img_setting, img_chat;
     public static FragmentManager fragmentManager;
     public static FirebaseUser firebaseUser;
@@ -71,8 +72,8 @@ public class MainActivity extends AppCompatActivity {
         sharedPreference = new SharedPreference();
         fuser = FirebaseAuth.getInstance().getCurrentUser();
 
-        txt_list = findViewById(R.id.txt_list);
-        txt_chats = findViewById(R.id.txt_chats);
+        txt_globle = findViewById(R.id.txt_globle);
+        txt_my_wallate = findViewById(R.id.txt_my_wallate);
         img_setting = findViewById(R.id.img_setting);
         img_chat = findViewById(R.id.img_chat);
         fab = findViewById(R.id.fab);
@@ -121,6 +122,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 showpart1();
+                MessageAdapter.back(MainActivity.this);
             }
         });
 
@@ -172,19 +174,19 @@ public class MainActivity extends AppCompatActivity {
         fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new ListChatFragment()).addToBackStack(null).commit();
 
 
-        txt_list.setOnClickListener(new View.OnClickListener() {
+        txt_my_wallate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                checkListTheme(MainActivity.this);
-                String ismain = WsConstant.ismain;
-                if (ismain.equalsIgnoreCase("p")) {
-                    FragmentManager fragmentGroup = getSupportFragmentManager();
-                    fragmentGroup.beginTransaction().replace(R.id.frame_mainactivity, new ListChatFragment()).addToBackStack(null).commit();
-                } else if (ismain.equalsIgnoreCase("g")) {
-                    FragmentManager fragmentPersonal = getSupportFragmentManager();
-                    fragmentPersonal.beginTransaction().replace(R.id.frame_mainactivity, new ListGroupChatFragment()).addToBackStack(null).commit();
-                }
-
+//                checkMyTheme(MainActivity.this);
+//                String ismain = WsConstant.ismain;
+//                if (ismain.equalsIgnoreCase("p")) {
+//                    FragmentManager fragmentGroup = getSupportFragmentManager();
+//                    fragmentGroup.beginTransaction().replace(R.id.frame_mainactivity, new ListChatFragment()).addToBackStack(null).commit();
+//                } else if (ismain.equalsIgnoreCase("g")) {
+//                    FragmentManager fragmentPersonal = getSupportFragmentManager();
+//                    fragmentPersonal.beginTransaction().replace(R.id.frame_mainactivity, new ListGroupChatFragment()).addToBackStack(null).commit();
+//                }
+                Toast.makeText(MainActivity.this, "Coming Soon..!", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -200,7 +202,7 @@ public class MainActivity extends AppCompatActivity {
         img_chat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                checkListTheme(MainActivity.this);
+//                checkListTheme(MainActivity.this);
                 String ismain = WsConstant.ismain;
                 if (ismain.equalsIgnoreCase("p")) {
                     img_chat.setImageDrawable(getResources().getDrawable(R.drawable.personal));
@@ -246,19 +248,19 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public static void checkChatTheme(Context context) {
-        txt_list.setTextColor(context.getResources().getColor(R.color.black));
+   /* public static void checkGlobleTheme(Context context) {
+        txt_globle.setTextColor(context.getResources().getColor(R.color.black));
         txt_chats.setTextColor(context.getResources().getColor(R.color.white));
         txt_list.setBackgroundResource(R.drawable.toolbar_backgroung_list_white);
         txt_chats.setBackgroundResource(R.drawable.toolbar_backgroung_chats_red);
     }
 
-    public static void checkListTheme(Context context) {
+    public static void checkMyTheme(Context context) {
         txt_list.setTextColor(context.getResources().getColor(R.color.white));
         txt_chats.setTextColor(context.getResources().getColor(R.color.black));
         txt_list.setBackgroundResource(R.drawable.toolbar_backgroung_list_red);
         txt_chats.setBackgroundResource(R.drawable.toolbar_backgroung_chats_white);
-    }
+    }*/
 
     @Override
     public void onBackPressed() {
@@ -274,10 +276,10 @@ public class MainActivity extends AppCompatActivity {
                 mBackPressed = System.currentTimeMillis();
             }
         } else {
-            txt_list.setTextColor(getResources().getColor(R.color.white));
+            /*txt_list.setTextColor(getResources().getColor(R.color.white));
             txt_chats.setTextColor(getResources().getColor(R.color.black));
             txt_list.setBackgroundResource(R.drawable.toolbar_backgroung_list_red);
-            txt_chats.setBackgroundResource(R.drawable.toolbar_backgroung_chats_white);
+            txt_chats.setBackgroundResource(R.drawable.toolbar_backgroung_chats_white);*/
             showFloatingActionButton();
             super.onBackPressed();
         }

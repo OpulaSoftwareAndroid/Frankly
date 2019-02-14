@@ -198,7 +198,7 @@ public class GroupProfileFragment extends Fragment {
             public void onClick(View view) {
 //                sharedPreference.save(getContext(), user.getGroupId(), WsConstant.groupUserId);
                 MainActivity.hideFloatingActionButton();
-                MainActivity.checkChatTheme(getContext());
+//                MainActivity.checkChatTheme(getContext());
                 MainActivity.showpart2();
                 FragmentManager fragmentManager = ((FragmentActivity) getContext()).getSupportFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new AddMemberGroupFragment()).addToBackStack(null).commit();
@@ -241,7 +241,7 @@ public class GroupProfileFragment extends Fragment {
         deleteGroupFromChatList();
         deleteMemebeFromGroup();
 
-        MainActivity.checkListTheme(Objects.requireNonNull(getContext()));
+//        MainActivity.checkListTheme(Objects.requireNonNull(getContext()));
 
         FragmentManager fragmentPersonal = Objects.requireNonNull(getActivity()).getSupportFragmentManager();
         fragmentPersonal.beginTransaction().replace(R.id.frame_mainactivity, new ListGroupChatFragment()).addToBackStack(null).commit();

@@ -11,7 +11,7 @@
                         android:radius="10dp"
                         android:topLeftRadius="0dp"/>
 
-                    <solid android:color="@color/colorPrimary"/>
+                    <solid android:color="@color/color_selecchat"/>
 
                 </shape>
             </item>
@@ -28,7 +28,7 @@
                         android:radius="10dp"
                         android:topLeftRadius="0dp"/>
 
-                    <solid android:color="@color/colorPrimary"/>
+                    <solid android:color="@color/chatright"/>
 
                 </shape>
             </item>

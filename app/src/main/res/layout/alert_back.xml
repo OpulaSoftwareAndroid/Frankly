@@ -9,7 +9,7 @@
         android:fontFamily="@font/m"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/grq"
+        android:background="@drawable/gradient_bg_splash"
         android:gravity="center"
         android:padding="@dimen/_8sdp"
         android:text="@string/app_name"

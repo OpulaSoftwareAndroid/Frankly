@@ -1,5 +1,6 @@
 package com.opula.chatapp.fragments;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -14,8 +15,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -28,6 +33,7 @@ import com.opula.chatapp.R;
 import com.opula.chatapp.adapter.MessageAdapter;
 import com.opula.chatapp.adapter.NewChatUserAdapter;
 import com.opula.chatapp.adapter.UserSharedAdapter;
+import com.opula.chatapp.constant.AppGlobal;
 import com.opula.chatapp.constant.SharedPreference;
 import com.opula.chatapp.constant.WsConstant;
 import com.opula.chatapp.model.Chat;
@@ -57,6 +63,7 @@ public class UserProfileFragment extends Fragment {
     FirebaseUser fuser;
     FirebaseAuth firebaseAuth;
     public static FirebaseUser firebaseUser;
+    String image;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -88,7 +95,7 @@ public class UserProfileFragment extends Fragment {
                 try {
                     Log.d("DATAA", dataSnapshot.getValue() + "/");
                     String email = dataSnapshot.child("email").getValue().toString();
-                    String image = dataSnapshot.child("imageURL").getValue().toString();
+                    image = dataSnapshot.child("imageURL").getValue().toString();
                     String username = dataSnapshot.child("username").getValue().toString();
                     txtEmail.setText(email);
                     txtName.setText(username);
@@ -105,6 +112,45 @@ public class UserProfileFragment extends Fragment {
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
+            }
+        });
+
+        image_PersonalInfo_DP.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                android.app.AlertDialog.Builder alertDialogBuilder = new android.app.AlertDialog.Builder(getActivity());
+
+                LayoutInflater inflater = ((Activity) getActivity()).getLayoutInflater();
+                View dialogView = inflater.inflate(R.layout.dailog_show_image, null);
+                alertDialogBuilder.setView(dialogView);
+                alertDialogBuilder.setCancelable(true);
+
+                final ImageView image2 = (ImageView) dialogView.findViewById(R.id.image);
+
+                final android.app.AlertDialog alertDialog = alertDialogBuilder.create();
+
+                if (image.equals("default")) {
+                    Toast.makeText(getActivity(), "No Image Found..!", Toast.LENGTH_SHORT).show();
+                } else {
+                    AppGlobal.showProgressDialog(getActivity());
+                    Glide.with(getActivity()).load(image)
+                            .listener(new RequestListener<String, GlideDrawable>() {
+                                @Override
+                                public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                                    AppGlobal.hideProgressDialog(getActivity());
+                                    Toast.makeText(getActivity(), "No Image Found!" + model + "/" + e, Toast.LENGTH_SHORT).show();
+                                    return false;
+                                }
+
+                                @Override
+                                public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                                    AppGlobal.hideProgressDialog(getActivity());
+                                    alertDialog.show();
+                                    return false;
+                                }
+                            })
+                            .into(image2);
+                }
             }
         });
 

@@ -4,6 +4,7 @@
     android:layout_gravity="end"
     android:gravity="end"
     android:id="@+id/linmain"
+
     android:layout_height="wrap_content"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:emojicon="http://schemas.android.com/apk/res-auto">
@@ -54,6 +55,7 @@
                     android:adjustViewBounds="true"
                     android:scaleType="centerCrop"
                     android:visibility="gone" />
+
             <RelativeLayout
                 android:id="@+id/img_blur"
                 android:layout_width="300dp"
@@ -80,16 +82,15 @@
             </RelativeLayout>
             </RelativeLayout>
 
-
             <hani.momanii.supernova_emoji_library.Helper.EmojiconTextView
                 android:id="@+id/show_message"
-                android:fontFamily="@font/m"
+                android:fontFamily="@font/m_m"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="start"
                 emojicon:emojiconSize="22sp"
                 android:textAlignment="gravity"
-                android:textColor="@color/white"
+                android:textColor="@color/black"
                 android:textSize="18sp"
                 android:visibility="visible" />
 
@@ -105,7 +106,6 @@
                     android:id="@+id/show_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/white"
                     android:textSize="10sp"
                     android:visibility="visible" />
 
@@ -140,6 +140,8 @@
                         android:layout_height="12dp" />
                 </RelativeLayout>
             </LinearLayout>
+
         </LinearLayout>
+
     </RelativeLayout>
 </LinearLayout>

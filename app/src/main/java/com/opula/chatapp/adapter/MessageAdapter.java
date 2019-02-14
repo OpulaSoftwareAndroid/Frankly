@@ -2,7 +2,9 @@ package com.opula.chatapp.adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Vibrator;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,7 +19,6 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
@@ -149,7 +150,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             }
         }
 
-
         String str = getDateCurrentTimeZone(Long.parseLong(chat.getTime()));
         holder.show_time.setText(str);
 
@@ -245,9 +245,39 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         holder.linear_chat.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
+                holder.linmain.setBackgroundColor(ContextCompat.getColor(mContext, R.color.color_selecchat));
                 i = holder.getAdapterPosition();
                 MainActivity.showpart3();
+                Vibrator vv = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
+                assert vv != null;
+                vv.vibrate(50); // 5000 miliseconds = 5 seconds
                 return false;
+            }
+        });
+
+        holder.linmain.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                holder.linmain.setBackgroundColor(ContextCompat.getColor(mContext, R.color.color_selecchat));
+                i = holder.getAdapterPosition();
+                MainActivity.showpart3();
+                Vibrator vv = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
+                assert vv != null;
+                vv.vibrate(50); // 5000 miliseconds = 5 seconds
+                return false;
+            }
+        });
+
+        holder.img_receive.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                holder.linmain.setBackgroundColor(ContextCompat.getColor(mContext, R.color.color_selecchat));
+                i = holder.getAdapterPosition();
+                MainActivity.showpart3();
+                Vibrator vv = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
+                assert vv != null;
+                vv.vibrate(50); // 5000 miliseconds = 5 seconds
+                return true;
             }
         });
 
@@ -256,7 +286,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     @Override
     public int getItemCount() {
         return mChat.size();
-//        88666922
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -336,6 +365,10 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         AppGlobal.copyData(context, mChat.get(i).getMessage());
     }
 
+    public static void back(Context context) {
+
+    }
+
     public static void forwardMessage(final Context context) {
         final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
         LayoutInflater inflater = ((MainActivity) context).getLayoutInflater();
@@ -379,7 +412,8 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
                             mUsers.add(user);
                         }
                     }
-                    newChatUserAdapter = new ForwardMessageAdapter(context, mUsers, false, mChat.get(i).getMessage(), alertDialog);
+
+                    newChatUserAdapter = new ForwardMessageAdapter(context, mUsers, mChat.get(i).isIsimage(),false, mChat.get(i).getMessage(), alertDialog, mChat.get(i).getImage());
                     WsConstant.check = "activity";
                     recyclerView.setAdapter(newChatUserAdapter);
                 } catch (Exception e) {
@@ -436,8 +470,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         }
 
         reference.setValue(hashMap);
-
+        Toast.makeText(context, "Message has been stared..!", Toast.LENGTH_SHORT).show();
     }
-
 
 }

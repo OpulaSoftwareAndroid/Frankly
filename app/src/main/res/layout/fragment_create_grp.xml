@@ -78,7 +78,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="@dimen/_32sdp"
                         android:layout_weight="0"
-                        android:background="@drawable/btn_shape_rounded"
+                        android:background="@drawable/btnshape_plain_without_stroke"
                         android:fontFamily="@font/m"
                         android:paddingLeft="@dimen/_30sdp"
                         android:paddingRight="@dimen/_30sdp"

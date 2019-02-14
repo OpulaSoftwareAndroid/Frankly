@@ -105,19 +105,17 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<GroupMessageAdapte
             holder.show_message.setText(chat.getMessage());
         }
 
-        if (position == mChat.size() - 1) {
-            if (chat.isIsseen()) {
-                //holder.txt_seen.setText("Seen");
-                holder.img_tick.setVisibility(View.GONE);
-                holder.img_dtick.setVisibility(View.VISIBLE);
-            } else {
-                //holder.txt_seen.setText("Delivered");
-                holder.img_tick.setVisibility(View.VISIBLE);
-                holder.img_dtick.setVisibility(View.GONE);
-            }
+
+        if (chat.isIsseen()) {
+            //holder.txt_seen.setText("Seen");
+            holder.img_tick.setVisibility(View.GONE);
+            holder.img_dtick.setVisibility(View.VISIBLE);
         } else {
-            holder.txt_seen.setVisibility(View.GONE);
+            //holder.txt_seen.setText("Delivered");
+            holder.img_tick.setVisibility(View.VISIBLE);
+            holder.img_dtick.setVisibility(View.GONE);
         }
+
 
         String str = getDateCurrentTimeZone(Long.parseLong(chat.getTime()));
         holder.show_time.setText(str);

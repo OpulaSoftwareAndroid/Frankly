@@ -21,7 +21,7 @@
                 android:id="@+id/progressBar_Dialog"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                app:loading_color="@color/colorPrimaryDark"
+                app:loading_color="@color/colorPrimaryone"
                 app:loading_speed="10"
                 app:loading_width="6dp"/>
 

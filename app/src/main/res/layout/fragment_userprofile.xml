@@ -288,7 +288,7 @@
                         android:fontFamily="@font/m"
                         android:gravity="center|left"
                         android:text="Block"
-                        android:textColor="@android:color/holo_red_dark"
+                        android:textColor="@color/colorPrimaryone"
                         android:textSize="@dimen/_11sdp" />
 
 
@@ -309,7 +309,7 @@
                         android:fontFamily="@font/m"
                         android:gravity="center|left"
                         android:text="Report Contact"
-                        android:textColor="@android:color/holo_red_dark"
+                        android:textColor="@color/colorPrimaryone"
                         android:textSize="@dimen/_11sdp" />
                 </LinearLayout>
             </ScrollView>

@@ -30,17 +30,19 @@ public class ForwardMessageAdapter extends RecyclerView.Adapter<ForwardMessageAd
 
     private Context mContext;
     private List<User> mUsers;
-    private boolean ischat;
+    private boolean ischat,isimage;
     SharedPreference sharedPreference;
     FirebaseUser fuser;
-    String meg;
+    String meg,url;
     AlertDialog alertDialog;
 
-    public ForwardMessageAdapter(Context mContext, List<User> mUsers, boolean ischat, String meg, AlertDialog alertDialog) {
+    public ForwardMessageAdapter(Context mContext, List<User> mUsers, boolean isimage, boolean ischat, String meg, AlertDialog alertDialog, String url) {
         this.mUsers = mUsers;
         this.mContext = mContext;
         this.ischat = ischat;
+        this.isimage = isimage;
         this.meg = meg;
+        this.url = url;
         this.alertDialog = alertDialog;
     }
 
@@ -72,9 +74,9 @@ public class ForwardMessageAdapter extends RecyclerView.Adapter<ForwardMessageAd
             public void onClick(View view) {
                 MainActivity.hideFloatingActionButton();
                 sharedPreference.save(mContext, user.getId(), WsConstant.userId);
-                MainActivity.checkChatTheme(mContext);
+//                MainActivity.checkChatTheme(mContext);
                 MainActivity.showpart1();
-                MessageFragment.sendMessage(mContext,fuser.getUid(), user.getId() , meg, false, "default");
+                MessageFragment.sendMessage(mContext,fuser.getUid(), user.getId() , meg, isimage, url);
                 alertDialog.dismiss();
                 FragmentManager fragmentManager = ((FragmentActivity) mContext).getSupportFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new MessageFragment()).commit();

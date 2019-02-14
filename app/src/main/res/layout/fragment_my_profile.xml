@@ -138,6 +138,7 @@
                     android:weightSum="1">
 
                     <ImageView
+                        android:tint="@color/colorPrimaryone"
                         android:layout_width="@dimen/_32sdp"
                         android:layout_height="@dimen/_32sdp"
                         android:layout_marginRight="@dimen/_8sdp"
@@ -175,6 +176,7 @@
                     <ImageView
                         android:layout_width="@dimen/_32sdp"
                         android:layout_height="@dimen/_32sdp"
+                        android:tint="@color/colorPrimaryone"
                         android:layout_marginRight="@dimen/_8sdp"
                         android:src="@drawable/web_frankly" />
 
@@ -186,7 +188,7 @@
                         android:layout_weight="1"
                         android:fontFamily="@font/m"
                         android:gravity="center|left"
-                        android:text="Frankly Web"
+                        android:text="Shreem Sanjeevani Web"
                         android:textColor="@android:color/black"
                         android:textSize="@dimen/_14sdp" />
                 </LinearLayout>
@@ -208,10 +210,11 @@
                     android:weightSum="1">
 
                     <ImageView
+                        android:tint="@color/colorPrimaryone"
                         android:layout_width="@dimen/_32sdp"
                         android:layout_height="@dimen/_32sdp"
                         android:layout_marginRight="@dimen/_8sdp"
-                        android:src="@drawable/web_frankly" />
+                        android:src="@drawable/ic_star" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -221,7 +224,7 @@
                         android:layout_weight="1"
                         android:fontFamily="@font/m"
                         android:gravity="center|left"
-                        android:text="Star Message"
+                        android:text="Starred Message"
                         android:textColor="@android:color/black"
                         android:textSize="@dimen/_14sdp" />
                 </LinearLayout>
@@ -243,6 +246,7 @@
                     android:weightSum="1">
 
                     <ImageView
+                        android:tint="@color/colorPrimaryone"
                         android:layout_width="@dimen/_32sdp"
                         android:layout_height="@dimen/_32sdp"
                         android:layout_marginRight="@dimen/_8sdp"
@@ -278,6 +282,7 @@
                     android:weightSum="1">
 
                     <ImageView
+                        android:tint="@color/colorPrimaryone"
                         android:layout_width="@dimen/_32sdp"
                         android:layout_height="@dimen/_32sdp"
                         android:layout_marginRight="@dimen/_8sdp"

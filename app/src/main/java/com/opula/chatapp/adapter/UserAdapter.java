@@ -2,6 +2,7 @@ package com.opula.chatapp.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -13,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -30,9 +32,11 @@ import com.opula.chatapp.fragments.MessageFragment;
 import com.opula.chatapp.fragments.UserProfileFragment;
 import com.opula.chatapp.model.BroadcastUser;
 import com.opula.chatapp.model.Chat;
+import com.opula.chatapp.model.Chatlist;
 import com.opula.chatapp.model.User;
 
 import java.security.MessageDigest;
+import java.sql.Struct;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -47,12 +51,12 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
     private Context mContext;
     private List<User> mUsers;
     private List<BroadcastUser> mBroadcast;
-    private boolean ischat,is;
+    private boolean ischat, is;
     SharedPreference sharedPreference;
     String theLastMessage, thetime;
     String AES = "AES";
 
-    public UserAdapter(Context mContext, List<User> mUsers , List<BroadcastUser> mBroadcast, boolean ischat, boolean is) {
+    public UserAdapter(Context mContext, List<User> mUsers, List<BroadcastUser> mBroadcast, boolean ischat, boolean is) {
         this.mUsers = mUsers;
         this.mBroadcast = mBroadcast;
         this.mContext = mContext;
@@ -68,11 +72,11 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
 
         sharedPreference = new SharedPreference();
 
-        if (is){
+        if (is) {
             final User user = mUsers.get(position);
             holder.username.setText(user.getUsername());
             if (user.getImageURL().equals("default")) {
@@ -105,7 +109,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                 public void onClick(View view) {
                     MainActivity.hideFloatingActionButton();
                     sharedPreference.save(mContext, user.getId(), WsConstant.userId);
-                    MainActivity.checkChatTheme(mContext);
+//                    MainActivity.checkChatTheme(mContext);
                     MainActivity.showpart1();
                     FragmentManager fragmentManager = ((FragmentActivity) mContext).getSupportFragmentManager();
                     fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new MessageFragment()).addToBackStack(null).commit();
@@ -125,6 +129,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
                 }
             });
+
         } else {
             final BroadcastUser user = mBroadcast.get(position);
             holder.username.setText(user.getBroadcastName());
@@ -142,7 +147,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                 public void onClick(View view) {
                     MainActivity.hideFloatingActionButton();
                     sharedPreference.save(mContext, user.getBroadcastId(), WsConstant.broadcastId);
-                    MainActivity.checkChatTheme(mContext);
+//                    MainActivity.checkChatTheme(mContext);
                     MainActivity.showpart1();
                     FragmentManager fragmentManager = ((FragmentActivity) mContext).getSupportFragmentManager();
                     fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new BroadcastMessageFragment()).addToBackStack(null).commit();
@@ -152,13 +157,11 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         }
 
 
-
-
     }
 
     @Override
     public int getItemCount() {
-        if (is){
+        if (is) {
             return mUsers.size();
         } else {
             return mBroadcast.size();
@@ -203,7 +206,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                     assert firebaseUser != null;
                     firebaseUser.getUid();
                     if (chat != null) {
-                        if (chat.getTo().equalsIgnoreCase("personal")){
+                        if ("personal".equalsIgnoreCase(chat.getTo())) {
                             if (chat.getReceiver().equals(firebaseUser.getUid()) && chat.getSender().equals(userid) ||
                                     chat.getReceiver().equals(userid) && chat.getSender().equals(firebaseUser.getUid())) {
                                 theLastMessage = chat.getMessage();
@@ -212,9 +215,10 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                                 time.setText(tiime);
 
                             }
-                        } else if (chat.getTo().equalsIgnoreCase("broadcast")){
-                            for (int i=0; i<chat.getBroadcast_receiver().size();i++){
-                                if (chat.getBroadcast_receiver().get(i).equalsIgnoreCase(firebaseUser.getUid())) {
+                        }
+                        if ("broadcast".equalsIgnoreCase(chat.getTo())) {
+                            for (int i = 0; i < chat.getBroadcast_receiver().size(); i++) {
+                                if (chat.getBroadcast_receiver().get(i).equalsIgnoreCase(userid)) {
                                     theLastMessage = chat.getMessage();
 
                                     String tiime = getDateCurrentTimeZone(Long.parseLong(chat.getTime()));
@@ -267,7 +271,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                     assert firebaseUser != null;
                     firebaseUser.getUid();
                     if (chat != null) {
-                        if (chat.getTo().equalsIgnoreCase("broadcast")){
+                        if (chat.getTo().equalsIgnoreCase("broadcast")) {
                             if (chat.getSender().equalsIgnoreCase(userid)) {
                                 theLastMessage = chat.getMessage();
                                 String tiime = getDateCurrentTimeZone(Long.parseLong(chat.getTime()));
@@ -304,32 +308,32 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         });
     }
 
-    private String decrypt(String outputString, String Password) throws Exception{
+    private String decrypt(String outputString, String Password) throws Exception {
         SecretKeySpec key = genrateKey(Password);
         Cipher cipher = Cipher.getInstance(AES);
-        cipher.init(Cipher.DECRYPT_MODE,key);
-        byte[] encyptedValue = Base64.decode(outputString,Base64.DEFAULT);
+        cipher.init(Cipher.DECRYPT_MODE, key);
+        byte[] encyptedValue = Base64.decode(outputString, Base64.DEFAULT);
         byte[] decValue = cipher.doFinal(encyptedValue);
         String decyptedValue = new String(decValue);
         return decyptedValue;
     }
 
-    private SecretKeySpec genrateKey(String password) throws Exception{
+    private SecretKeySpec genrateKey(String password) throws Exception {
         final MessageDigest digest = MessageDigest.getInstance("SHA-256");
         byte[] bytes = password.getBytes("UTF-8");
-        digest.update(bytes,0, bytes.length);
+        digest.update(bytes, 0, bytes.length);
         byte[] key = digest.digest();
-        SecretKeySpec secretKeySpec = new SecretKeySpec(key,"AES");
-        return  secretKeySpec;
+        SecretKeySpec secretKeySpec = new SecretKeySpec(key, "AES");
+        return secretKeySpec;
     }
 
     public String getDateCurrentTimeZone(long timestamp) {
         try {
             Calendar calendar = Calendar.getInstance();
-            TimeZone tz = TimeZone.getDefault();
+            TimeZone tz = calendar.getTimeZone();//get your local time zone.
             calendar.setTimeInMillis(timestamp * 1000);
-            calendar.add(Calendar.MILLISECOND, tz.getOffset(calendar.getTimeInMillis()));
-            @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a");
+            SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a");
+            sdf.setTimeZone(tz);
             Date currenTimeZone = (Date) calendar.getTime();
             return sdf.format(currenTimeZone);
         } catch (Exception e) {

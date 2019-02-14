@@ -40,7 +40,6 @@ public class GroupUserAdapter extends RecyclerView.Adapter<GroupUserAdapter.View
     private List<GroupUser> mUsers;
     private boolean ischat;
     SharedPreference sharedPreference;
-
     String theLastMessage, thetime;
 
     public GroupUserAdapter(Context mContext, List<GroupUser> mUsers, boolean ischat) {
@@ -81,7 +80,7 @@ public class GroupUserAdapter extends RecyclerView.Adapter<GroupUserAdapter.View
             public void onClick(View view) {
                 sharedPreference.save(mContext, user.getGroupId(), WsConstant.groupUserId);
                 MainActivity.hideFloatingActionButton();
-                MainActivity.checkChatTheme(mContext);
+//                MainActivity.checkChatTheme(mContext);
                 MainActivity.showpart1();
                 FragmentManager fragmentManager = ((FragmentActivity) mContext).getSupportFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new GroupMessageFragment()).addToBackStack(null).commit();

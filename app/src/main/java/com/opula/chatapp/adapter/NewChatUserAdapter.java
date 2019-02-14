@@ -62,7 +62,7 @@ public class NewChatUserAdapter extends RecyclerView.Adapter<NewChatUserAdapter.
             public void onClick(View view) {
                 MainActivity.hideFloatingActionButton();
                 sharedPreference.save(mContext, user.getId(), WsConstant.userId);
-                MainActivity.checkChatTheme(mContext);
+//                MainActivity.checkChatTheme(mContext);
                 MainActivity.showpart1();
                 FragmentManager fragmentManager = ((FragmentActivity) mContext).getSupportFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new MessageFragment()).commit();

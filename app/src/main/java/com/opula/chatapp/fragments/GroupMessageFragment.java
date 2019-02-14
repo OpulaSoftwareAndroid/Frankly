@@ -133,6 +133,9 @@ public class GroupMessageFragment extends Fragment {
 
         MainActivity.hideFloatingActionButton();
 
+//        MainActivity.checkChatTheme(getActivity());
+        MainActivity.showpart1();
+
         sharedPreference = new SharedPreference();
 
         groupUserId = sharedPreference.getValue(getActivity(), WsConstant.groupUserId);
@@ -162,7 +165,7 @@ public class GroupMessageFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 MainActivity.hideFloatingActionButton();
-                MainActivity.checkChatTheme(getContext());
+//                MainActivity.checkChatTheme(getContext());
                 MainActivity.showpart2();
                 FragmentManager fragmentManager = ((FragmentActivity) getContext()).getSupportFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new GroupProfileFragment()).addToBackStack(null).commit();
@@ -173,7 +176,7 @@ public class GroupMessageFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 MainActivity.hideFloatingActionButton();
-                MainActivity.checkChatTheme(getContext());
+//                MainActivity.checkChatTheme(getContext());
                 MainActivity.showpart2();
                 FragmentManager fragmentManager = ((FragmentActivity) getContext()).getSupportFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new GroupProfileFragment()).addToBackStack(null).commit();

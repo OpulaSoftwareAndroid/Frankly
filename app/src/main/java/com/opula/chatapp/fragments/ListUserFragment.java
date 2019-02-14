@@ -36,7 +36,7 @@ public class ListUserFragment extends Fragment {
     private RecyclerView recyclerView;
     private NewChatUserAdapter newChatUserAdapter;
     private List<User> mUsers;
-    LinearLayout createNewGrpLayout,imgBack,createNewBroadcast;
+    LinearLayout createNewGrpLayout, imgBack, createNewBroadcast;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -60,6 +60,8 @@ public class ListUserFragment extends Fragment {
         });
 
         recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutFrozen(true);
+        recyclerView.setNestedScrollingEnabled(false);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mUsers = new ArrayList<>();
 
@@ -151,8 +153,9 @@ public class ListUserFragment extends Fragment {
                     mUsers.clear();
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         User user = snapshot.getValue(User.class);
-
-                        if (!user.getId().equals(firebaseUser.getUid())) {
+                        assert user != null;
+                        assert firebaseUser != null;
+                        if (!firebaseUser.getUid().equalsIgnoreCase(user.getId())) {
                             mUsers.add(user);
                         }
                     }

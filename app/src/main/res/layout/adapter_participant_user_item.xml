@@ -16,7 +16,8 @@
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/profile_image"
             android:layout_width="48dp"
-            android:layout_height="48dp" />
+            android:layout_height="48dp"
+            tools:ignore="MissingConstraints" />
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/img_on"

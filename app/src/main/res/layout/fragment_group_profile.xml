@@ -34,14 +34,15 @@
                         android:layout_gravity="center">
 
 
-                        <com.comix.rounded.RoundedCornerImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+                        <com.comix.rounded.RoundedCornerImageView
+                            xmlns:app="http://schemas.android.com/apk/res-auto"
                             android:id="@+id/image_PersonalInfo_DP"
                             android:layout_width="match_parent"
                             android:layout_height="@dimen/_150sdp"
                             android:layout_centerHorizontal="true"
                             android:scaleType="centerCrop"
                             app:cornerBottomDisable="true"
-                            app:cornerColor="@color/colorPrimary"
+                            app:cornerColor="@color/colorPrimaryone"
                             app:cornerLeftDisable="false"
                             app:cornerRadius="5dp"
                             app:cornerRightDisable="false"
@@ -222,7 +223,7 @@
                             android:layout_alignParentBottom="true"
                             android:layout_centerInParent="true"
                             android:layout_margin="@dimen/_8sdp"
-                            android:background="@drawable/btn_shape_rounded"
+                            android:background="@drawable/btnshape_plain_without_stroke"
                             android:fontFamily="@font/m"
                             android:text="Exit Group"
                             android:textColor="@color/white"

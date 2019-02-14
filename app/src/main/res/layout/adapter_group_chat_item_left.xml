@@ -55,8 +55,8 @@
 
                     <ImageView
                         android:id="@+id/img_receive"
-                        android:layout_width="300dp"
-                        android:layout_height="300dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
                         android:adjustViewBounds="true"
                         android:scaleType="centerCrop"
                         android:visibility="gone" />
@@ -79,10 +79,11 @@
                     android:id="@+id/show_message"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/m"
+                    android:fontFamily="@font/m_m"
                     android:layout_marginTop="2dp"
                     android:gravity="start"
                     emojicon:emojiconSize="22sp"
+                    android:textColor="@color/black"
                     android:textAlignment="gravity"
                     android:textSize="18sp"
                     android:visibility="visible" />
@@ -119,7 +120,6 @@
 
                 </RelativeLayout>
             </LinearLayout>
-
         </LinearLayout>
     </RelativeLayout>
 </LinearLayout>

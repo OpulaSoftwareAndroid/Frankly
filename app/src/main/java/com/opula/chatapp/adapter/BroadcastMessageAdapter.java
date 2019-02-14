@@ -164,7 +164,7 @@ public class BroadcastMessageAdapter extends RecyclerView.Adapter<BroadcastMessa
                             @Override
                             public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
                                 AppGlobal.hideProgressDialog(mContext);
-                                Toast.makeText(mContext, "No Image Found!" + model + "/" + e, Toast.LENGTH_SHORT).show();
+
                                 return false;
                             }
 
@@ -309,7 +309,7 @@ public class BroadcastMessageAdapter extends RecyclerView.Adapter<BroadcastMessa
                             mUsers.add(user);
                         }
                     }
-                    newChatUserAdapter = new ForwardMessageAdapter(context, mUsers, false,mChat.get(i).getMessage(),alertDialog);
+                    //newChatUserAdapter = new ForwardMessageAdapter(context, mUsers, false,mChat.get(i).getMessage(),alertDialog);
                     WsConstant.check = "activity";
                     recyclerView.setAdapter(newChatUserAdapter);
                 } catch (Exception e) {

@@ -139,6 +139,9 @@ public class BroadcastMessageFragment extends Fragment{
 
         MainActivity.hideFloatingActionButton();
 
+//        MainActivity.checkChatTheme(getActivity());
+        MainActivity.showpart1();
+
         sharedPreference = new SharedPreference();
 
         apiService = Client.getClient("https://fcm.googleapis.com/").create(APIService.class);

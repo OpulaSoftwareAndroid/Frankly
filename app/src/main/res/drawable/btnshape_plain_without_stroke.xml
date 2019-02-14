@@ -5,7 +5,7 @@
             <item>
                 <shape android:shape="rectangle">
                     <corners android:radius="@dimen/_5sdp"/>
-                    <solid android:color="@color/colorPrimaryLightk"/>
+                    <gradient android:angle="0" android:endColor="#eb268e" android:startColor="#eb268e" />
                 </shape>
             </item>
         </layer-list>
@@ -16,7 +16,7 @@
             <item>
                 <shape android:shape="rectangle">
                     <corners android:radius="@dimen/_5sdp"/>
-                    <solid android:color="@color/colorPrimary"/>
+                    <gradient android:angle="0" android:startColor="#eb268e" android:endColor="#00aeee"/>
                 </shape>
             </item>
         </layer-list>

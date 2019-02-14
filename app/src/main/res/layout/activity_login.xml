@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
-    android:background="@color/bg_main"
     android:layout_height="match_parent"
+    android:background="@color/bg_main"
+    android:orientation="vertical"
     tools:context=".activity.LoginActivity">
 
     <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
@@ -14,61 +14,63 @@
         android:fillViewport="true">
 
         <LinearLayout
-            android:gravity="start"
-            android:layout_gravity="start"
-            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:gravity="start"
+            android:orientation="vertical">
 
             <LinearLayout
-                android:paddingTop="@dimen/_24sdp"
-                android:paddingBottom="@dimen/_24sdp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:background="@drawable/gr"
                 android:gravity="center"
-                android:layout_gravity="center"
                 android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:paddingTop="@dimen/_24sdp"
+                android:paddingBottom="@dimen/_24sdp">
+
                 <ImageView
-                    android:src="@drawable/logo"
                     android:layout_width="@dimen/_82sdp"
-                    android:layout_height="@dimen/_82sdp" />
+                    android:layout_height="@dimen/_82sdp"
+                    android:src="@drawable/shreem_connect" />
+
                 <TextView
-                    android:textColor="@color/white"
-                    android:layout_marginTop="@dimen/_16sdp"
-                    android:textStyle="bold"
-                    android:fontFamily="@font/m"
-                    android:textSize="@dimen/_16sdp"
-                    android:text="Login"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_16sdp"
+                    android:fontFamily="@font/m"
+                    android:text="Login"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_16sdp"
+                    android:textStyle="bold" />
             </LinearLayout>
 
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:orientation="vertical"
-                android:gravity="center_horizontal"
+                android:layout_height="match_parent"
                 android:layout_below="@id/toolbar"
-                android:padding="16dp"
-                android:layout_height="match_parent">
-
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:padding="16dp">
 
 
                 <com.rengwuxian.materialedittext.MaterialEditText
-                    android:layout_width="match_parent"
-                    android:fontFamily="@font/m"
-                    android:layout_height="wrap_content"
                     android:id="@+id/email"
-                    android:inputType="textEmailAddress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    app:met_floatingLabel="normal"
-                    android:hint="Email"/>
+                    android:fontFamily="@font/m"
+                    android:hint="Email"
+                    android:inputType="textEmailAddress"
+                    app:met_floatingLabel="normal" />
 
                 <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp">
+
                     <com.scottyab.showhidepasswordedittext.ShowHidePasswordEditText
                         android:id="@+id/password"
                         android:layout_width="match_parent"
@@ -81,27 +83,27 @@
 
                 <Button
                     android:id="@+id/btn_login"
+                    android:layout_width="@dimen/_124sdp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_16sdp"
+                    android:background="@drawable/btnshape"
                     android:fontFamily="@font/m"
-                    android:textSize="@dimen/_14sdp"
+                    android:text="Login"
                     android:textAllCaps="false"
                     android:textColor="@color/white"
-                    android:background="@drawable/btnshape"
-                    android:layout_marginTop="@dimen/_16sdp"
-                    android:text="Login"
-                    android:layout_width="@dimen/_124sdp"
-                    android:layout_height="wrap_content"/>
+                    android:textSize="@dimen/_14sdp" />
 
                 <TextView
-                    android:fontFamily="@font/m"
+                    android:id="@+id/forgot_password"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_marginTop="@dimen/_16sdp"
+                    android:fontFamily="@font/m"
                     android:gravity="center"
                     android:text="Forgot you password?"
-                    android:layout_marginTop="@dimen/_16sdp"
-                    android:layout_gravity="end"
-                    android:textStyle="bold"
-                    android:id="@+id/forgot_password"
-                    android:textColor="@color/colorPrimaryDark"/>
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textStyle="bold" />
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

@@ -88,10 +88,14 @@ public class ListChatFragment extends Fragment {
                     usersList.clear();
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         chatlist = snapshot.getValue(Chatlist.class);
-                        usersList.add(chatlist);
+                        if (!("group".equalsIgnoreCase(snapshot.getKey()) || ("broadcast".equalsIgnoreCase(snapshot.getKey())))) {
+                            Log.d("DATAA22", snapshot.getValue() + "//" + chatlist);
+                            usersList.add(chatlist);
+                        }
                     }
 
                     chatList();
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -105,7 +109,7 @@ public class ListChatFragment extends Fragment {
     }
 
     public void getBroadcast() {
-        reference = FirebaseDatabase.getInstance().getReference("Chatlist").child(fuser.getUid()).child("broadcast");
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Chatlist").child(fuser.getUid()).child("broadcast");
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -145,49 +149,13 @@ public class ListChatFragment extends Fragment {
                         User user = snapshot.getValue(User.class);
                         for (Chatlist chatlist : usersList) {
                             assert user != null;
-                            if (user.getId().equals(chatlist.getId())) {
+                            if (chatlist.getId().equalsIgnoreCase(user.getId())) {
                                 mUsers.add(user);
                             }
                         }
                     }
 
                     userAdapter = new UserAdapter(getContext(), mUsers, mBroadcast, true, true);
-                    WsConstant.check = "fragment";
-                    recyclerView.setAdapter(userAdapter);
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-    }
-
-    private void broadcastList() {
-        mBroadcast = new ArrayList<>();
-
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Broadcast");
-        reference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                try {
-                    mBroadcast.clear();
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        BroadcastUser user = snapshot.getValue(BroadcastUser.class);
-                        for (String list : broadcastList) {
-                            assert user != null;
-                            if (user.getBroadcastId().equals(list)) {
-                                mBroadcast.add(user);
-                            }
-                        }
-                    }
-
-                    broadcastAdapter = new UserAdapter(getContext(), mUsers, mBroadcast, true, false);
                     WsConstant.check = "fragment";
                     setAdapter(userAdapter, broadcastAdapter);
 
@@ -204,33 +172,77 @@ public class ListChatFragment extends Fragment {
         });
     }
 
+    private void broadcastList() {
+        mBroadcast = new ArrayList<>();
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Broadcast");
+        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                try {
+                    mBroadcast.clear();
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        BroadcastUser user = snapshot.getValue(BroadcastUser.class);
+                        for (String list : broadcastList) {
+                            assert user != null;
+                            if (user.getBroadcastId().equals(list)) {
+                                mBroadcast.add(user);
+                            }
+                        }
+                    }
+                    broadcastAdapter = new UserAdapter(getContext(), mUsers, mBroadcast, true, false);
+                    WsConstant.check = "fragment";
+                    //setAdapter(userAdapter, broadcastAdapter);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
     public void setAdapter(UserAdapter userAdapter, UserAdapter broadcastAdapter) {
-        if (userAdapter.getItemCount() > 0) {
+        if (userAdapter.getItemCount() == 0 && broadcastAdapter.getItemCount() == 0){
+            task_list.setVisibility(View.GONE);
+            no_chat.setVisibility(View.VISIBLE);
+        } else {
+            recyclerView.setAdapter(userAdapter);
+            recycler_view1.setAdapter(broadcastAdapter);
+        }
+       /* if (userAdapter.getItemCount() > 0) {
             if (broadcastAdapter.getItemCount() > 0) {
-//             listView not empty
                 task_list.setVisibility(View.VISIBLE);
                 no_chat.setVisibility(View.GONE);
-                recycler_view1.setAdapter(broadcastAdapter);
+                //recycler_view1.setAdapter(broadcastAdapter);
+                recyclerView.setAdapter(userAdapter);
             } else {
                 task_list.setVisibility(View.VISIBLE);
                 no_chat.setVisibility(View.GONE);
+               // recycler_view1.setAdapter(broadcastAdapter);
+                recyclerView.setAdapter(userAdapter);
             }
         } else if (broadcastAdapter.getItemCount() > 0) {
             if (userAdapter.getItemCount() > 0) {
-//             listView not empty
                 task_list.setVisibility(View.VISIBLE);
                 no_chat.setVisibility(View.GONE);
-                recycler_view1.setAdapter(broadcastAdapter);
+                //recycler_view1.setAdapter(broadcastAdapter);
+                recyclerView.setAdapter(userAdapter);
             } else {
                 task_list.setVisibility(View.VISIBLE);
                 no_chat.setVisibility(View.GONE);
-                recycler_view1.setAdapter(broadcastAdapter);
+               // recycler_view1.setAdapter(broadcastAdapter);
+                recyclerView.setAdapter(userAdapter);
             }
         } else {
             // listView  empty
             task_list.setVisibility(View.GONE);
             no_chat.setVisibility(View.VISIBLE);
-        }
+        }*/
     }
 
 }

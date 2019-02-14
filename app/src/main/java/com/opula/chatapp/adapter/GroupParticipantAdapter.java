@@ -219,7 +219,7 @@ public class GroupParticipantAdapter extends RecyclerView.Adapter<GroupParticipa
     private void MsgUser(String id) {
         MainActivity.hideFloatingActionButton();
         sharedPreference.save(mContext, id, WsConstant.userId);
-        MainActivity.checkChatTheme(mContext);
+//        MainActivity.checkChatTheme(mContext);
         MainActivity.showpart1();
         FragmentManager fragmentManager = ((FragmentActivity) mContext).getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new MessageFragment()).addToBackStack(null).commit();

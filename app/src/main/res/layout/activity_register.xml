@@ -29,7 +29,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <ImageView
-                    android:src="@drawable/logo"
+                    android:src="@drawable/shreem_connect"
                     android:layout_width="@dimen/_82sdp"
                     android:layout_height="@dimen/_82sdp" />
                 <TextView

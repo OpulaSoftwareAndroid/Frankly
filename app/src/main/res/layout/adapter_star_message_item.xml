@@ -17,8 +17,7 @@
                 android:id="@+id/user_profile"
                 android:layout_width="@dimen/_20sdp"
                 android:layout_height="@dimen/_20sdp"
-                android:layout_gravity="center"
-                android:src="@color/colorPrimary" />
+                android:layout_gravity="center" />
 
             <TextView
                 android:id="@+id/txtsender"
@@ -111,10 +110,10 @@
                             android:id="@+id/show_message"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:fontFamily="@font/m"
+                            android:fontFamily="@font/m_m"
                             android:gravity="start"
                             android:textAlignment="gravity"
-                            android:textColor="@color/white"
+                            android:textColor="@color/black"
                             android:textSize="18sp"
                             android:visibility="visible"
                             emojicon:emojiconSize="22sp" />

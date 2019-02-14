@@ -1,6 +1,8 @@
 package com.opula.chatapp.fragments;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -27,6 +29,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -74,6 +79,7 @@ public class MyProfileFragment extends Fragment {
     TextView txtName, txtMobile;
     Uri mImageUri = null;
     int GALLERY = 1, CAMERA = 2;
+    User user;
 
 
     @Override
@@ -123,7 +129,17 @@ public class MyProfileFragment extends Fragment {
         lin_web.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getActivity(), "Frankly web is currently not available... ", Toast.LENGTH_SHORT).show();
+                String urlString = "https://shreemsanjeevani.com/";
+                Intent intent = new Intent(Intent.ACTION_VIEW,Uri.parse(urlString));
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.setPackage("com.android.chrome");
+                try {
+                    getActivity().startActivity(intent);
+                } catch (ActivityNotFoundException ex) {
+                    // Chrome browser presumably not installed so allow user to choose instead
+                    intent.setPackage(null);
+                    getActivity().startActivity(intent);
+                }
             }
         });
 
@@ -151,6 +167,47 @@ public class MyProfileFragment extends Fragment {
             }
         });
 
+        image_profile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                android.app.AlertDialog.Builder alertDialogBuilder = new android.app.AlertDialog.Builder(getActivity());
+
+                LayoutInflater inflater = ((Activity) getActivity()).getLayoutInflater();
+                View dialogView = inflater.inflate(R.layout.dailog_show_image, null);
+                alertDialogBuilder.setView(dialogView);
+                alertDialogBuilder.setCancelable(true);
+
+                final ImageView image = (ImageView) dialogView.findViewById(R.id.image);
+
+                final android.app.AlertDialog alertDialog = alertDialogBuilder.create();
+
+                String string = user.getImageURL();
+
+                if (string.equals("default")) {
+                    Toast.makeText(getActivity(), "No Image Found..!", Toast.LENGTH_SHORT).show();
+                } else {
+                    AppGlobal.showProgressDialog(getActivity());
+                    Glide.with(getActivity()).load(string)
+                            .listener(new RequestListener<String, GlideDrawable>() {
+                                @Override
+                                public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                                    AppGlobal.hideProgressDialog(getActivity());
+                                    Toast.makeText(getActivity(), "No Image Found!" + model + "/" + e, Toast.LENGTH_SHORT).show();
+                                    return false;
+                                }
+
+                                @Override
+                                public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                                    AppGlobal.hideProgressDialog(getActivity());
+                                    alertDialog.show();
+                                    return false;
+                                }
+                            })
+                            .into(image);
+                }
+            }
+        });
+
         return view;
 
     }
@@ -162,7 +219,7 @@ public class MyProfileFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 try {
-                    User user = dataSnapshot.getValue(User.class);
+                    user = dataSnapshot.getValue(User.class);
                     assert user != null;
                     txtName.setText(user.getUsername());
                     txtMobile.setText(firebaseUser.getEmail());

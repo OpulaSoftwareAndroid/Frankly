@@ -6,6 +6,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -100,7 +101,7 @@ import retrofit2.Response;
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 
-public class MessageFragment extends Fragment{
+public class MessageFragment extends Fragment {
 
     CircleImageView imgUser;
     LinearLayout imgBack;
@@ -148,6 +149,8 @@ public class MessageFragment extends Fragment{
             StrictMode.setThreadPolicy(policy);
         }
         MainActivity.hideFloatingActionButton();
+//        MainActivity.checkChatTheme(getActivity());
+        MainActivity.showpart1();
 
         sharedPreference = new SharedPreference();
 
@@ -179,7 +182,7 @@ public class MessageFragment extends Fragment{
                 notify = true;
                 String msg = text_send.getText().toString();
                 if (!msg.equals("")) {
-                    sendMessage(getActivity(),fuser.getUid(), userid, msg, false, "default");
+                    sendMessage(getActivity(), fuser.getUid(), userid, msg, false, "default");
                 }
                 text_send.setText("");
             }
@@ -257,7 +260,7 @@ public class MessageFragment extends Fragment{
                     txtUserName.setText(user.getUsername());
                     CheckActive = user.getStatus();
 
-                    if (user.getStatus().equalsIgnoreCase("online")){
+                    if (user.getStatus().equalsIgnoreCase("online")) {
                         txtCheckActive.setText(user.getStatus());
                     } else {
                         String str = getDateCurrentTimeZone(Long.parseLong(user.getStatus()));
@@ -286,7 +289,8 @@ public class MessageFragment extends Fragment{
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) { }
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
         });
 
         sendMessage(userid);
@@ -345,7 +349,7 @@ public class MessageFragment extends Fragment{
                 new KeyboardVisibilityEventListener() {
                     @Override
                     public void onVisibilityChanged(boolean isOpen) {
-                        if (isOpen){
+                        if (isOpen) {
                             recordButton.setVisibility(View.GONE);
                             send_image.setVisibility(View.GONE);
                         } else {
@@ -354,7 +358,6 @@ public class MessageFragment extends Fragment{
                         }
                     }
                 });
-
 
 
         return view;
@@ -497,7 +500,7 @@ public class MessageFragment extends Fragment{
                         Uri downloadUri = task.getResult();
                         String mUri = downloadUri.toString();
 
-                        sendMessage(getActivity(),fuser.getUid(), userid, "Image", true, mUri);
+                        sendMessage(getActivity(), fuser.getUid(), userid, "Image", true, mUri);
 
                         pd.dismiss();
                     } else {
@@ -519,14 +522,13 @@ public class MessageFragment extends Fragment{
 
     public void seenMessage(final String userid) {
         reference = FirebaseDatabase.getInstance().getReference("Chats");
-        ValueEventListener valueEventListener = new ValueEventListener()
-        {
+        ValueEventListener valueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 try {
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         Chat chat = snapshot.getValue(Chat.class);
-                        if (chat.getTo().equalsIgnoreCase("personal")){
+                        if (chat.getTo().equalsIgnoreCase("personal")) {
                             if (chat.getReceiver().equals(fuser.getUid()) && chat.getSender().equals(userid)) {
                                 HashMap<String, Object> hashMap = new HashMap<>();
                                 hashMap.put("isseen", true);
@@ -590,36 +592,35 @@ public class MessageFragment extends Fragment{
     }
 
 
-
-    private String encrypt(String Data, String Password) throws Exception{
+    private String encrypt(String Data, String Password) throws Exception {
         SecretKeySpec key = genrateKey(Password);
         Cipher cipher = Cipher.getInstance(AES);
-        cipher.init(Cipher.ENCRYPT_MODE,key);
+        cipher.init(Cipher.ENCRYPT_MODE, key);
         byte[] encVal = cipher.doFinal(Data.getBytes());
-        String encyptedValue = Base64.encodeToString(encVal,Base64.DEFAULT);
+        String encyptedValue = Base64.encodeToString(encVal, Base64.DEFAULT);
         return encyptedValue;
     }
 
-    private String decrypt(String outputString, String Password) throws Exception{
+    private String decrypt(String outputString, String Password) throws Exception {
         SecretKeySpec key = genrateKey(Password);
         Cipher cipher = Cipher.getInstance(AES);
-        cipher.init(Cipher.DECRYPT_MODE,key);
-        byte[] encyptedValue = Base64.decode(outputString,Base64.DEFAULT);
+        cipher.init(Cipher.DECRYPT_MODE, key);
+        byte[] encyptedValue = Base64.decode(outputString, Base64.DEFAULT);
         byte[] decValue = cipher.doFinal(encyptedValue);
         String decyptedValue = new String(decValue);
         return decyptedValue;
     }
 
-    private SecretKeySpec genrateKey(String password) throws Exception{
+    private SecretKeySpec genrateKey(String password) throws Exception {
         final MessageDigest digest = MessageDigest.getInstance("SHA-256");
         byte[] bytes = password.getBytes("UTF-8");
-        digest.update(bytes,0, bytes.length);
+        digest.update(bytes, 0, bytes.length);
         byte[] key = digest.digest();
-        SecretKeySpec secretKeySpec = new SecretKeySpec(key,"AES");
-        return  secretKeySpec;
+        SecretKeySpec secretKeySpec = new SecretKeySpec(key, "AES");
+        return secretKeySpec;
     }
 
-    public static void sendMessage(final Context context,String sender, final String receiver, String message, boolean isimage, String uri) {
+    public static void sendMessage(final Context context, final String sender, final String receiver, String message, boolean isimage, String uri) {
 
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Chats").push();
         randomString(9);
@@ -635,7 +636,7 @@ public class MessageFragment extends Fragment{
 
         HashMap<String, Object> hashMap = new HashMap<>();
 
-        if (AppGlobal.isNetwork(context)){
+        if (AppGlobal.isNetwork(context)) {
             hashMap.put("id", sb.toString());
             hashMap.put("to", "personal");
             hashMap.put("sender", sender);
@@ -660,21 +661,21 @@ public class MessageFragment extends Fragment{
             hashMap.put("image", uri);
             hashMap.put("time", ts);
             hashMap.put("table_id", reference.getKey());
-            hashMap.put("storage_uri","default");
+            hashMap.put("storage_uri", "default");
         }
 
         reference.setValue(hashMap);
 
 
         // add user to chat fragment
-        final DatabaseReference chatRef = FirebaseDatabase.getInstance().getReference("Chatlist").child(fuser.getUid()).child(userid);
+        final DatabaseReference chatRef = FirebaseDatabase.getInstance().getReference("Chatlist").child(sender).child(receiver);
 
         chatRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 try {
                     if (!dataSnapshot.exists()) {
-                        chatRef.child("id").setValue(userid);
+                        chatRef.child("id").setValue(receiver);
                         chatRef.child("istyping").setValue(false);
                         chatRef.child("isnotification").setValue(false);
                     }
@@ -690,8 +691,8 @@ public class MessageFragment extends Fragment{
         });
 
         try {
-            final DatabaseReference chatRefReceiver = FirebaseDatabase.getInstance().getReference("Chatlist").child(userid).child(fuser.getUid());
-            chatRefReceiver.child("id").setValue(fuser.getUid());
+            final DatabaseReference chatRefReceiver = FirebaseDatabase.getInstance().getReference("Chatlist").child(receiver).child(sender);
+            chatRefReceiver.child("id").setValue(sender);
             chatRefReceiver.child("istyping").setValue(false);
             chatRefReceiver.child("isnotification").setValue(true);
         } catch (Exception e) {
@@ -700,14 +701,14 @@ public class MessageFragment extends Fragment{
 
         final String msg = message;
 
-        reference = FirebaseDatabase.getInstance().getReference("Users").child(fuser.getUid());
+        reference = FirebaseDatabase.getInstance().getReference("Users").child(sender);
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 try {
                     User user = dataSnapshot.getValue(User.class);
                     if (notify) {
-                        sendNotifiaction(context,receiver, user.getUsername(), msg);
+                        sendNotifiaction(context, receiver, user.getUsername(), msg);
                     }
                     notify = false;
                 } catch (Exception e) {
@@ -722,7 +723,7 @@ public class MessageFragment extends Fragment{
         });
     }
 
-    private static void sendNotifiaction(final Context context,String receiver, final String username, final String message) {
+    private static void sendNotifiaction(final Context context, String receiver, final String username, final String message) {
         DatabaseReference tokens = FirebaseDatabase.getInstance().getReference("Tokens");
         Query query = tokens.orderByKey().equalTo(receiver);
         query.addValueEventListener(new ValueEventListener() {
@@ -742,7 +743,7 @@ public class MessageFragment extends Fragment{
                                     public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
                                         if (response.code() == 200) {
                                             if (response.body().success != 1) {
-                                                Toast.makeText(context, "Failed!", Toast.LENGTH_SHORT).show();
+
                                             }
                                         }
                                     }
@@ -776,14 +777,17 @@ public class MessageFragment extends Fragment{
                     mchat.clear();
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         Chat chat = snapshot.getValue(Chat.class);
-                        if (chat.getTo().equalsIgnoreCase("personal")){
+                        Log.d("DATAA33", snapshot.getKey() + "//" + snapshot.getValue());
+                        assert chat != null;
+                        if ("personal".equals(chat.getTo())) {
                             if (chat.getReceiver().equals(myid) && chat.getSender().equals(userid) ||
                                     chat.getReceiver().equals(userid) && chat.getSender().equals(myid)) {
                                 mchat.add(chat);
                             }
-                        } else if (chat.getTo().equalsIgnoreCase("broadcast")){
-                            for (int i=0; i<chat.getBroadcast_receiver().size();i++){
-                                if (chat.getBroadcast_receiver().get(i).equalsIgnoreCase(myid)) {
+                        }
+                        if ("broadcast".equals(chat.getTo())) {
+                            for (int i = 0; i < chat.getBroadcast_receiver().size(); i++) {
+                                if (chat.getBroadcast_receiver().get(i).equalsIgnoreCase(userid)) {
                                     mchat.add(chat);
                                 }
                             }

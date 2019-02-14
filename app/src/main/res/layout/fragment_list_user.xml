@@ -7,9 +7,9 @@
     tools:context=".MainActivity">
 
     <LinearLayout
-        android:background="@drawable/border_white"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@drawable/border_white"
         android:orientation="vertical">
 
         <RelativeLayout
@@ -22,10 +22,10 @@
             tools:targetApi="lollipop">
 
             <LinearLayout
-                android:layout_centerVertical="true"
                 android:id="@+id/imgBack"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
                 android:layout_gravity="center"
                 android:paddingStart="@dimen/_8sdp"
                 android:paddingTop="@dimen/_8sdp"
@@ -61,100 +61,102 @@
             android:layout_below="@id/toolbarLayout"
             android:background="@color/gray" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:paddingLeft="8dp"
-            android:layout_marginTop="8dp"
-            android:paddingRight="8dp">
-
-            <LinearLayout
-                android:id="@+id/createNewGrpLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:visibility="visible">
-
-                <ImageView
-                    android:layout_width="@dimen/_48sdp"
-                    android:layout_height="@dimen/_48sdp"
-                    android:layout_weight="0"
-                    android:padding="4dp"
-                    android:adjustViewBounds="true"
-                    android:src="@drawable/group" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center_vertical"
-                    android:layout_weight="1"
-                    android:fontFamily="@font/m"
-                    android:gravity="center_vertical"
-                    android:paddingLeft="@dimen/_8sdp"
-                    android:text="Create New Group"
-                    android:textSize="@dimen/_14sdp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/createNewBroadcast"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:visibility="visible">
-
-                <ImageView
-                    android:layout_width="@dimen/_48sdp"
-                    android:layout_height="@dimen/_48sdp"
-                    android:layout_weight="0"
-                    android:padding="4dp"
-                    android:adjustViewBounds="true"
-                    android:src="@drawable/group" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center_vertical"
-                    android:layout_weight="1"
-                    android:fontFamily="@font/m"
-                    android:gravity="center_vertical"
-                    android:paddingLeft="@dimen/_8sdp"
-                    android:text="Create New Broadcast"
-                    android:textSize="@dimen/_14sdp"
-                    android:textStyle="bold" />
-            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:layout_marginTop="4dp"
-                android:gravity="center"
-                android:orientation="vertical">
+                android:layout_marginTop="8dp"
+                android:orientation="vertical"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp">
 
-                <TextView
-                    android:id="@+id/text"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:id="@+id/createNewGrpLayout"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:alpha="0.5"
-                    android:fontFamily="@font/m"
-                    android:text="No Member Found!"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/_16sdp"
-                    android:visibility="gone" />
+                    android:orientation="horizontal"
+                    android:visibility="visible">
 
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/recycler_view"
+                    <ImageView
+                        android:layout_width="@dimen/_48sdp"
+                        android:layout_height="@dimen/_48sdp"
+                        android:layout_weight="0"
+                        android:adjustViewBounds="true"
+                        android:padding="4dp"
+                        android:src="@drawable/group" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/m"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="@dimen/_8sdp"
+                        android:text="Create New Group"
+                        android:textSize="@dimen/_14sdp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/createNewBroadcast"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:visibility="visible">
+
+                    <ImageView
+                        android:layout_width="@dimen/_48sdp"
+                        android:layout_height="@dimen/_48sdp"
+                        android:layout_weight="0"
+                        android:adjustViewBounds="true"
+                        android:padding="4dp"
+                        android:src="@drawable/group" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/m"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="@dimen/_8sdp"
+                        android:text="Create New Broadcast"
+                        android:textSize="@dimen/_14sdp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@drawable/border_white"
-                    android:divider="@null"
-                    android:scrollbars="none" />
+                    android:layout_gravity="center"
+                    android:layout_marginTop="4dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
 
+                    <TextView
+                        android:id="@+id/text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:alpha="0.5"
+                        android:fontFamily="@font/m"
+                        android:text="No Member Found!"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_16sdp"
+                        android:visibility="gone" />
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/recycler_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/border_white"
+                        android:divider="@null"
+                        android:nestedScrollingEnabled="false"
+                        android:overScrollMode="never"
+                        android:scrollbars="none" />
+
+                </LinearLayout>
             </LinearLayout>
-        </LinearLayout>
-
     </LinearLayout>
 </LinearLayout>

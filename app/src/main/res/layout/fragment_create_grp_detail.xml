@@ -104,7 +104,7 @@
                     android:layout_marginLeft="@dimen/_10sdp"
                     android:layout_marginRight="@dimen/_20sdp"
                     android:layout_marginBottom="@dimen/_20sdp"
-                    android:background="@drawable/btn_shape_rounded"
+                    android:background="@drawable/btnshape_plain_without_stroke"
                     android:fontFamily="@font/m"
                     android:text="Create"
                     android:textColor="@color/white"

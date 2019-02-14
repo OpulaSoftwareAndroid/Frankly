@@ -20,6 +20,7 @@
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/profile_image"
+                android:visibility="gone"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_weight="0" />
@@ -95,8 +96,9 @@
                     android:id="@+id/show_message"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/m"
+                    android:fontFamily="@font/m_m"
                     android:gravity="start"
+                    android:textColor="@color/black"
                     android:textAlignment="gravity"
                     android:textSize="18sp"
                     android:visibility="visible"
