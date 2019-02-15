@@ -93,7 +93,6 @@ public class ListChatFragment extends Fragment {
                             usersList.add(chatlist);
                         }
                     }
-
                     chatList();
 
                 } catch (Exception e) {
@@ -162,7 +161,6 @@ public class ListChatFragment extends Fragment {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
             }
 
             @Override
@@ -191,7 +189,7 @@ public class ListChatFragment extends Fragment {
                     }
                     broadcastAdapter = new UserAdapter(getContext(), mUsers, mBroadcast, true, false);
                     WsConstant.check = "fragment";
-                    //setAdapter(userAdapter, broadcastAdapter);
+                    setAdapter(userAdapter, broadcastAdapter);
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -207,13 +205,23 @@ public class ListChatFragment extends Fragment {
     }
 
     public void setAdapter(UserAdapter userAdapter, UserAdapter broadcastAdapter) {
-        if (userAdapter.getItemCount() == 0 && broadcastAdapter.getItemCount() == 0){
+
+        if (userAdapter.getItemCount() == 0 && broadcastAdapter.getItemCount() == 0) {
             task_list.setVisibility(View.GONE);
             no_chat.setVisibility(View.VISIBLE);
         } else {
             recyclerView.setAdapter(userAdapter);
             recycler_view1.setAdapter(broadcastAdapter);
         }
+
+//        if (userAdapter.getItemCount() > 0 || broadcastAdapter.getItemCount() > 0) {
+//            recyclerView.setAdapter(userAdapter);
+//            recycler_view1.setAdapter(broadcastAdapter);
+//        } else {
+//            task_list.setVisibility(View.GONE);
+//            no_chat.setVisibility(View.VISIBLE);
+//        }
+
        /* if (userAdapter.getItemCount() > 0) {
             if (broadcastAdapter.getItemCount() > 0) {
                 task_list.setVisibility(View.VISIBLE);

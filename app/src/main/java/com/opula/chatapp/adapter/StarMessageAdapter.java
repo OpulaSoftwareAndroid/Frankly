@@ -3,6 +3,7 @@ package com.opula.chatapp.adapter;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -69,6 +70,7 @@ public class StarMessageAdapter extends RecyclerView.Adapter<StarMessageAdapter.
                         //Sender
                         if (firebaseUser.getUid().equals(starMessage.getSender())) {
                             holder.txtsender.setText("You");
+                            Log.d("Image_url_if", user.getImageURL() + "/");
 
                             if (user.getImageURL().equals("default")) {
                                 holder.user_profile.setImageResource(R.drawable.image_boy);
@@ -76,8 +78,11 @@ public class StarMessageAdapter extends RecyclerView.Adapter<StarMessageAdapter.
                                 Glide.with(mContext).load(user.getImageURL()).into(holder.user_profile);
                             }
 
-                        } else if (user.getId().equals(starMessage.getSender())) {
+                        }
+                        if (user.getId().equals(starMessage.getSender())) {
                             holder.txtsender.setText(user.getUsername());
+                            Log.d("Image_url_else", user.getImageURL() + "/");
+
                             if (user.getImageURL().equals("default")) {
                                 holder.user_profile.setImageResource(R.drawable.image_boy);
                             } else {

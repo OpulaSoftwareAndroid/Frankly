@@ -34,6 +34,7 @@ public class StarMessagesFragment extends Fragment {
     FirebaseUser firebaseUser;
     StarMessageAdapter starMessageAdapter;
     LinearLayout imgBack;
+    LinearLayout no_chat;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -64,6 +65,7 @@ public class StarMessagesFragment extends Fragment {
     private void initViews(View view) {
         recycler_view = view.findViewById(R.id.recycler_view);
         imgBack = view.findViewById(R.id.imgBack);
+        no_chat = view.findViewById(R.id.no_chat);
     }
 
     private void getAllStarMessages() {
@@ -77,7 +79,10 @@ public class StarMessagesFragment extends Fragment {
                         StarMessage chat = snapshot.getValue(StarMessage.class);
                         assert chat != null;
                         if (chat.getId().equalsIgnoreCase(firebaseUser.getUid())) {
+                            no_chat.setVisibility(View.GONE);
                             mStarMsg.add(chat);
+                        } else {
+                            no_chat.setVisibility(View.VISIBLE);
                         }
 
                     }

@@ -6,7 +6,6 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -17,8 +16,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -61,7 +58,6 @@ import com.opula.chatapp.constant.AppGlobal;
 import com.opula.chatapp.constant.SharedPreference;
 import com.opula.chatapp.constant.WsConstant;
 import com.opula.chatapp.model.Chat;
-import com.opula.chatapp.model.Chatlist;
 import com.opula.chatapp.model.User;
 import com.opula.chatapp.notifications.Client;
 import com.opula.chatapp.notifications.Data;
@@ -75,7 +71,6 @@ import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventList
 
 import java.security.MessageDigest;
 import java.security.SecureRandom;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -84,8 +79,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.TimeZone;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
@@ -134,7 +127,7 @@ public class MessageFragment extends Fragment {
     String AES = "AES";
     ValueEventListener mSendEventListner;
     RelativeLayout is_text;
-
+    LinearLayout l1;
     //new library
     RecordView recordView;
     RecordButton recordButton;
@@ -204,52 +197,6 @@ public class MessageFragment extends Fragment {
             }
         });
 
-        /*text_send.addTextChangedListener(new TextWatcher() {
-            boolean isTyping = false;
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-            private Timer timer = new Timer();
-            private final long DELAY = 1000;
-            @Override
-            public void afterTextChanged(final Editable s) {
-                Log.d("", "");
-                if (!isTyping) {
-
-                    try {
-                        final DatabaseReference chatRefReceiver = FirebaseDatabase.getInstance().getReference("Chatlist").child(userid).child(fuser.getUid());
-                        chatRefReceiver.child("istyping").setValue(true);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
-                    isTyping = true;
-                }
-                timer.cancel();
-                timer = new Timer();
-                timer.schedule(
-                        new TimerTask() {
-                            @Override
-                            public void run() {
-                                isTyping = false;
-
-                                try {
-                                    final DatabaseReference chatRefReceiver = FirebaseDatabase.getInstance().getReference("Chatlist").child(userid).child(fuser.getUid());
-                                    chatRefReceiver.child("istyping").setValue(false);
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-
-                            }
-                        },
-                        DELAY
-                );
-            }
-        });*/
-
         reference = FirebaseDatabase.getInstance().getReference("Users").child(userid);
         reference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -266,8 +213,6 @@ public class MessageFragment extends Fragment {
                         String str = getDateCurrentTimeZone(Long.parseLong(user.getStatus()));
                         txtCheckActive.setText("Last seen : " + str);
                     }
-
-
                     if (user.getImageURL().equals("default")) {
                         imgUser.setImageResource(R.drawable.image_boy);
                     } else {
@@ -358,7 +303,6 @@ public class MessageFragment extends Fragment {
                         }
                     }
                 });
-
 
         return view;
     }
@@ -768,7 +712,6 @@ public class MessageFragment extends Fragment {
 
     private void readMesagges(final String myid, final String userid, final String imageurl) {
         mchat = new ArrayList<>();
-
         reference = FirebaseDatabase.getInstance().getReference("Chats");
         reference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -779,13 +722,12 @@ public class MessageFragment extends Fragment {
                         Chat chat = snapshot.getValue(Chat.class);
                         Log.d("DATAA33", snapshot.getKey() + "//" + snapshot.getValue());
                         assert chat != null;
-                        if ("personal".equals(chat.getTo())) {
+                        if (chat.getTo().equalsIgnoreCase("personal")) {
                             if (chat.getReceiver().equals(myid) && chat.getSender().equals(userid) ||
                                     chat.getReceiver().equals(userid) && chat.getSender().equals(myid)) {
                                 mchat.add(chat);
                             }
-                        }
-                        if ("broadcast".equals(chat.getTo())) {
+                        } else if (chat.getTo().equalsIgnoreCase("broadcast")) {
                             for (int i = 0; i < chat.getBroadcast_receiver().size(); i++) {
                                 if (chat.getBroadcast_receiver().get(i).equalsIgnoreCase(userid)) {
                                     mchat.add(chat);

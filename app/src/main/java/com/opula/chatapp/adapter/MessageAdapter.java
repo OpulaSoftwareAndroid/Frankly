@@ -19,6 +19,7 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
@@ -119,14 +120,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             holder.img_receive.setVisibility(View.GONE);
             holder.relative.setVisibility(View.GONE);
             holder.show_message.setVisibility(View.VISIBLE);
-
-           /* String decMessage = null;
-            try {
-                decMessage = decrypt(chat.getMessage(),"Jenil");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }*/
-
             holder.show_message.setText(chat.getMessage());
         }
 
@@ -244,7 +237,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
         holder.linear_chat.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
-            public boolean onLongClick(View v) {
+            public boolean onLongClick(View view) {
                 holder.linmain.setBackgroundColor(ContextCompat.getColor(mContext, R.color.color_selecchat));
                 i = holder.getAdapterPosition();
                 MainActivity.showpart3();
@@ -258,8 +251,9 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         holder.linmain.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
+                i = position;
                 holder.linmain.setBackgroundColor(ContextCompat.getColor(mContext, R.color.color_selecchat));
-                i = holder.getAdapterPosition();
+                Toast.makeText(mContext, position + "/", Toast.LENGTH_SHORT).show();
                 MainActivity.showpart3();
                 Vibrator vv = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
                 assert vv != null;
@@ -364,7 +358,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     public static void copyMessage(Context context) {
         AppGlobal.copyData(context, mChat.get(i).getMessage());
     }
-
     public static void back(Context context) {
 
     }
@@ -412,8 +405,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
                             mUsers.add(user);
                         }
                     }
-
-                    newChatUserAdapter = new ForwardMessageAdapter(context, mUsers, mChat.get(i).isIsimage(),false, mChat.get(i).getMessage(), alertDialog, mChat.get(i).getImage());
+                    newChatUserAdapter = new ForwardMessageAdapter(context, mUsers, mChat.get(i).isIsimage(), false, mChat.get(i).getMessage(), alertDialog, mChat.get(i).getImage());
                     WsConstant.check = "activity";
                     recyclerView.setAdapter(newChatUserAdapter);
                 } catch (Exception e) {

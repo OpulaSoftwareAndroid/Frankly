@@ -1,27 +1,35 @@
 {
   "project_info": {
-    "project_number": "166033665334",
-    "firebase_url": "https://chat-4e0b2.firebaseio.com",
-    "project_id": "chat-4e0b2",
-    "storage_bucket": "chat-4e0b2.appspot.com"
+    "project_number": "127307215489",
+    "firebase_url": "https://shreem-connect-814a3.firebaseio.com",
+    "project_id": "shreem-connect-814a3",
+    "storage_bucket": "shreem-connect-814a3.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:166033665334:android:caaf5697797883c1",
+        "mobilesdk_app_id": "1:127307215489:android:caaf5697797883c1",
         "android_client_info": {
           "package_name": "com.opula.chatapp"
         }
       },
       "oauth_client": [
         {
-          "client_id": "166033665334-ih8rimrl70ip7el8gpgm2hgj33jloe1l.apps.googleusercontent.com",
+          "client_id": "127307215489-5g296pomh8jju22vaccrjvkgh6ifting.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.opula.chatapp",
+            "certificate_hash": "d942fe95bf0d1d19fec62ca6009a8249eef09195"
+          }
+        },
+        {
+          "client_id": "127307215489-jihn0n7fhmbhb1fpb4k41d2h3ruvk5m0.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCGkA29bZIraokRSn1Ef16KhuEWc3JDJC4"
+          "current_key": "AIzaSyA6F1WURJe890xhec23VOGqzhlLj-bPXcU"
         }
       ],
       "services": {
@@ -29,8 +37,13 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "127307215489-jihn0n7fhmbhb1fpb4k41d2h3ruvk5m0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2

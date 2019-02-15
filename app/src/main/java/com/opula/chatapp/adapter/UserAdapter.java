@@ -1,8 +1,6 @@
 package com.opula.chatapp.adapter;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -32,11 +30,9 @@ import com.opula.chatapp.fragments.MessageFragment;
 import com.opula.chatapp.fragments.UserProfileFragment;
 import com.opula.chatapp.model.BroadcastUser;
 import com.opula.chatapp.model.Chat;
-import com.opula.chatapp.model.Chatlist;
 import com.opula.chatapp.model.User;
 
 import java.security.MessageDigest;
-import java.sql.Struct;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -131,6 +127,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
             });
 
         } else {
+
             final BroadcastUser user = mBroadcast.get(position);
             holder.username.setText(user.getBroadcastName());
 
@@ -206,21 +203,18 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                     assert firebaseUser != null;
                     firebaseUser.getUid();
                     if (chat != null) {
-                        if ("personal".equalsIgnoreCase(chat.getTo())) {
+                        if (chat.getTo().equalsIgnoreCase("personal")) {
                             if (chat.getReceiver().equals(firebaseUser.getUid()) && chat.getSender().equals(userid) ||
                                     chat.getReceiver().equals(userid) && chat.getSender().equals(firebaseUser.getUid())) {
                                 theLastMessage = chat.getMessage();
-
                                 String tiime = getDateCurrentTimeZone(Long.parseLong(chat.getTime()));
                                 time.setText(tiime);
 
                             }
-                        }
-                        if ("broadcast".equalsIgnoreCase(chat.getTo())) {
+                        } else if (chat.getTo().equalsIgnoreCase("broadcast")) {
                             for (int i = 0; i < chat.getBroadcast_receiver().size(); i++) {
                                 if (chat.getBroadcast_receiver().get(i).equalsIgnoreCase(userid)) {
                                     theLastMessage = chat.getMessage();
-
                                     String tiime = getDateCurrentTimeZone(Long.parseLong(chat.getTime()));
                                     time.setText(tiime);
                                 }

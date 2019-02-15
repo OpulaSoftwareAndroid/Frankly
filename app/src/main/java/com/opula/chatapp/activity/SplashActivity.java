@@ -79,7 +79,6 @@ public class SplashActivity extends AppCompatActivity {
                 try {
                     Log.d("code",d1.getValue().toString());
                         String verCode = String.valueOf(pInfo.versionCode);
-
                     if (verCode.equalsIgnoreCase(d1.getValue().toString())){
                         if (firebaseUser != null){
                             auth.signInWithEmailAndPassword(Objects.requireNonNull(firebaseUser.getEmail()), sharedPreference.getValue(SplashActivity.this,WsConstant.password))
@@ -88,7 +87,7 @@ public class SplashActivity extends AppCompatActivity {
                                         public void onComplete(@NonNull Task<AuthResult> task) {
                                             AppGlobal.hideProgressDialog(SplashActivity.this);
                                             if (task.isSuccessful()){
-                                                initView("1");
+                                               initView("1");
                                             } else {
                                                 if (ActivityCompat.checkSelfPermission(SplashActivity.this, Manifest.permission.CAMERA)
                                                         != PackageManager.PERMISSION_GRANTED ||
@@ -104,6 +103,7 @@ public class SplashActivity extends AppCompatActivity {
                                                                 != PackageManager.PERMISSION_GRANTED ||
                                                         ActivityCompat.checkSelfPermission(SplashActivity.this, Manifest.permission.READ_PHONE_STATE)
                                                                 != PackageManager.PERMISSION_GRANTED) {
+
                                                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
                                                         requestPermissions(new String[]{Manifest.permission.CAMERA,
@@ -121,7 +121,34 @@ public class SplashActivity extends AppCompatActivity {
                                         }
                                     });
                         } else {
-                            initView("0");
+                            if (ActivityCompat.checkSelfPermission(SplashActivity.this, Manifest.permission.CAMERA)
+                                    != PackageManager.PERMISSION_GRANTED ||
+                                    ActivityCompat.checkSelfPermission(SplashActivity.this, Manifest.permission.ACCESS_NETWORK_STATE)
+                                            != PackageManager.PERMISSION_GRANTED ||
+                                    ActivityCompat.checkSelfPermission(SplashActivity.this, Manifest.permission.READ_CONTACTS)
+                                            != PackageManager.PERMISSION_GRANTED ||
+                                    ActivityCompat.checkSelfPermission(SplashActivity.this, Manifest.permission.ACCESS_WIFI_STATE)
+                                            != PackageManager.PERMISSION_GRANTED ||
+                                    ActivityCompat.checkSelfPermission(SplashActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                                            != PackageManager.PERMISSION_GRANTED ||
+                                    ActivityCompat.checkSelfPermission(SplashActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                                            != PackageManager.PERMISSION_GRANTED ||
+                                    ActivityCompat.checkSelfPermission(SplashActivity.this, Manifest.permission.READ_PHONE_STATE)
+                                            != PackageManager.PERMISSION_GRANTED) {
+
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
+                                    requestPermissions(new String[]{Manifest.permission.CAMERA,
+                                            Manifest.permission.ACCESS_NETWORK_STATE,
+                                            Manifest.permission.READ_CONTACTS,
+                                            Manifest.permission.ACCESS_WIFI_STATE,
+                                            Manifest.permission.READ_EXTERNAL_STORAGE,
+                                            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                            Manifest.permission.READ_PHONE_STATE}, REQUEST_CAMERA);
+                                }
+                            } else {
+                                initView("0");
+                            }
                         }
                     } else {
                         initView("2");
@@ -137,10 +164,6 @@ public class SplashActivity extends AppCompatActivity {
 
             }
         });
-
-
-
-
     }
 
     private void getPermission() {
@@ -224,7 +247,7 @@ public class SplashActivity extends AppCompatActivity {
 
         btn_no.setVisibility(View.GONE);
 
-        txt.setText("Please update to letest version of app to get latest features...");
+        txt.setText("Please update to latest version of app to get latest features...");
 
         btn_yes.setOnClickListener(new View.OnClickListener() {
             @Override
