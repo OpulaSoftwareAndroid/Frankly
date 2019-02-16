@@ -40,6 +40,12 @@
                 android:paddingBottom="4dp"
                 android:visibility="visible">
 
+                <com.github.barteksc.pdfviewer.PDFView
+                    android:id="@+id/pdfView"
+                    android:visibility="gone"
+                    android:layout_width="300dp"
+                    android:layout_height="100dp" />
+
                 <RelativeLayout
                     android:id="@+id/relative"
                     android:layout_width="300dp"
@@ -101,7 +107,7 @@
                     android:textColor="@color/black"
                     android:textAlignment="gravity"
                     android:textSize="18sp"
-                    android:visibility="visible"
+                    android:visibility="gone"
                     emojicon:emojiconSize="22sp" />
 
                 <TextView

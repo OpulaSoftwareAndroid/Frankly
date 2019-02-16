@@ -74,6 +74,10 @@ dependencies {
     implementation 'com.github.zjywill:roundedcornerimageview:1.1.0'
     implementation 'com.devlomi.record-view:record-view:2.0.1'
 
+    //PDF Viewer
+    implementation 'com.github.barteksc:android-pdf-viewer:2.0.3'
+    implementation 'com.github.barteksc:pdfium-android:1.4.0'
+
 }
 
 apply plugin: 'com.google.gms.google-services'

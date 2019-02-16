@@ -1,10 +1,10 @@
 package com.opula.chatapp.adapter;
 
-import android.support.v7.app.AlertDialog;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,7 +21,6 @@ import com.opula.chatapp.R;
 import com.opula.chatapp.constant.SharedPreference;
 import com.opula.chatapp.constant.WsConstant;
 import com.opula.chatapp.fragments.MessageFragment;
-import com.opula.chatapp.fragments.UserProfileFragment;
 import com.opula.chatapp.model.User;
 
 import java.util.List;
@@ -30,10 +29,10 @@ public class ForwardMessageAdapter extends RecyclerView.Adapter<ForwardMessageAd
 
     private Context mContext;
     private List<User> mUsers;
-    private boolean ischat,isimage;
+    private boolean ischat, isimage;
     SharedPreference sharedPreference;
     FirebaseUser fuser;
-    String meg,url;
+    String meg, url;
     AlertDialog alertDialog;
 
     public ForwardMessageAdapter(Context mContext, List<User> mUsers, boolean isimage, boolean ischat, String meg, AlertDialog alertDialog, String url) {
@@ -76,7 +75,7 @@ public class ForwardMessageAdapter extends RecyclerView.Adapter<ForwardMessageAd
                 sharedPreference.save(mContext, user.getId(), WsConstant.userId);
 //                MainActivity.checkChatTheme(mContext);
                 MainActivity.showpart1();
-                MessageFragment.sendMessage(mContext,fuser.getUid(), user.getId() , meg, isimage, url);
+                MessageFragment.sendMessage(mContext, fuser.getUid(), user.getId(), meg, isimage, url, "");
                 alertDialog.dismiss();
                 FragmentManager fragmentManager = ((FragmentActivity) mContext).getSupportFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new MessageFragment()).commit();
@@ -91,7 +90,7 @@ public class ForwardMessageAdapter extends RecyclerView.Adapter<ForwardMessageAd
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        public TextView username,last_msg;
+        public TextView username, last_msg;
         public ImageView profile_image;
         LinearLayout click_layout;
 

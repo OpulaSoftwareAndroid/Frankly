@@ -1,19 +1,25 @@
 package com.opula.chatapp.fragments;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.provider.MediaStore;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AlertDialog;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Base64;
@@ -69,6 +75,7 @@ import com.squareup.picasso.Picasso;
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener;
 
+import java.io.File;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
@@ -131,6 +138,8 @@ public class MessageFragment extends Fragment {
     //new library
     RecordView recordView;
     RecordButton recordButton;
+    BottomSheetDialog dialogMenu;
+    final static int PICK_PDF_CODE = 2342;
 
 
     @Override
@@ -175,7 +184,7 @@ public class MessageFragment extends Fragment {
                 notify = true;
                 String msg = text_send.getText().toString();
                 if (!msg.equals("")) {
-                    sendMessage(getActivity(), fuser.getUid(), userid, msg, false, "default");
+                    sendMessage(getActivity(), fuser.getUid(), userid, msg, false, "default", "default");
                 }
                 text_send.setText("");
             }
@@ -184,7 +193,38 @@ public class MessageFragment extends Fragment {
         send_image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showPictureDialog();
+                View view = getLayoutInflater().inflate(R.layout.fragment_bottom_sheet_dialog, null);
+                dialogMenu = new BottomSheetDialog(getContext());
+                dialogMenu.setContentView(view);
+                dialogMenu.setCancelable(true);
+                LinearLayout lin_document = dialogMenu.findViewById(R.id.lin_document);
+                LinearLayout lin_camera = dialogMenu.findViewById(R.id.lin_camera);
+                LinearLayout lin_gallery = dialogMenu.findViewById(R.id.lin_gallery);
+                LinearLayout lin_audio = dialogMenu.findViewById(R.id.lin_audio);
+                LinearLayout lin_location = dialogMenu.findViewById(R.id.lin_location);
+                LinearLayout lin_contact = dialogMenu.findViewById(R.id.lin_contact);
+                lin_camera.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialogMenu.dismiss();
+                        takePhotoFromCamera();
+                    }
+                });
+                lin_gallery.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialogMenu.dismiss();
+                        choosePhotoFromGallary();
+                    }
+                });
+                lin_document.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialogMenu.dismiss();
+                        getPDF();
+                    }
+                });
+                dialogMenu.show();
             }
         });
 
@@ -307,6 +347,36 @@ public class MessageFragment extends Fragment {
         return view;
     }
 
+    private void getPDF() {
+        //for greater than lolipop versions we need the permissions asked on runtime
+        //so if the permission is not available user will go to the screen to allow storage permission
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && ContextCompat.checkSelfPermission(getContext(),
+                Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                    Uri.parse("package:" + getContext().getPackageName()));
+            startActivity(intent);
+            return;
+        }
+        String[] mimeTypes =
+                {"application/pdf", "text/plain"};
+        Intent intent = new Intent("android.intent.action.GET_CONTENT");
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            intent.setType(mimeTypes.length == 1 ? mimeTypes[0] : "*/*");
+            if (mimeTypes.length > 0) {
+                intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
+            }
+        } else {
+            String mimeTypesStr = "";
+            for (String mimeType : mimeTypes) {
+                mimeTypesStr += mimeType + "|";
+            }
+            intent.setType(mimeTypesStr.substring(0, mimeTypesStr.length() - 1));
+        }
+        startActivityForResult(Intent.createChooser(intent, "Select File"), PICK_PDF_CODE);
+    }
+
     public static String randomString(int len) {
         sb = new StringBuilder(len);
         for (int i = 0; i < len; i++)
@@ -343,29 +413,6 @@ public class MessageFragment extends Fragment {
         is_text = view.findViewById(R.id.is_text);
     }
 
-    private void showPictureDialog() {
-        AlertDialog.Builder pictureDialog = new AlertDialog.Builder(getContext());
-        pictureDialog.setTitle("Choose Image");
-        String[] pictureDialogItems = {
-                "Gallery",
-                "Camera"};
-        pictureDialog.setItems(pictureDialogItems,
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        switch (which) {
-                            case 0:
-                                choosePhotoFromGallary();
-                                break;
-                            case 1:
-                                takePhotoFromCamera();
-                                break;
-                        }
-                    }
-                });
-        pictureDialog.show();
-    }
-
     public void choosePhotoFromGallary() {
         Intent galleryIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(galleryIntent, GALLERY);
@@ -378,7 +425,7 @@ public class MessageFragment extends Fragment {
             public void accept(@io.reactivex.annotations.NonNull Uri uri) throws Exception {
                 mImageUri = uri;
                 if (uploadTask != null && uploadTask.isInProgress()) {
-                    Toast.makeText(getContext(), "Upload in preogress", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Upload in progress", Toast.LENGTH_SHORT).show();
                 } else {
                     uploadImage();
                 }
@@ -389,8 +436,8 @@ public class MessageFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-
         super.onActivityResult(requestCode, resultCode, data);
+        Uri uri = new Uri.Builder().build();
         if (resultCode == RESULT_CANCELED) {
             return;
         }
@@ -400,12 +447,122 @@ public class MessageFragment extends Fragment {
                 mImageUri = data.getData();
                 //image_profile.setImageURI(mImageUri);
                 if (uploadTask != null && uploadTask.isInProgress()) {
-                    Toast.makeText(getContext(), "Upload in preogress", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Upload in progress", Toast.LENGTH_SHORT).show();
                 } else {
-                    uploadImage();
+                    Log.d("image_upload", mImageUri + "//");
+//                    uploadImage();
                 }
             }
         }
+        if (requestCode == PICK_PDF_CODE && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            if (data.getData() != null) {
+                String path = new File(Objects.requireNonNull(data.getData().getPath())).getAbsolutePath();
+                if (path != null) {
+                    uri = data.getData();
+                    String filename;
+                    Cursor cursor = getActivity().getContentResolver().query(uri, null, null, null, null);
+                    if (cursor == null) { // Source is Dropbox or other similar local file path
+                        filename = uri.getPath();
+                    } else {
+                        cursor.moveToFirst();
+                        int idx = cursor.getColumnIndex(MediaStore.Files.FileColumns.DISPLAY_NAME);
+                        filename = cursor.getString(idx);
+                        cursor.close();
+                    }
+                    String extension = filename.substring(filename.lastIndexOf("."));
+                    Log.d("File_upload", extension + "/+" + path);
+                    //uploading the file
+                    //  uploadFile(data.getData(), extension);
+                }
+            } else {
+                Toast.makeText(getContext(), "No file chosen", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void uploadFile(Uri data, String ext) {
+
+        final ProgressDialog pd = new ProgressDialog(getContext());
+        pd.setMessage("Uploading...");
+        pd.show();
+        pd.setCancelable(false);
+//        storageReference = FirebaseStorage.getInstance().getReference("doc_files");
+//        final StorageReference sRef = storageReference.child(System.currentTimeMillis() + ext);
+
+        if (data != null) {
+            storageReference = FirebaseStorage.getInstance().getReference("doc_files");
+
+            final StorageReference fileReference = storageReference.child(System.currentTimeMillis() + ext);
+
+            uploadTask = fileReference.putFile(data);
+            uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                @Override
+                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                    if (!task.isSuccessful()) {
+                        throw task.getException();
+                    }
+
+                    return fileReference.getDownloadUrl();
+                }
+            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                @Override
+                public void onComplete(@NonNull Task<Uri> task) {
+                    if (task.isSuccessful()) {
+                        Uri downloadUri = task.getResult();
+                        String mUri = downloadUri.toString();
+                        Log.d("UploadFile", mUri);
+                        sendMessage(getActivity(), fuser.getUid(), userid, "Document", false, "default", mUri);
+
+                        pd.dismiss();
+                    } else {
+                        Toast.makeText(getContext(), "Failed!", Toast.LENGTH_SHORT).show();
+                        pd.dismiss();
+                    }
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                    pd.dismiss();
+                }
+            });
+        } else {
+            Toast.makeText(getContext(), "No File selected", Toast.LENGTH_SHORT).show();
+        }
+
+//        sRef.putFile(data)
+//                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+//                    @SuppressWarnings("VisibleForTests")
+//                    @Override
+//                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+//                        pd.dismiss();
+//                        Toast.makeText(getContext(), "File Uploaded Successfully", Toast.LENGTH_SHORT).show();
+//                        String doc_uri=sRef.getDownloadUrl().toString();
+//                        Log.d("UploadFile",doc_uri);
+//                        Toast.makeText(getContext(), doc_uri+"", Toast.LENGTH_SHORT).show();
+////                        Upload upload = new Upload(editTextFilename.getText().toString(), taskSnapshot.getDownloadUrl().toString());
+////                        mDatabaseReference.child(mDatabaseReference.push().getKey()).setValue(upload);
+////                        sendMessage(getActivity(), fuser.getUid(), userid, "Document", false, taskSnapshot.getDownloadUrl());
+//
+//                    }
+//                })
+//
+//                .addOnFailureListener(new OnFailureListener() {
+//                    @Override
+//                    public void onFailure(@NonNull Exception exception) {
+//                        Toast.makeText(getContext(), exception.getMessage(), Toast.LENGTH_LONG).show();
+//                    }
+//                })
+//
+//                .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+//                    @SuppressWarnings("VisibleForTests")
+//                    @Override
+//                    public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+////                        double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+////                        textViewStatus.setText((int) progress + "% Uploading...");
+//                    }
+//                });
+
     }
 
     private String getFileExtension(Uri uri) {
@@ -421,7 +578,6 @@ public class MessageFragment extends Fragment {
         pd.setCancelable(false);
 
         if (mImageUri != null) {
-
             storageReference = FirebaseStorage.getInstance().getReference("chats");
 
             final StorageReference fileReference = storageReference.child(System.currentTimeMillis()
@@ -444,7 +600,7 @@ public class MessageFragment extends Fragment {
                         Uri downloadUri = task.getResult();
                         String mUri = downloadUri.toString();
 
-                        sendMessage(getActivity(), fuser.getUid(), userid, "Image", true, mUri);
+                        sendMessage(getActivity(), fuser.getUid(), userid, "Image", true, mUri, "default");
 
                         pd.dismiss();
                     } else {
@@ -526,7 +682,6 @@ public class MessageFragment extends Fragment {
         if (mSendEventListner != null) {
             reference.removeEventListener(mSendEventListner);
         }
-
     }
 
     @Override
@@ -534,7 +689,6 @@ public class MessageFragment extends Fragment {
         super.onResume();
         seenMessage(userid);
     }
-
 
     private String encrypt(String Data, String Password) throws Exception {
         SecretKeySpec key = genrateKey(Password);
@@ -564,7 +718,7 @@ public class MessageFragment extends Fragment {
         return secretKeySpec;
     }
 
-    public static void sendMessage(final Context context, final String sender, final String receiver, String message, boolean isimage, String uri) {
+    public static void sendMessage(final Context context, final String sender, final String receiver, String message, boolean isimage, String uri, String docUri) {
 
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Chats").push();
         randomString(9);
@@ -574,7 +728,6 @@ public class MessageFragment extends Fragment {
         } catch (Exception e) {
             e.printStackTrace();
         }*/
-
         Long tsLong = (System.currentTimeMillis() / 1000);
         String ts = tsLong.toString();
 
@@ -592,6 +745,8 @@ public class MessageFragment extends Fragment {
             hashMap.put("image", uri);
             hashMap.put("time", ts);
             hashMap.put("storage_uri", "default");
+            hashMap.put("audio_uri", "default");
+            hashMap.put("doc_uri", docUri);
             hashMap.put("table_id", reference.getKey());
         } else {
             hashMap.put("id", sb.toString());
@@ -605,15 +760,14 @@ public class MessageFragment extends Fragment {
             hashMap.put("image", uri);
             hashMap.put("time", ts);
             hashMap.put("table_id", reference.getKey());
+            hashMap.put("audio_uri", "default");
+            hashMap.put("doc_uri", docUri);
             hashMap.put("storage_uri", "default");
         }
-
         reference.setValue(hashMap);
-
 
         // add user to chat fragment
         final DatabaseReference chatRef = FirebaseDatabase.getInstance().getReference("Chatlist").child(sender).child(receiver);
-
         chatRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -644,7 +798,6 @@ public class MessageFragment extends Fragment {
         }
 
         final String msg = message;
-
         reference = FirebaseDatabase.getInstance().getReference("Users").child(sender);
         reference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -748,5 +901,4 @@ public class MessageFragment extends Fragment {
             }
         });
     }
-
 }

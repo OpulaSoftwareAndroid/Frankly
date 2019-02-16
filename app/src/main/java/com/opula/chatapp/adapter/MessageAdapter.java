@@ -2,6 +2,10 @@ package com.opula.chatapp.adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.os.Environment;
+import android.os.ParcelFileDescriptor;
 import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
@@ -24,6 +28,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.github.barteksc.pdfviewer.PDFView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -37,7 +42,11 @@ import com.opula.chatapp.constant.AppGlobal;
 import com.opula.chatapp.constant.WsConstant;
 import com.opula.chatapp.model.Chat;
 import com.opula.chatapp.model.User;
+import com.shockwave.pdfium.PdfDocument;
+import com.shockwave.pdfium.PdfiumCore;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -61,7 +70,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     public static FirebaseUser fuser;
     public static int i = 0;
     public static ForwardMessageAdapter newChatUserAdapter;
-
+    public final static String FOLDER = Environment.getExternalStorageDirectory() + "/PDF";
 
     public MessageAdapter(Context mContext, List<Chat> mChat, String imageurl) {
         this.mChat = mChat;
@@ -93,7 +102,17 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             Glide.with(mContext).load(imageurl).into(holder.profile_image);
         }
 
-        if (!chat.getImage().equalsIgnoreCase("default")) {
+        if (!chat.getDoc_uri().equalsIgnoreCase("default")) {
+            holder.show_message.setVisibility(View.GONE);
+            holder.pdfView.setVisibility(View.VISIBLE);
+            try {
+//                String baseDir = Environment.getExternalStorageDirectory().getAbsolutePath();
+                generateImageFromPdf(Uri.parse("/document/primary:text.pdf"), mContext);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+        if (!chat.getImage().equalsIgnoreCase("default")){
             holder.img_receive.setVisibility(View.VISIBLE);
             holder.show_message.setVisibility(View.GONE);
             holder.relative.setVisibility(View.VISIBLE);
@@ -116,13 +135,12 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
                     })
                     .into(holder.img_receive);
         }
-        if (chat.getImage().equalsIgnoreCase("default")) {
+        if (chat.getImage().equalsIgnoreCase("default") && chat.getDoc_uri().equalsIgnoreCase("default")) {
             holder.img_receive.setVisibility(View.GONE);
             holder.relative.setVisibility(View.GONE);
             holder.show_message.setVisibility(View.VISIBLE);
             holder.show_message.setText(chat.getMessage());
         }
-
 
         if (chat.isIsseen()) {
             //holder.txt_seen.setText("seen");
@@ -196,7 +214,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 //                });
 //            }
 //        });
-
 
         holder.img_receive.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -277,6 +294,101 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
     }
 
+    public void generateImageFromPdf(Uri pdfUri, Context context) throws FileNotFoundException {
+//        int pageNumber = 0;
+//        PdfiumCore pdfiumCore = new PdfiumCore(context);
+//        try {
+//            //http://www.programcreek.com/java-api-examples/index.php?api=android.os.ParcelFileDescriptor
+//            ParcelFileDescriptor fd = context.getContentResolver().openFileDescriptor(pdfUri, "r");
+//            PdfDocument pdfDocument = pdfiumCore.newDocument(fd);
+//            pdfiumCore.openPage(pdfDocument, pageNumber);
+//            int width = pdfiumCore.getPageWidthPoint(pdfDocument, pageNumber);
+//            int height = pdfiumCore.getPageHeightPoint(pdfDocument, pageNumber);
+//            Bitmap bmp = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+//            pdfiumCore.renderPageBitmap(pdfDocument, bmp, pageNumber, 0, 0, width, height);
+//            saveImage(bmp);
+//            pdfiumCore.closeDocument(pdfDocument); // important!
+//        } catch (Exception e) {
+//            Log.d("Exceptoin",e.toString());
+//            //todo with exception
+//        }
+
+
+//        ImageView iv = (ImageView) findViewById(R.id.imageView);
+        ParcelFileDescriptor fd = context.getContentResolver().openFileDescriptor(pdfUri, "r");
+        int pageNum = 0;
+        PdfiumCore pdfiumCore = new PdfiumCore(context);
+        try {
+            PdfDocument pdfDocument = pdfiumCore.newDocument(fd);
+            pdfiumCore.openPage(pdfDocument, pageNum);
+
+            int width = pdfiumCore.getPageWidthPoint(pdfDocument, pageNum);
+            int height = pdfiumCore.getPageHeightPoint(pdfDocument, pageNum);
+
+            Bitmap bitmap = Bitmap.createBitmap(width, height,
+                    Bitmap.Config.RGB_565);
+            pdfiumCore.renderPageBitmap(pdfDocument, bitmap, pageNum, 0, 0,
+                    width, height);
+
+            //if you need to render annotations and form fields, you can use
+            //the same method above adding 'true' as last param
+
+//            iv.setImageBitmap(bitmap);
+
+            printInfo(pdfiumCore, pdfDocument);
+
+            pdfiumCore.closeDocument(pdfDocument); // important!
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public void printInfo(PdfiumCore core, PdfDocument doc) {
+        PdfDocument.Meta meta = core.getDocumentMeta(doc);
+        Log.e("TAG", "title = " + meta.getTitle());
+        Log.e("TAG", "author = " + meta.getAuthor());
+        Log.e("TAG", "subject = " + meta.getSubject());
+        Log.e("TAG", "keywords = " + meta.getKeywords());
+        Log.e("TAG", "creator = " + meta.getCreator());
+        Log.e("TAG", "producer = " + meta.getProducer());
+        Log.e("TAG", "creationDate = " + meta.getCreationDate());
+        Log.e("TAG", "modDate = " + meta.getModDate());
+
+        printBookmarksTree(core.getTableOfContents(doc), "-");
+
+    }
+
+    public void printBookmarksTree(List<PdfDocument.Bookmark> tree, String sep) {
+        for (PdfDocument.Bookmark b : tree) {
+
+            Log.e("TAG", String.format("%s %s, p %d", sep, b.getTitle(), b.getPageIdx()));
+
+            if (b.hasChildren()) {
+                printBookmarksTree(b.getChildren(), sep + "-");
+            }
+        }
+    }
+
+    //    private void saveImage(Bitmap bmp) {
+//        FileOutputStream out = null;
+//        try {
+//            File folder = new File(FOLDER);
+//            if (!folder.exists())
+//                folder.mkdirs();
+//            File file = new File(folder, "PDF.png");
+//            out = new FileOutputStream(file);
+//            bmp.compress(Bitmap.CompressFormat.PNG, 100, out); // bmp is your Bitmap instance
+//        } catch (Exception e) {
+//            //todo with exception
+//        } finally {
+//            try {
+//                if (out != null)
+//                    out.close();
+//            } catch (Exception e) {
+//                //todo with exception
+//            }
+//        }
+//    }
     @Override
     public int getItemCount() {
         return mChat.size();
@@ -291,6 +403,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         public RelativeLayout relative, txt_seen, img_blur;
         public LinearLayout linear_chat;
         public LinearLayout linmain;
+        public PDFView pdfView;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -309,6 +422,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             linmain = itemView.findViewById(R.id.linmain);
             img_download = itemView.findViewById(R.id.img_download);
             img_blur = itemView.findViewById(R.id.img_blur);
+            pdfView = itemView.findViewById(R.id.pdfView);
         }
     }
 
@@ -358,6 +472,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     public static void copyMessage(Context context) {
         AppGlobal.copyData(context, mChat.get(i).getMessage());
     }
+
     public static void back(Context context) {
 
     }

@@ -50,6 +50,7 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
         String body = remoteMessage.getData().get("body");
 
         RemoteMessage.Notification notification = remoteMessage.getNotification();
+
         int j = Integer.parseInt(user.replaceAll("[\\D]", ""));
         Intent intent = new Intent(this, MainActivity.class);
         Bundle bundle = new Bundle();
@@ -69,17 +70,16 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
         }
 
         oreoNotification.getManager().notify(i, builder.build());
-
     }
 
     private void sendNotification(RemoteMessage remoteMessage) {
-
         String user = remoteMessage.getData().get("user");
         String icon = remoteMessage.getData().get("icon");
         String title = remoteMessage.getData().get("title");
         String body = remoteMessage.getData().get("body");
 
         RemoteMessage.Notification notification = remoteMessage.getNotification();
+
         int j = Integer.parseInt(user.replaceAll("[\\D]", ""));
         Intent intent = new Intent(this, MainActivity.class);
         Bundle bundle = new Bundle();

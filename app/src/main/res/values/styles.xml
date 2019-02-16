@@ -6,16 +6,17 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="bottomSheetDialogTheme">@style/AppBottomSheetDialogTheme</item>
     </style>
 
-<style name="AppTheme.Toolbar" parent="AppTheme">
-    <!--This line changes the color of text in Toolbar-->
-    <item name="android:textColorPrimary">@color/white</item>
-    <!--This line changes the color of icons in toolbar (back, overflow menu icons)-->
-    <item name="android:textColorSecondary">@color/white</item>
-    <item name="actionMenuTextColor">@color/white</item>
-    <item name="android:textColorHint">@color/white</item>
-</style>
+    <style name="AppTheme.Toolbar" parent="AppTheme">
+        <!--This line changes the color of text in Toolbar-->
+        <item name="android:textColorPrimary">@color/white</item>
+        <!--This line changes the color of icons in toolbar (back, overflow menu icons)-->
+        <item name="android:textColorSecondary">@color/white</item>
+        <item name="actionMenuTextColor">@color/white</item>
+        <item name="android:textColorHint">@color/white</item>
+    </style>
 
     <style name="ToolbarPopupTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:textColor">@color/black</item>
@@ -23,6 +24,17 @@
 
     <style name="MenuStyle" parent="Theme.AppCompat.Light">
         <item name="android:background">@android:color/white</item>
+    </style>
+
+    <style name="AppBottomSheetDialogTheme" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/AppModalStyle</item>
+    </style>
+
+    <style name="AppModalStyle" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@android:color/transparent</item>
+        <!--<item name="behavior_peekHeight">500dp</item>-->
+        <item name="android:layout_marginLeft">@dimen/_10sdp</item>
+        <item name="android:layout_marginRight">@dimen/_10sdp</item>
     </style>
 
 </resources>

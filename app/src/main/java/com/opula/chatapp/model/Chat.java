@@ -18,6 +18,7 @@ public class Chat {
     private String sender_username;
     private String sender_image;
     private String table_id;
+    private String doc_uri;
 
     public String getId() {
         return id;
@@ -129,5 +130,13 @@ public class Chat {
 
     public void setTable_id(String table_id) {
         this.table_id = table_id;
+    }
+
+    public String getDoc_uri() {
+        return doc_uri;
+    }
+
+    public void setDoc_uri(String doc_uri) {
+        this.doc_uri = doc_uri;
     }
 }
