@@ -76,7 +76,6 @@ public class CreateGrpFragment extends Fragment {
                 if (commaSepValueBuilder.length() > 0) {
                     commaSepValueBuilder.deleteCharAt(commaSepValueBuilder.lastIndexOf(","));
                 }
-
             }
         });
 
@@ -98,13 +97,10 @@ public class CreateGrpFragment extends Fragment {
                     } else {
                         Toast.makeText(getActivity(), "Please select more than one member!", Toast.LENGTH_SHORT).show();
                     }
-
                 }
             }
         });
-
         return view;
-
     }
 
     private void initViews(View view) {
@@ -112,7 +108,6 @@ public class CreateGrpFragment extends Fragment {
         btnNext = view.findViewById(R.id.btnNext);
         txtSelectedCount = view.findViewById(R.id.txtSelectedCount);
     }
-
 
     static class ViewHolder {
         CheckBox checkBox;
@@ -152,7 +147,6 @@ public class CreateGrpFragment extends Fragment {
         });
     }
 
-
     public class ItemsListAdapter extends BaseAdapter {
         private Context context;
         private ArrayList<User> oricoininfo;
@@ -185,7 +179,6 @@ public class CreateGrpFragment extends Fragment {
             if (rowView == null) {
                 LayoutInflater inflater = ((Activity) context).getLayoutInflater();
                 rowView = inflater.inflate(R.layout.group_user_item, null);
-
                 viewHolder.checkBox = rowView.findViewById(R.id.rowCheckBox);
                 viewHolder.txtNumber = rowView.findViewById(R.id.txtNumber);
                 viewHolder.txtName = rowView.findViewById(R.id.txtName);

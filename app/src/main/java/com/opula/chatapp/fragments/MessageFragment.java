@@ -5,17 +5,22 @@ import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.media.MediaPlayer;
+import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.StrictMode;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetDialog;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -76,6 +81,7 @@ import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener;
 
 import java.io.File;
+import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
@@ -125,7 +131,9 @@ public class MessageFragment extends Fragment {
     StorageReference storageReference;
     private StorageTask uploadTask;
     Uri mImageUri = null;
+    Uri mPDFUri = null;
     int GALLERY = 1;
+    int AUDIO_FROM_GALLERY = 2;
     String CheckActive;
     public static boolean notify = false;
     static final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -141,6 +149,17 @@ public class MessageFragment extends Fragment {
     BottomSheetDialog dialogMenu;
     final static int PICK_PDF_CODE = 2342;
 
+    private static final String LOG_TAG = "AudioRecordTest";
+    private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
+    private static String fileName = null;
+
+    private MediaRecorder recorder = null;
+    private MediaPlayer player = null;
+    boolean mStartRecording = true;
+    // Requesting permission to RECORD_AUDIO
+    private boolean permissionToRecordAccepted = false;
+    private String[] permissions = {Manifest.permission.RECORD_AUDIO};
+
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -150,8 +169,14 @@ public class MessageFragment extends Fragment {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
         }
+        // Record to the external cache directory for visibility
+        fileName = Environment.getExternalStorageDirectory().getAbsolutePath();
+        fileName += "/audiorecordtest.3gp";
+
+        ActivityCompat.requestPermissions(getActivity(), permissions, REQUEST_RECORD_AUDIO_PERMISSION);
+
+
         MainActivity.hideFloatingActionButton();
-//        MainActivity.checkChatTheme(getActivity());
         MainActivity.showpart1();
 
         sharedPreference = new SharedPreference();
@@ -224,6 +249,23 @@ public class MessageFragment extends Fragment {
                         getPDF();
                     }
                 });
+                lin_audio.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialogMenu.dismiss();
+                        chooseAudioFromGallary();
+                    }
+                });
+                lin_contact.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialogMenu.dismiss();
+                        MainActivity.showpart2();
+                        FragmentManager fragmentManager = ((FragmentActivity) getContext()).getSupportFragmentManager();
+                        fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new ContactListFragment()).addToBackStack(null).commit();
+
+                    }
+                });
                 dialogMenu.show();
             }
         });
@@ -292,6 +334,13 @@ public class MessageFragment extends Fragment {
                 Log.d("RecordView", "onStart");
                 is_text.setVisibility(View.GONE);
                 recordView.setVisibility(View.VISIBLE);
+                onRecord(mStartRecording);
+                if (mStartRecording) {
+//                    setText("Stop recording");
+                } else {
+//                    setText("Start recording");
+                }
+                mStartRecording = !mStartRecording;
             }
 
             @Override
@@ -304,10 +353,7 @@ public class MessageFragment extends Fragment {
 
             @Override
             public void onFinish(long recordTime) {
-                //Stop Recording..
-                //String time = getHumanTimeText(recordTime);
                 Log.d("RecordView", "onFinish");
-                //Log.d("RecordTime", time);
                 is_text.setVisibility(View.VISIBLE);
                 recordView.setVisibility(View.GONE);
             }
@@ -347,9 +393,87 @@ public class MessageFragment extends Fragment {
         return view;
     }
 
+    private void onRecord(boolean start) {
+        if (start) {
+            startRecording();
+        } else {
+            stopRecording();
+        }
+    }
+
+    private void onPlay(boolean start) {
+        if (start) {
+            startPlaying();
+        } else {
+            stopPlaying();
+        }
+    }
+
+    private void startPlaying() {
+        player = new MediaPlayer();
+        try {
+            player.setDataSource(fileName);
+            player.prepare();
+            player.start();
+        } catch (IOException e) {
+            Log.e(LOG_TAG, "prepare() failed");
+        }
+    }
+
+    private void stopPlaying() {
+        player.release();
+        player = null;
+    }
+
+    private void startRecording() {
+        recorder = new MediaRecorder();
+        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+        recorder.setOutputFile(fileName);
+        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+
+        try {
+            recorder.prepare();
+        } catch (IOException e) {
+            Log.e(LOG_TAG, "prepare() failed");
+        }
+
+        recorder.start();
+    }
+
+    private void stopRecording() {
+        recorder.stop();
+        recorder.release();
+        recorder = null;
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (recorder != null) {
+            recorder.release();
+            recorder = null;
+        }
+
+        if (player != null) {
+            player.release();
+            player = null;
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case REQUEST_RECORD_AUDIO_PERMISSION:
+                permissionToRecordAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+                break;
+        }
+        if (!permissionToRecordAccepted) getActivity().finish();
+
+    }
+
     private void getPDF() {
-        //for greater than lolipop versions we need the permissions asked on runtime
-        //so if the permission is not available user will go to the screen to allow storage permission
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && ContextCompat.checkSelfPermission(getContext(),
                 Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -418,6 +542,14 @@ public class MessageFragment extends Fragment {
         startActivityForResult(galleryIntent, GALLERY);
     }
 
+    public void chooseAudioFromGallary() {
+        Intent intent;
+        intent = new Intent();
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        intent.setType("audio/*");
+        startActivityForResult(Intent.createChooser(intent, "Select Audio"), AUDIO_FROM_GALLERY);
+    }
+
     @SuppressLint("CheckResult")
     private void takePhotoFromCamera() {
         RxImagePicker.with(getActivity()).requestImage(Sources.CAMERA).subscribe(new io.reactivex.functions.Consumer<Uri>() {
@@ -437,7 +569,6 @@ public class MessageFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Uri uri = new Uri.Builder().build();
         if (resultCode == RESULT_CANCELED) {
             return;
         }
@@ -450,7 +581,7 @@ public class MessageFragment extends Fragment {
                     Toast.makeText(getContext(), "Upload in progress", Toast.LENGTH_SHORT).show();
                 } else {
                     Log.d("image_upload", mImageUri + "//");
-//                    uploadImage();
+                    uploadImage();
                 }
             }
         }
@@ -458,11 +589,11 @@ public class MessageFragment extends Fragment {
             if (data.getData() != null) {
                 String path = new File(Objects.requireNonNull(data.getData().getPath())).getAbsolutePath();
                 if (path != null) {
-                    uri = data.getData();
+                    mPDFUri = data.getData();
                     String filename;
-                    Cursor cursor = getActivity().getContentResolver().query(uri, null, null, null, null);
+                    Cursor cursor = getActivity().getContentResolver().query(mPDFUri, null, null, null, null);
                     if (cursor == null) { // Source is Dropbox or other similar local file path
-                        filename = uri.getPath();
+                        filename = mPDFUri.getPath();
                     } else {
                         cursor.moveToFirst();
                         int idx = cursor.getColumnIndex(MediaStore.Files.FileColumns.DISPLAY_NAME);
@@ -478,6 +609,84 @@ public class MessageFragment extends Fragment {
                 Toast.makeText(getContext(), "No file chosen", Toast.LENGTH_SHORT).show();
             }
         }
+        if (requestCode == AUDIO_FROM_GALLERY && null != data) {
+            try {
+                Uri audioFileUri = data.getData();
+                String path1 = audioFileUri.getPath();
+                Log.d("Audio_path", path1 + "/");
+                uploadAudio(audioFileUri, "mp3");
+//                String path2 = getAudioPath(audioFileUri);
+//                File f = new File(path2);
+//                long fileSizeInBytes = f.length();
+//                long fileSizeInKB = fileSizeInBytes / 1024;
+//                long fileSizeInMB = fileSizeInKB / 1024;
+//                if (fileSizeInMB > 2) {
+//                    Toast.makeText(getContext(), "sorry file size is large", Toast.LENGTH_SHORT).show();
+//                } else {
+////                        profilePicUrl = path2;
+////                        isPicSelect = true;
+//                    Toast.makeText(getContext(), "Upload success", Toast.LENGTH_SHORT).show();
+//                }
+
+            } catch (Exception e) {
+                Toast.makeText(getContext(), "Unable to process,try again", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void uploadAudio(Uri data, String ext) {
+        final ProgressDialog pd = new ProgressDialog(getContext());
+        pd.setMessage("Uploading...");
+        pd.show();
+        pd.setCancelable(false);
+        if (data != null) {
+            storageReference = FirebaseStorage.getInstance().getReference("audio");
+
+            final StorageReference fileReference = storageReference.child(System.currentTimeMillis() + ext);
+
+            uploadTask = fileReference.putFile(data);
+            uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                @Override
+                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                    if (!task.isSuccessful()) {
+                        throw task.getException();
+                    }
+
+                    return fileReference.getDownloadUrl();
+                }
+            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                @Override
+                public void onComplete(@NonNull Task<Uri> task) {
+                    if (task.isSuccessful()) {
+                        Uri downloadUri = task.getResult();
+                        String mUri = downloadUri.toString();
+                        Log.d("UploadFile", mUri);
+//                        sendMessage(getActivity(), fuser.getUid(), userid, "Document", false, "default", mUri);
+                        pd.dismiss();
+                    } else {
+                        Toast.makeText(getContext(), "Failed!", Toast.LENGTH_SHORT).show();
+                        pd.dismiss();
+                    }
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                    pd.dismiss();
+                }
+            });
+        } else {
+            Toast.makeText(getContext(), "No File selected", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private String getAudioPath(Uri uri) {
+        String[] data = {MediaStore.Audio.Media.DATA};
+        CursorLoader loader = new CursorLoader(getActivity(), uri, data, null, null, null);
+        Cursor cursor = loader.loadInBackground();
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA);
+        cursor.moveToFirst();
+        return cursor.getString(column_index);
     }
 
     private void uploadFile(Uri data, String ext) {
@@ -486,9 +695,6 @@ public class MessageFragment extends Fragment {
         pd.setMessage("Uploading...");
         pd.show();
         pd.setCancelable(false);
-//        storageReference = FirebaseStorage.getInstance().getReference("doc_files");
-//        final StorageReference sRef = storageReference.child(System.currentTimeMillis() + ext);
-
         if (data != null) {
             storageReference = FirebaseStorage.getInstance().getReference("doc_files");
 
@@ -529,40 +735,6 @@ public class MessageFragment extends Fragment {
         } else {
             Toast.makeText(getContext(), "No File selected", Toast.LENGTH_SHORT).show();
         }
-
-//        sRef.putFile(data)
-//                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-//                    @SuppressWarnings("VisibleForTests")
-//                    @Override
-//                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-//                        pd.dismiss();
-//                        Toast.makeText(getContext(), "File Uploaded Successfully", Toast.LENGTH_SHORT).show();
-//                        String doc_uri=sRef.getDownloadUrl().toString();
-//                        Log.d("UploadFile",doc_uri);
-//                        Toast.makeText(getContext(), doc_uri+"", Toast.LENGTH_SHORT).show();
-////                        Upload upload = new Upload(editTextFilename.getText().toString(), taskSnapshot.getDownloadUrl().toString());
-////                        mDatabaseReference.child(mDatabaseReference.push().getKey()).setValue(upload);
-////                        sendMessage(getActivity(), fuser.getUid(), userid, "Document", false, taskSnapshot.getDownloadUrl());
-//
-//                    }
-//                })
-//
-//                .addOnFailureListener(new OnFailureListener() {
-//                    @Override
-//                    public void onFailure(@NonNull Exception exception) {
-//                        Toast.makeText(getContext(), exception.getMessage(), Toast.LENGTH_LONG).show();
-//                    }
-//                })
-//
-//                .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-//                    @SuppressWarnings("VisibleForTests")
-//                    @Override
-//                    public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-////                        double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
-////                        textViewStatus.setText((int) progress + "% Uploading...");
-//                    }
-//                });
-
     }
 
     private String getFileExtension(Uri uri) {
