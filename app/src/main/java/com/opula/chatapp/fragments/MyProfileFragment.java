@@ -130,7 +130,7 @@ public class MyProfileFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 String urlString = "https://shreemsanjeevani.com/";
-                Intent intent = new Intent(Intent.ACTION_VIEW,Uri.parse(urlString));
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(urlString));
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.setPackage("com.android.chrome");
                 try {

@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -16,11 +18,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.opula.chatapp.MainActivity;
 import com.opula.chatapp.R;
 import com.opula.chatapp.constant.SharedPreference;
+import com.opula.chatapp.constant.WsConstant;
 import com.opula.chatapp.model.ContactVO;
 
 import java.util.ArrayList;
@@ -37,6 +44,9 @@ public class ContactListFragment extends Fragment {
     List<ContactVO> userList;
     List<ContactVO> selectedUserList = new ArrayList<>();
     Button btnNext;
+    FirebaseUser fuser;
+    String userid, type_of_fragment,groupUserId;
+    LinearLayout no_chat;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -44,8 +54,12 @@ public class ContactListFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_contactlist, container, false);
 
         MainActivity.hideFloatingActionButton();
+        type_of_fragment = getArguments().getString("Type");
 
         sharedPreference = new SharedPreference();
+        userid = sharedPreference.getValue(getActivity(), WsConstant.userId);
+        groupUserId = sharedPreference.getValue(getActivity(), WsConstant.groupUserId);
+        fuser = FirebaseAuth.getInstance().getCurrentUser();
         initViews(view);
 
         recycler_contact.setHasFixedSize(true);
@@ -54,19 +68,36 @@ public class ContactListFragment extends Fragment {
 
         getContactList();
 
-        AllContactsAdapter contactAdapter = new AllContactsAdapter(userList, getContext());
-        recycler_contact.setAdapter(contactAdapter);
-
+        if (userList.isEmpty()) {
+            no_chat.setVisibility(View.VISIBLE);
+            recycler_contact.setVisibility(View.GONE);
+            btnNext.setEnabled(false);
+        } else {
+            no_chat.setVisibility(View.GONE);
+            AllContactsAdapter contactAdapter = new AllContactsAdapter(userList, getContext());
+            recycler_contact.setAdapter(contactAdapter);
+        }
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Map<String, String> map = new HashMap<String, String>();
-                for (int i = 0; i < selectedUserList.size(); i++) {
-                    map.put(selectedUserList.get(i).getContactNumber(), selectedUserList.get(i).getContactName());
-                }
-                Log.d("Contact_User", map.toString()+"/");
-                Set keys = map.keySet();
+                if (selectedUserList.isEmpty()) {
+                    Toast.makeText(getContext(), "Select Any Contact..", Toast.LENGTH_SHORT).show();
+                } else {
+                    if (type_of_fragment.equalsIgnoreCase("GroupContact")) {
+                        for (int i = 0; i < selectedUserList.size(); i++) {
+                            GroupMessageFragment.sendMessageToGrp(getContext(), fuser.getUid(), groupUserId, "contact", false, "default", "default", true, selectedUserList.get(i).getContactName(), selectedUserList.get(i).getContactNumber());
+                        }
+                        FragmentManager fragmentManager = ((FragmentActivity) getContext()).getSupportFragmentManager();
+                        fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new GroupMessageFragment()).commit();
+                    } else if (type_of_fragment.equalsIgnoreCase("PersonalContact")) {
+                        for (int i = 0; i < selectedUserList.size(); i++) {
+                            MessageFragment.sendMessageToPersonal(getContext(), fuser.getUid(), userid, "contact", false, "default", "default", true, selectedUserList.get(i).getContactName(), selectedUserList.get(i).getContactNumber());
+                        }
+                        FragmentManager fragmentManager = ((FragmentActivity) getContext()).getSupportFragmentManager();
+                        fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new MessageFragment()).commit();
+                    }
 
+                }
             }
         });
         return view;
@@ -105,6 +136,7 @@ public class ContactListFragment extends Fragment {
     private void initViews(View view) {
         recycler_contact = view.findViewById(R.id.recycler_contact);
         btnNext = view.findViewById(R.id.btnNext);
+        no_chat = view.findViewById(R.id.no_chat);
     }
 
     //Contact list Adapter

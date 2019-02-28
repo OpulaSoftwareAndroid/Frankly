@@ -113,10 +113,8 @@ public class UserSharedAdapter extends RecyclerView.Adapter<UserSharedAdapter.Vi
 
         public ImageView profile_image;
         public ProgressBar p_bar;
-
         public ViewHolder(View itemView) {
             super(itemView);
-
             profile_image = itemView.findViewById(R.id.profile_image);
             p_bar = itemView.findViewById(R.id.p_bar);
 

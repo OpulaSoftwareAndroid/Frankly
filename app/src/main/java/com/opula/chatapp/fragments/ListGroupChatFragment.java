@@ -68,7 +68,7 @@ public class ListGroupChatFragment extends Fragment {
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                 usersList.clear();
                                 try {
-                                    if (dataSnapshott.child(fuser.getUid()).hasChild("group")){
+                                    if (dataSnapshott.child(fuser.getUid()).hasChild("group")) {
                                         for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
 
 //                                        for (DataSnapshot d1 : snapshot.getChildren()) {
@@ -100,8 +100,7 @@ public class ListGroupChatFragment extends Fragment {
                             }
                         });
 
-                    }else
-                    {
+                    } else {
                         if (mUsers.size() > 0) {
                             // listView not empty
                             recyclerView.setVisibility(View.VISIBLE);

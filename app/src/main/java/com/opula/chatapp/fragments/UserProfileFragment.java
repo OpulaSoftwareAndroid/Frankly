@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -50,18 +52,16 @@ public class UserProfileFragment extends Fragment {
 
     SharedPreference sharedPreference;
     String userid;
-    TextView txtName, txtEmail, text_no_image;
+    TextView txtName, txtEmail, text_no_image, txtViewAll;
     TextView txtOnOff;
     LinearLayout imgBack;
     CircleImageView image_PersonalInfo_DP;
     Switch chkNotification;
     DatabaseReference reference;
     RecyclerView recycler_image;
-
     private List<Chat> mchat;
     private UserSharedAdapter userSharedAdapter;
     FirebaseUser fuser;
-    FirebaseAuth firebaseAuth;
     public static FirebaseUser firebaseUser;
     String image;
 
@@ -154,50 +154,58 @@ public class UserProfileFragment extends Fragment {
             }
         });
 
-        /*firebaseAuth = FirebaseAuth.getInstance();
-        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        reference = FirebaseDatabase.getInstance().getReference("Chatlist").child(firebaseUser.getUid());
-        reference.addValueEventListener(new ValueEventListener() {
+        txtViewAll.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Chatlist chatlist = dataSnapshot.getValue(Chatlist.class);
-                assert chatlist != null;
-                if (chatlist.getIsnotification()){
-                    chkNotification.setChecked(true);
-                } else {
-                    chkNotification.setChecked(false);
-                }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+            public void onClick(View view) {
+                MainActivity.showpart2();
+                FragmentManager fragmentManager = ((FragmentActivity) getContext()).getSupportFragmentManager();
+                fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new ViewAllSharedMediaFragment()).addToBackStack(null).commit();
 
             }
         });
-
-        chkNotification.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (chkNotification.isChecked()){
-                    final DatabaseReference chatRefReceiver = FirebaseDatabase.getInstance().getReference("Chatlist").child(userid).child(fuser.getUid());
-                    chatRefReceiver.child("id").setValue(fuser.getUid());
-                    chatRefReceiver.child("isnotification").setValue(false);
-
-                    txtOnOff.setText("Off");
-                } else {
-
-                    final DatabaseReference chatRefReceiver = FirebaseDatabase.getInstance().getReference("Chatlist").child(userid).child(fuser.getUid());
-                    chatRefReceiver.child("id").setValue(fuser.getUid());
-                    chatRefReceiver.child("isnotification").setValue(true);
-
-                    txtOnOff.setText("On");
-                }
-            }
-        });*/
-
+//        firebaseAuth = FirebaseAuth.getInstance();
+//        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+//        reference = FirebaseDatabase.getInstance().getReference("Chatlist").child(firebaseUser.getUid());
+//        reference.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                Chatlist chatlist = dataSnapshot.getValue(Chatlist.class);
+//                assert chatlist != null;
+//                if (chatlist.getIsnotification()){
+//                    chkNotification.setChecked(true);
+//                } else {
+//                    chkNotification.setChecked(false);
+//                }
+//            }
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
+//
+//        chkNotification.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if (chkNotification.isChecked()){
+//                    final DatabaseReference chatRefReceiver = FirebaseDatabase.getInstance().getReference("Chatlist").child(userid).child(fuser.getUid());
+//                    chatRefReceiver.child("id").setValue(fuser.getUid());
+//                    chatRefReceiver.child("isnotification").setValue(false);
+//
+//                    txtOnOff.setText("Off");
+//                } else {
+//
+//                    final DatabaseReference chatRefReceiver = FirebaseDatabase.getInstance().getReference("Chatlist").child(userid).child(fuser.getUid());
+//                    chatRefReceiver.child("id").setValue(fuser.getUid());
+//                    chatRefReceiver.child("isnotification").setValue(true);
+//
+//                    txtOnOff.setText("On");
+//                }
+//            }
+//        });
         chkNotification.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked){
+                if (isChecked) {
 
                     /*final DatabaseReference chatRefReceiver = FirebaseDatabase.getInstance().getReference("Chatlist").child(userid).child(fuser.getUid());
                     chatRefReceiver.child("id").setValue(fuser.getUid());
@@ -228,6 +236,7 @@ public class UserProfileFragment extends Fragment {
         txtName = view.findViewById(R.id.txtName);
         txtEmail = view.findViewById(R.id.txtEmail);
         recycler_image = view.findViewById(R.id.recycler_image);
+        txtViewAll = view.findViewById(R.id.txtViewAll);
         text_no_image = view.findViewById(R.id.text_no_image);
     }
 
@@ -244,16 +253,14 @@ public class UserProfileFragment extends Fragment {
                         Chat chat = snapshot.getValue(Chat.class);
                         assert chat != null;
 
-                        if (chat.getTo().equalsIgnoreCase("personal")){
+                        if (chat.getTo().equalsIgnoreCase("personal")) {
                             if (chat.getReceiver().equals(myid) && chat.getSender().equals(userid) ||
                                     chat.getReceiver().equals(userid) && chat.getSender().equals(myid)) {
-                                if (chat.isIsimage()){
+                                if (chat.isIsimage()) {
                                     mchat.add(chat);
                                 }
                             }
-
                         }
-
                         userSharedAdapter = new UserSharedAdapter(getActivity(), mchat);
                         recycler_image.setAdapter(userSharedAdapter);
 

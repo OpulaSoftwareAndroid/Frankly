@@ -50,6 +50,27 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:visibility="visible" />
+
+                    <LinearLayout
+                        android:id="@+id/no_chat"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:visibility="gone"
+                        tools:ignore="ExtraText">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:fontFamily="@font/m"
+                            android:text="No new contact found!"
+                            android:textColor="#ccc"
+                            android:textSize="@dimen/_13sdp"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
                 </LinearLayout>
 
                 <LinearLayout

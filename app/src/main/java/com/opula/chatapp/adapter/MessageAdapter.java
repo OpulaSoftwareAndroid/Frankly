@@ -2,11 +2,13 @@ package com.opula.chatapp.adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.os.Vibrator;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -94,7 +96,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
 
         final Chat chat = mChat.get(position);
-        Log.d("Chat_Data", chat.getImage() + "/");
+        Log.d("Chat_Data", chat.getContact_number() + "/" + chat.getContact_number());
 
         if (imageurl.equals("default")) {
             holder.profile_image.setImageResource(R.drawable.image_boy);
@@ -104,6 +106,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
         if (!chat.getDoc_uri().equalsIgnoreCase("default")) {
             holder.show_message.setVisibility(View.GONE);
+            holder.relative_contact.setVisibility(View.GONE);
             holder.pdfView.setVisibility(View.VISIBLE);
             try {
 //                String baseDir = Environment.getExternalStorageDirectory().getAbsolutePath();
@@ -112,8 +115,9 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
                 e.printStackTrace();
             }
         }
-        if (!chat.getImage().equalsIgnoreCase("default")){
+        if (!chat.getImage().equalsIgnoreCase("default")) {
             holder.img_receive.setVisibility(View.VISIBLE);
+            holder.relative_contact.setVisibility(View.GONE);
             holder.show_message.setVisibility(View.GONE);
             holder.relative.setVisibility(View.VISIBLE);
 
@@ -135,9 +139,16 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
                     })
                     .into(holder.img_receive);
         }
-        if (chat.getImage().equalsIgnoreCase("default") && chat.getDoc_uri().equalsIgnoreCase("default")) {
+        if (chat.isIscontact()) {
+            holder.show_message.setVisibility(View.GONE);
+            holder.relative_contact.setVisibility(View.VISIBLE);
+            holder.txtContactNumber.setText(chat.getContact_number() + "");
+            holder.txtContactName.setText(chat.getContact_name());
+        }
+        if (chat.getImage().equalsIgnoreCase("default") && chat.getDoc_uri().equalsIgnoreCase("default") && chat.isIscontact() == false) {
             holder.img_receive.setVisibility(View.GONE);
             holder.relative.setVisibility(View.GONE);
+            holder.relative_contact.setVisibility(View.GONE);
             holder.show_message.setVisibility(View.VISIBLE);
             holder.show_message.setText(chat.getMessage());
         }
@@ -291,6 +302,17 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
                 return true;
             }
         });
+        holder.txtAddContact.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent contactIntent = new Intent(ContactsContract.Intents.Insert.ACTION);
+                contactIntent.setType(ContactsContract.RawContacts.CONTENT_TYPE);
+                contactIntent
+                        .putExtra(ContactsContract.Intents.Insert.NAME, chat.getContact_name())
+                        .putExtra(ContactsContract.Intents.Insert.PHONE, chat.getContact_number());
+                ((Activity) mContext).startActivity(contactIntent);
+            }
+        });
 
     }
 
@@ -396,11 +418,11 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        public TextView show_message;
+        public TextView show_message, txtContactName, txtContactNumber, txtAddContact;
         public ImageView profile_image, img_receive, img_tick, img_dtick, img_dstick, img_download;
         public TextView show_time;
         public ProgressBar progress_circular;
-        public RelativeLayout relative, txt_seen, img_blur;
+        public RelativeLayout relative, txt_seen, img_blur, relative_contact;
         public LinearLayout linear_chat;
         public LinearLayout linmain;
         public PDFView pdfView;
@@ -423,6 +445,10 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             img_download = itemView.findViewById(R.id.img_download);
             img_blur = itemView.findViewById(R.id.img_blur);
             pdfView = itemView.findViewById(R.id.pdfView);
+            relative_contact = itemView.findViewById(R.id.relative_contact);
+            txtAddContact = itemView.findViewById(R.id.txtAddContact);
+            txtContactName = itemView.findViewById(R.id.txtContactName);
+            txtContactNumber = itemView.findViewById(R.id.txtContactNumber);
         }
     }
 

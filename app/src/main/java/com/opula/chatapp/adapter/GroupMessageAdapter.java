@@ -4,6 +4,9 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -20,12 +23,14 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.github.barteksc.pdfviewer.PDFView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.opula.chatapp.R;
 import com.opula.chatapp.constant.AppGlobal;
 import com.opula.chatapp.model.Chat;
 
+import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -65,7 +70,7 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<GroupMessageAdapte
     public void onBindViewHolder(@NonNull final GroupMessageAdapter.ViewHolder holder, int position) {
 
         final Chat chat = mChat.get(position);
-        Log.d("Chat_Data", chat.getSender_image() + "/");
+        Log.d("Chat_Data", chat.getContact_number() + "/" + chat.getContact_name());
 
         if (chat.getSender_image().equals("default")) {
             holder.profile_image.setImageResource(R.drawable.image_boy);
@@ -74,9 +79,15 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<GroupMessageAdapte
         }
 
         holder.show_sender.setText(chat.getSender_username());
+        if (!chat.getDoc_uri().equalsIgnoreCase("default")) {
+            holder.show_message.setVisibility(View.GONE);
+            holder.relative_contact.setVisibility(View.GONE);
+            holder.pdfView.setVisibility(View.VISIBLE);
 
+        }
         if (!chat.getImage().equalsIgnoreCase("default")) {
             holder.img_receive.setVisibility(View.VISIBLE);
+            holder.relative_contact.setVisibility(View.GONE);
             holder.show_message.setVisibility(View.GONE);
             holder.relative.setVisibility(View.VISIBLE);
 
@@ -98,24 +109,27 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<GroupMessageAdapte
                     .into(holder.img_receive);
             //Glide.with(mContext).load(chat.getImage()).into(holder.img_receive);
         }
-        if (chat.getImage().equalsIgnoreCase("default")) {
+        if (chat.isIscontact()) {
+            holder.show_message.setVisibility(View.GONE);
+            holder.relative_contact.setVisibility(View.VISIBLE);
+            holder.txtContactNumber.setText(chat.getContact_number() + "");
+            holder.txtContactName.setText(chat.getContact_name());
+        }
+        if (chat.getImage().equalsIgnoreCase("default") && chat.getDoc_uri().equalsIgnoreCase("default") && chat.isIscontact() == false) {
             holder.img_receive.setVisibility(View.GONE);
             holder.relative.setVisibility(View.GONE);
+            holder.relative_contact.setVisibility(View.GONE);
             holder.show_message.setVisibility(View.VISIBLE);
             holder.show_message.setText(chat.getMessage());
         }
 
-
         if (chat.isIsseen()) {
-            //holder.txt_seen.setText("Seen");
             holder.img_tick.setVisibility(View.GONE);
             holder.img_dtick.setVisibility(View.VISIBLE);
         } else {
-            //holder.txt_seen.setText("Delivered");
             holder.img_tick.setVisibility(View.VISIBLE);
             holder.img_dtick.setVisibility(View.GONE);
         }
-
 
         String str = getDateCurrentTimeZone(Long.parseLong(chat.getTime()));
         holder.show_time.setText(str);
@@ -156,6 +170,18 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<GroupMessageAdapte
                         .into(image);
             }
         });
+        holder.txtAddContact.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent contactIntent = new Intent(ContactsContract.Intents.Insert.ACTION);
+                contactIntent.setType(ContactsContract.RawContacts.CONTENT_TYPE);
+                contactIntent
+                        .putExtra(ContactsContract.Intents.Insert.NAME, chat.getContact_name())
+                        .putExtra(ContactsContract.Intents.Insert.PHONE, chat.getContact_number());
+                ((Activity) mContext).startActivity(contactIntent);
+            }
+        });
+
 
     }
 
@@ -166,11 +192,13 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<GroupMessageAdapte
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        EmojiconTextView show_sender,show_message;
-        public TextView show_time;
+        EmojiconTextView show_sender, show_message;
+        public TextView show_time, txtContactName, txtContactNumber, txtAddContact;
+        ;
         public ImageView profile_image, img_receive, img_tick, img_dtick;
         public ProgressBar progress_circular;
-        public RelativeLayout relative,txt_seen;
+        public RelativeLayout relative, txt_seen, relative_contact;
+        public PDFView pdfView;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -185,8 +213,11 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<GroupMessageAdapte
             relative = itemView.findViewById(R.id.relative);
             img_tick = itemView.findViewById(R.id.img_tick);
             img_dtick = itemView.findViewById(R.id.img_dtick);
-
-
+            relative_contact = itemView.findViewById(R.id.relative_contact);
+            txtAddContact = itemView.findViewById(R.id.txtAddContact);
+            txtContactName = itemView.findViewById(R.id.txtContactName);
+            txtContactNumber = itemView.findViewById(R.id.txtContactNumber);
+            pdfView = itemView.findViewById(R.id.pdfView);
 
         }
     }

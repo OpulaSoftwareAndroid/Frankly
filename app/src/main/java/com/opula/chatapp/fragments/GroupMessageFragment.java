@@ -1,16 +1,29 @@
 package com.opula.chatapp.fragments;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.media.MediaPlayer;
+import android.media.MediaRecorder;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetDialog;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -54,6 +67,7 @@ import com.opula.chatapp.R;
 import com.opula.chatapp.adapter.GroupMessageAdapter;
 import com.opula.chatapp.adapter.MessageAdapter;
 import com.opula.chatapp.api.APIService;
+import com.opula.chatapp.constant.AppGlobal;
 import com.opula.chatapp.constant.SharedPreference;
 import com.opula.chatapp.constant.WsConstant;
 import com.opula.chatapp.model.Chat;
@@ -68,6 +82,8 @@ import com.squareup.picasso.Picasso;
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener;
 
+import java.io.File;
+import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -105,18 +121,20 @@ public class GroupMessageFragment extends Fragment {
     EmojIconActions emojIcon;
     List<Chat> mchat;
     GroupMessageAdapter messageAdapter;
-    FirebaseUser fuser;
+    static FirebaseUser fuser;
     ValueEventListener seenListener;
-    String userusername,userimage;
+    static String userusername;
+    static String userimage;
     APIService apiService;
-
+    BottomSheetDialog dialogMenu;
+    int AUDIO_FROM_GALLERY = 2;
     //pickimage
     StorageReference storageReference;
     private StorageTask uploadTask;
     Uri mImageUri = null;
     int GALLERY = 1;
     public static StringBuilder sb;
-    boolean notify = false;
+    static boolean notify = false;
     static final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     GroupUser user;
     static SecureRandom rnd = new SecureRandom();
@@ -126,14 +144,25 @@ public class GroupMessageFragment extends Fragment {
     RecordButton recordButton;
     RelativeLayout is_text;
 
+    Uri mPDFUri = null;
+    final static int PICK_PDF_CODE = 2342;
+    private static final String LOG_TAG = "AudioRecordTest";
+    private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
+    private MediaRecorder recorder = null;
+    private MediaPlayer player = null;
+    boolean mStartRecording = true;
+    // Requesting permission to RECORD_AUDIO
+    private boolean permissionToRecordAccepted = false;
+    private String[] permissions = {Manifest.permission.RECORD_AUDIO};
+    private static String fileName = null;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_group_message, container, false);
 
+        ActivityCompat.requestPermissions(getActivity(), permissions, REQUEST_RECORD_AUDIO_PERMISSION);
         MainActivity.hideFloatingActionButton();
-
-//        MainActivity.checkChatTheme(getActivity());
         MainActivity.showpart1();
 
         sharedPreference = new SharedPreference();
@@ -141,6 +170,8 @@ public class GroupMessageFragment extends Fragment {
         groupUserId = sharedPreference.getValue(getActivity(), WsConstant.groupUserId);
         userusername = sharedPreference.getValue(getActivity(), WsConstant.userUsername);
         userimage = sharedPreference.getValue(getActivity(), WsConstant.userImage);
+
+        fileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + "AudioRecording.mp3";
 
         initViews(view);
         emojIcon = new EmojIconActions(getActivity(), rootView, text_send, emojiButton);
@@ -165,7 +196,6 @@ public class GroupMessageFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 MainActivity.hideFloatingActionButton();
-//                MainActivity.checkChatTheme(getContext());
                 MainActivity.showpart2();
                 FragmentManager fragmentManager = ((FragmentActivity) getContext()).getSupportFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new GroupProfileFragment()).addToBackStack(null).commit();
@@ -176,7 +206,6 @@ public class GroupMessageFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 MainActivity.hideFloatingActionButton();
-//                MainActivity.checkChatTheme(getContext());
                 MainActivity.showpart2();
                 FragmentManager fragmentManager = ((FragmentActivity) getContext()).getSupportFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new GroupProfileFragment()).addToBackStack(null).commit();
@@ -191,7 +220,7 @@ public class GroupMessageFragment extends Fragment {
                 notify = true;
                 String msg = text_send.getText().toString();
                 if (!msg.equals("")) {
-                    sendMessage(fuser.getUid(), groupUserId, msg, false, "default");
+                    sendMessageToGrp(getActivity(), fuser.getUid(), groupUserId, msg, false, "default", "default", false, "default", "default");
                 }
                 text_send.setText("");
             }
@@ -200,7 +229,58 @@ public class GroupMessageFragment extends Fragment {
         send_image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showPictureDialog();
+                View view = getLayoutInflater().inflate(R.layout.fragment_bottom_sheet_dialog, null);
+                dialogMenu = new BottomSheetDialog(getContext());
+                dialogMenu.setContentView(view);
+                dialogMenu.setCancelable(true);
+                LinearLayout lin_document = dialogMenu.findViewById(R.id.lin_document);
+                LinearLayout lin_camera = dialogMenu.findViewById(R.id.lin_camera);
+                LinearLayout lin_gallery = dialogMenu.findViewById(R.id.lin_gallery);
+                LinearLayout lin_audio = dialogMenu.findViewById(R.id.lin_audio);
+                LinearLayout lin_location = dialogMenu.findViewById(R.id.lin_location);
+                LinearLayout lin_contact = dialogMenu.findViewById(R.id.lin_contact);
+                lin_camera.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialogMenu.dismiss();
+                        takePhotoFromCamera();
+                    }
+                });
+                lin_gallery.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialogMenu.dismiss();
+                        choosePhotoFromGallary();
+                    }
+                });
+                lin_document.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialogMenu.dismiss();
+                        getPDF();
+                    }
+                });
+                lin_audio.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialogMenu.dismiss();
+                        chooseAudioFromGallary();
+                    }
+                });
+                lin_contact.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialogMenu.dismiss();
+                        MainActivity.showpart2();
+                        ContactListFragment ldf = new ContactListFragment();
+                        Bundle args = new Bundle();
+                        args.putString("Type", "GroupContact");
+                        ldf.setArguments(args);
+                        assert getFragmentManager() != null;
+                        getFragmentManager().beginTransaction().replace(R.id.frame_mainactivity, ldf).addToBackStack(null).commit();
+                    }
+                });
+                dialogMenu.show();
             }
         });
 
@@ -214,7 +294,7 @@ public class GroupMessageFragment extends Fragment {
                     assert user != null;
                     txtUserName.setText(user.getGroupName());
                     txtCheckActive.setText(user.getMemberList().size() + " Members");
-                    sharedPreference.save(getContext(),user.getGroupAdmin(), WsConstant.groupadminId);
+                    sharedPreference.save(getContext(), user.getGroupAdmin(), WsConstant.groupadminId);
                     if (user.getImageURL().equals("default")) {
                         imgUser.setImageResource(R.drawable.image_boy);
                     } else {
@@ -243,8 +323,6 @@ public class GroupMessageFragment extends Fragment {
 //                                commaSepValueBuilder.append(",");
 //                                txtCheckActive.setText(commaSepValueBuilder);
 //                            }
-//
-//
 //                        }
 //
 //                        @Override
@@ -281,6 +359,13 @@ public class GroupMessageFragment extends Fragment {
                 Log.d("RecordView", "onStart");
                 is_text.setVisibility(View.GONE);
                 recordView.setVisibility(View.VISIBLE);
+                onRecord(mStartRecording);
+                if (mStartRecording) {
+//                    setText("Stop recording");
+                } else {
+//                    setText("Start recording");
+                }
+                mStartRecording = !mStartRecording;
             }
 
             @Override
@@ -323,7 +408,7 @@ public class GroupMessageFragment extends Fragment {
                 new KeyboardVisibilityEventListener() {
                     @Override
                     public void onVisibilityChanged(boolean isOpen) {
-                        if (isOpen){
+                        if (isOpen) {
                             recordButton.setVisibility(View.GONE);
                             send_image.setVisibility(View.GONE);
                         } else {
@@ -334,8 +419,115 @@ public class GroupMessageFragment extends Fragment {
                 });
 
 
-
         return view;
+    }
+
+    private void getPDF() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && ContextCompat.checkSelfPermission(getContext(),
+                Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                    Uri.parse("package:" + getContext().getPackageName()));
+            startActivity(intent);
+            return;
+        }
+        String[] mimeTypes =
+                {"application/pdf", "text/plain"};
+        Intent intent = new Intent("android.intent.action.GET_CONTENT");
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            intent.setType(mimeTypes.length == 1 ? mimeTypes[0] : "*/*");
+            if (mimeTypes.length > 0) {
+                intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
+            }
+        } else {
+            String mimeTypesStr = "";
+            for (String mimeType : mimeTypes) {
+                mimeTypesStr += mimeType + "|";
+            }
+            intent.setType(mimeTypesStr.substring(0, mimeTypesStr.length() - 1));
+        }
+        startActivityForResult(Intent.createChooser(intent, "Select File"), PICK_PDF_CODE);
+    }
+
+    private void onRecord(boolean start) {
+        if (start) {
+            startRecording();
+        } else {
+            stopRecording();
+        }
+    }
+
+    private void onPlay(boolean start) {
+        if (start) {
+            startPlaying();
+        } else {
+            stopPlaying();
+        }
+    }
+
+    private void startPlaying() {
+        player = new MediaPlayer();
+        try {
+            player.setDataSource(fileName);
+            player.prepare();
+            player.start();
+        } catch (IOException e) {
+            Log.e(LOG_TAG, "prepare() failed");
+        }
+    }
+
+    private void stopPlaying() {
+        player.release();
+        player = null;
+    }
+
+    private void startRecording() {
+        recorder = new MediaRecorder();
+        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+        recorder.setOutputFile(fileName);
+
+        try {
+            recorder.prepare();
+        } catch (IOException e) {
+            Log.e(LOG_TAG, "prepare() failed");
+        }
+
+        recorder.start();
+    }
+
+    private void stopRecording() {
+        recorder.stop();
+        recorder.release();
+        recorder = null;
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (recorder != null) {
+            recorder.release();
+            recorder = null;
+        }
+
+        if (player != null) {
+            player.release();
+            player = null;
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case REQUEST_RECORD_AUDIO_PERMISSION:
+                permissionToRecordAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+                break;
+        }
+        if (!permissionToRecordAccepted) getActivity().finish();
+
     }
 
     public static String randomString(int len) {
@@ -363,7 +555,6 @@ public class GroupMessageFragment extends Fragment {
 
     private void readMesagges(final String groupid, final String imageurl) {
         mchat = new ArrayList<>();
-
         reference = FirebaseDatabase.getInstance().getReference("Chats");
         reference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -373,7 +564,7 @@ public class GroupMessageFragment extends Fragment {
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         final Chat chat = snapshot.getValue(Chat.class);
                         assert chat != null;
-                        if (chat.getTo().equalsIgnoreCase("group")){
+                        if (chat.getTo().equalsIgnoreCase("group")) {
                             if (chat.getReceiver().equals(groupid)) {
                                 for (int i = 0; i < user.getMemberList().size(); i++) {
                                     final int finalI = i;
@@ -382,7 +573,6 @@ public class GroupMessageFragment extends Fragment {
                                         @Override
                                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                             try {
-                                                Log.d("Group_chat_data", dataSnapshot.getValue() + "//");
                                                 User u1 = dataSnapshot.getValue(User.class);
                                                 assert u1 != null;
                                                 if (u1.getId().equalsIgnoreCase(chat.getSender())) {
@@ -392,8 +582,6 @@ public class GroupMessageFragment extends Fragment {
                                             } catch (Exception e) {
                                                 e.printStackTrace();
                                             }
-
-
                                         }
 
                                         @Override
@@ -402,7 +590,6 @@ public class GroupMessageFragment extends Fragment {
                                         }
                                     });
                                 }
-
                                 mchat.add(chat);
                             }
                         }
@@ -422,27 +609,12 @@ public class GroupMessageFragment extends Fragment {
         });
     }
 
-    private void showPictureDialog() {
-        AlertDialog.Builder pictureDialog = new AlertDialog.Builder(getContext());
-        pictureDialog.setTitle("Choose Image");
-        String[] pictureDialogItems = {
-                "Gallery",
-                "Camera"};
-        pictureDialog.setItems(pictureDialogItems,
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        switch (which) {
-                            case 0:
-                                choosePhotoFromGallary();
-                                break;
-                            case 1:
-                                takePhotoFromCamera();
-                                break;
-                        }
-                    }
-                });
-        pictureDialog.show();
+    public void chooseAudioFromGallary() {
+        Intent intent;
+        intent = new Intent();
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        intent.setType("audio/*");
+        startActivityForResult(Intent.createChooser(intent, "Select Audio"), AUDIO_FROM_GALLERY);
     }
 
     public void choosePhotoFromGallary() {
@@ -496,7 +668,7 @@ public class GroupMessageFragment extends Fragment {
                         Uri downloadUri = task.getResult();
                         String mUri = downloadUri.toString();
 
-                        sendMessage(fuser.getUid(), groupUserId, "Image", true, mUri);
+                        sendMessageToGrp(getActivity(), fuser.getUid(), groupUserId, "Image", true, mUri, "default", false, "default", "default");
 
                         pd.dismiss();
                     } else {
@@ -541,28 +713,200 @@ public class GroupMessageFragment extends Fragment {
                 }
             }
         }
+        if (requestCode == PICK_PDF_CODE && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            if (data.getData() != null) {
+                String path = new File(Objects.requireNonNull(data.getData().getPath())).getAbsolutePath();
+                if (path != null) {
+                    mPDFUri = data.getData();
+
+                    String filename;
+                    Cursor cursor = getActivity().getContentResolver().query(mPDFUri, null, null, null, null);
+                    if (cursor == null) { // Source is Dropbox or other similar local file path
+                        filename = mPDFUri.getPath();
+                    } else {
+                        cursor.moveToFirst();
+                        int idx = cursor.getColumnIndex(MediaStore.Files.FileColumns.DISPLAY_NAME);
+                        filename = cursor.getString(idx);
+                        cursor.close();
+                    }
+                    String extension = filename.substring(filename.lastIndexOf("."));
+                    Log.d("File_upload", extension + "/+" + path);
+//                    //uploading the file
+                    uploadFile(data.getData(), extension);
+                }
+            } else {
+                Toast.makeText(getContext(), "No file chosen", Toast.LENGTH_SHORT).show();
+            }
+        }
+        if (requestCode == AUDIO_FROM_GALLERY && null != data) {
+            try {
+                Uri audioFileUri = data.getData();
+                String path1 = audioFileUri.getPath();
+                Log.d("Audio_path", path1 + "/");
+                uploadAudio(audioFileUri, "mp3");
+//                String path2 = getAudioPath(audioFileUri);
+//                File f = new File(path2);
+//                long fileSizeInBytes = f.length();
+//                long fileSizeInKB = fileSizeInBytes / 1024;
+//                long fileSizeInMB = fileSizeInKB / 1024;
+//                if (fileSizeInMB > 2) {
+//                    Toast.makeText(getContext(), "sorry file size is large", Toast.LENGTH_SHORT).show();
+//                } else {
+////                        profilePicUrl = path2;
+////                        isPicSelect = true;
+//                    Toast.makeText(getContext(), "Upload success", Toast.LENGTH_SHORT).show();
+//                }
+
+            } catch (Exception e) {
+                Toast.makeText(getContext(), "Unable to process,try again", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
-    private void sendMessage(String sender, final String receiver, String message, boolean isimage, String uri) {
+    private void uploadFile(Uri data, String ext) {
+
+        final ProgressDialog pd = new ProgressDialog(getContext());
+        pd.setMessage("Uploading...");
+        pd.show();
+        pd.setCancelable(false);
+        if (data != null) {
+            storageReference = FirebaseStorage.getInstance().getReference("doc_files");
+
+            final StorageReference fileReference = storageReference.child(System.currentTimeMillis() + ext);
+
+            uploadTask = fileReference.putFile(data);
+            uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                @Override
+                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                    if (!task.isSuccessful()) {
+                        throw task.getException();
+                    }
+
+                    return fileReference.getDownloadUrl();
+                }
+            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                @Override
+                public void onComplete(@NonNull Task<Uri> task) {
+                    if (task.isSuccessful()) {
+                        Uri downloadUri = task.getResult();
+                        String mUri = downloadUri.toString();
+                        Log.d("UploadFile", mUri);
+                        sendMessageToGrp(getActivity(), fuser.getUid(), groupUserId, "Document", false, "default", mUri, false, "default", "default");
+
+                        pd.dismiss();
+                    } else {
+                        Toast.makeText(getContext(), "Failed!", Toast.LENGTH_SHORT).show();
+                        pd.dismiss();
+                    }
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                    pd.dismiss();
+                }
+            });
+        } else {
+            Toast.makeText(getContext(), "No File selected", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void uploadAudio(Uri data, String ext) {
+        final ProgressDialog pd = new ProgressDialog(getContext());
+        pd.setMessage("Uploading...");
+        pd.show();
+        pd.setCancelable(false);
+        if (data != null) {
+            storageReference = FirebaseStorage.getInstance().getReference("audio");
+
+            final StorageReference fileReference = storageReference.child(System.currentTimeMillis() + ext);
+
+            uploadTask = fileReference.putFile(data);
+            uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                @Override
+                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                    if (!task.isSuccessful()) {
+                        throw task.getException();
+                    }
+
+                    return fileReference.getDownloadUrl();
+                }
+            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                @Override
+                public void onComplete(@NonNull Task<Uri> task) {
+                    if (task.isSuccessful()) {
+                        Uri downloadUri = task.getResult();
+                        String mUri = downloadUri.toString();
+                        Log.d("UploadFile", mUri);
+//                        sendMessage(getActivity(), fuser.getUid(), userid, "Document", false, "default", mUri);
+                        pd.dismiss();
+                    } else {
+                        Toast.makeText(getContext(), "Failed!", Toast.LENGTH_SHORT).show();
+                        pd.dismiss();
+                    }
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                    pd.dismiss();
+                }
+            });
+        } else {
+            Toast.makeText(getContext(), "No File selected", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public static void sendMessageToGrp(final Context context, final String sender, final String receiver, String message, boolean isimage, String uri, String docUri, boolean iscontact, String con_name, String con_num) {
 
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
         randomString(9);
 
         Long tsLong = (System.currentTimeMillis() / 1000);
         String ts = tsLong.toString();
-
         HashMap<String, Object> hashMap = new HashMap<>();
-        hashMap.put("id", sb.toString());
-        hashMap.put("to", "group");
-        hashMap.put("sender", sender);
-        hashMap.put("receiver", receiver);
-        hashMap.put("message", message);
-        hashMap.put("isseen", false);
-        hashMap.put("isimage", isimage);
-        hashMap.put("image", uri);
-        hashMap.put("time", ts);
-        hashMap.put("sender_username", userusername);
-        hashMap.put("sender_image", userimage);
+
+        if (AppGlobal.isNetwork(context)) {
+            hashMap.put("id", sb.toString());
+            hashMap.put("to", "group");
+            hashMap.put("sender", sender);
+            hashMap.put("receiver", receiver);
+            hashMap.put("message", message);
+            hashMap.put("issend", true);
+            hashMap.put("isseen", false);
+            hashMap.put("isimage", isimage);
+            hashMap.put("iscontact", iscontact);
+            hashMap.put("contact_number", con_num);
+            hashMap.put("contact_name", con_name);
+            hashMap.put("image", uri);
+            hashMap.put("time", ts);
+            hashMap.put("storage_uri", "default");
+            hashMap.put("audio_uri", "default");
+            hashMap.put("doc_uri", docUri);
+            hashMap.put("table_id", reference.getKey());
+            hashMap.put("sender_username", userusername);
+            hashMap.put("sender_image", userimage);
+        } else {
+            hashMap.put("id", sb.toString());
+            hashMap.put("to", "group");
+            hashMap.put("sender", sender);
+            hashMap.put("receiver", receiver);
+            hashMap.put("message", message);
+            hashMap.put("issend", false);
+            hashMap.put("isseen", false);
+            hashMap.put("isimage", isimage);
+            hashMap.put("iscontact", iscontact);
+            hashMap.put("contact_number", con_num);
+            hashMap.put("contact_name", con_name);
+            hashMap.put("image", uri);
+            hashMap.put("time", ts);
+            hashMap.put("table_id", reference.getKey());
+            hashMap.put("audio_uri", "default");
+            hashMap.put("doc_uri", docUri);
+            hashMap.put("storage_uri", "default");
+            hashMap.put("sender_username", userusername);
+            hashMap.put("sender_image", userimage);
+        }
 
         reference.child("Chats").push().setValue(hashMap);
 
@@ -573,7 +917,7 @@ public class GroupMessageFragment extends Fragment {
                 try {
                     User user = dataSnapshot.getValue(User.class);
                     if (notify) {
-                        //sendNotifiaction(receiver, user.getUsername(), msg);
+//                        sendNotifiaction(receiver, user.getUsername(), message);
                     }
                     notify = false;
                 } catch (Exception e) {

@@ -262,10 +262,9 @@ public class GroupProfileFragment extends Fragment {
                                 String grp = member;
                                 grpList.add(grp);
                             }
-                            if(groupUser.getMemberList().size()<=1)
-                            {
+                            if (groupUser.getMemberList().size() <= 1) {
                                 ref.getRef().removeValue();
-                                Log.d("GroupChat2",   "//");
+                                Log.d("GroupChat2", "//");
                             }
                         }
                         ref.child("memberList").setValue(grpList);
@@ -561,33 +560,34 @@ public class GroupProfileFragment extends Fragment {
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    mchat.clear();
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        Chat chat = snapshot.getValue(Chat.class);
-                        assert chat != null;
-                        if (chat.getTo().equalsIgnoreCase("group")){
-                            if (chat.getReceiver().equals(userid)) {
-                                if (chat.isIsimage()) {
-                                    mchat.add(chat);
-                                }
+                mchat.clear();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Chat chat = snapshot.getValue(Chat.class);
+                    assert chat != null;
+                    if (chat.getTo().equalsIgnoreCase("group")) {
+                        if (chat.getReceiver().equals(userid)) {
+                            if (chat.isIsimage()) {
+                                mchat.add(chat);
                             }
                         }
-
-                        userSharedAdapter = new UserSharedAdapter(getActivity(), mchat);
-                        recycler_image.setAdapter(userSharedAdapter);
-
-                        if (userSharedAdapter.getItemCount() > 0) {
-                            // listView not empty
-                            recycler_image.setVisibility(View.VISIBLE);
-                            text_no_image.setVisibility(View.GONE);
-                            recycler_image.setAdapter(userSharedAdapter);
-                        } else {
-                            // listView  empty
-                            recycler_image.setVisibility(View.GONE);
-                            text_no_image.setVisibility(View.VISIBLE);
-                        }
                     }
+
+                    userSharedAdapter = new UserSharedAdapter(getActivity(), mchat);
+                    recycler_image.setAdapter(userSharedAdapter);
+
+                    if (userSharedAdapter.getItemCount() > 0) {
+                        // listView not empty
+                        recycler_image.setVisibility(View.VISIBLE);
+                        text_no_image.setVisibility(View.GONE);
+                        recycler_image.setAdapter(userSharedAdapter);
+                    } else {
+                        // listView  empty
+                        recycler_image.setVisibility(View.GONE);
+                        text_no_image.setVisibility(View.VISIBLE);
+                    }
+                }
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 

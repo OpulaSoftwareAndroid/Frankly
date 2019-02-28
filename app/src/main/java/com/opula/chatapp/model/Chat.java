@@ -13,12 +13,15 @@ public class Chat {
     private boolean issend;
     private boolean isseen;
     private boolean isimage;
+    private boolean iscontact;
     private String image;
     private String time;
     private String sender_username;
     private String sender_image;
     private String table_id;
     private String doc_uri;
+    private String contact_name;
+    private String contact_number;
 
     public String getId() {
         return id;
@@ -92,6 +95,14 @@ public class Chat {
         this.isimage = isimage;
     }
 
+    public boolean isIscontact() {
+        return iscontact;
+    }
+
+    public void setIscontact(boolean iscontact) {
+        this.iscontact = iscontact;
+    }
+
     public String getImage() {
         return image;
     }
@@ -138,5 +149,21 @@ public class Chat {
 
     public void setDoc_uri(String doc_uri) {
         this.doc_uri = doc_uri;
+    }
+
+    public String getContact_number() {
+        return contact_number;
+    }
+
+    public void setContact_number(String contact_number) {
+        this.contact_number = contact_number;
+    }
+
+    public String getContact_name() {
+        return contact_name;
+    }
+
+    public void setContact_name(String contact_name) {
+        this.contact_name = contact_name;
     }
 }

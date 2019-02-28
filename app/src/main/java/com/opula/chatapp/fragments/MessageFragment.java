@@ -175,7 +175,6 @@ public class MessageFragment extends Fragment {
 
         ActivityCompat.requestPermissions(getActivity(), permissions, REQUEST_RECORD_AUDIO_PERMISSION);
 
-
         MainActivity.hideFloatingActionButton();
         MainActivity.showpart1();
 
@@ -209,7 +208,7 @@ public class MessageFragment extends Fragment {
                 notify = true;
                 String msg = text_send.getText().toString();
                 if (!msg.equals("")) {
-                    sendMessage(getActivity(), fuser.getUid(), userid, msg, false, "default", "default");
+                    sendMessageToPersonal(getActivity(), fuser.getUid(), userid, msg, false, "default", "default", false, "default", "default");
                 }
                 text_send.setText("");
             }
@@ -261,8 +260,15 @@ public class MessageFragment extends Fragment {
                     public void onClick(View view) {
                         dialogMenu.dismiss();
                         MainActivity.showpart2();
-                        FragmentManager fragmentManager = ((FragmentActivity) getContext()).getSupportFragmentManager();
-                        fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new ContactListFragment()).addToBackStack(null).commit();
+                        ContactListFragment ldf = new ContactListFragment();
+                        Bundle args = new Bundle();
+                        args.putString("Type", "PersonalContact");
+                        ldf.setArguments(args);
+                        assert getFragmentManager() != null;
+                        getFragmentManager().beginTransaction().replace(R.id.frame_mainactivity, ldf).addToBackStack(null).commit();
+
+//                        FragmentManager fragmentManager = ((FragmentActivity) getContext()).getSupportFragmentManager();
+//                        fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new ContactListFragment()).addToBackStack(null).commit();
 
                     }
                 });
@@ -376,19 +382,19 @@ public class MessageFragment extends Fragment {
             }
         });
 
-        KeyboardVisibilityEvent.setEventListener(Objects.requireNonNull(getActivity()),
-                new KeyboardVisibilityEventListener() {
-                    @Override
-                    public void onVisibilityChanged(boolean isOpen) {
-                        if (isOpen) {
-                            recordButton.setVisibility(View.GONE);
-                            send_image.setVisibility(View.GONE);
-                        } else {
-                            recordButton.setVisibility(View.VISIBLE);
-                            send_image.setVisibility(View.VISIBLE);
-                        }
-                    }
-                });
+//        KeyboardVisibilityEvent.setEventListener(Objects.requireNonNull(getActivity()),
+//                new KeyboardVisibilityEventListener() {
+//                    @Override
+//                    public void onVisibilityChanged(boolean isOpen) {
+//                        if (isOpen) {
+//                            recordButton.setVisibility(View.GONE);
+//                            send_image.setVisibility(View.GONE);
+//                        } else {
+//                            recordButton.setVisibility(View.VISIBLE);
+//                            send_image.setVisibility(View.VISIBLE);
+//                        }
+//                    }
+//                });
 
         return view;
     }
@@ -717,7 +723,7 @@ public class MessageFragment extends Fragment {
                         Uri downloadUri = task.getResult();
                         String mUri = downloadUri.toString();
                         Log.d("UploadFile", mUri);
-                        sendMessage(getActivity(), fuser.getUid(), userid, "Document", false, "default", mUri);
+                        sendMessageToPersonal(getActivity(), fuser.getUid(), userid, "Document", false, "default", mUri, false, "default", "default");
 
                         pd.dismiss();
                     } else {
@@ -749,6 +755,7 @@ public class MessageFragment extends Fragment {
         pd.show();
         pd.setCancelable(false);
 
+
         if (mImageUri != null) {
             storageReference = FirebaseStorage.getInstance().getReference("chats");
 
@@ -772,7 +779,7 @@ public class MessageFragment extends Fragment {
                         Uri downloadUri = task.getResult();
                         String mUri = downloadUri.toString();
 
-                        sendMessage(getActivity(), fuser.getUid(), userid, "Image", true, mUri, "default");
+                        sendMessageToPersonal(getActivity(), fuser.getUid(), userid, "Image", true, mUri, "default", false, "default", "default");
 
                         pd.dismiss();
                     } else {
@@ -890,7 +897,7 @@ public class MessageFragment extends Fragment {
         return secretKeySpec;
     }
 
-    public static void sendMessage(final Context context, final String sender, final String receiver, String message, boolean isimage, String uri, String docUri) {
+    public static void sendMessageToPersonal(final Context context, final String sender, final String receiver, String message, boolean isimage, String uri, String docUri, boolean iscontact, String con_name, String con_num) {
 
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Chats").push();
         randomString(9);
@@ -914,6 +921,9 @@ public class MessageFragment extends Fragment {
             hashMap.put("issend", true);
             hashMap.put("isseen", false);
             hashMap.put("isimage", isimage);
+            hashMap.put("iscontact", iscontact);
+            hashMap.put("contact_number", con_num);
+            hashMap.put("contact_name", con_name);
             hashMap.put("image", uri);
             hashMap.put("time", ts);
             hashMap.put("storage_uri", "default");
@@ -929,6 +939,9 @@ public class MessageFragment extends Fragment {
             hashMap.put("issend", false);
             hashMap.put("isseen", false);
             hashMap.put("isimage", isimage);
+            hashMap.put("iscontact", iscontact);
+            hashMap.put("contact_number", con_num);
+            hashMap.put("contact_name", con_name);
             hashMap.put("image", uri);
             hashMap.put("time", ts);
             hashMap.put("table_id", reference.getKey());

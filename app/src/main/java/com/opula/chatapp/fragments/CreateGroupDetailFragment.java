@@ -378,9 +378,7 @@ public class CreateGroupDetailFragment extends Fragment {
                         fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new ListGroupChatFragment()).addToBackStack(null).commit();
 
                         pd.dismiss();
-                    } else
-
-                    {
+                    } else {
                         Toast.makeText(getContext(), "Failed!", Toast.LENGTH_SHORT).show();
                         pd.dismiss();
                     }

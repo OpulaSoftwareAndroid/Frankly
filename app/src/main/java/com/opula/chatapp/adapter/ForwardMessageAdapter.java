@@ -75,7 +75,7 @@ public class ForwardMessageAdapter extends RecyclerView.Adapter<ForwardMessageAd
                 sharedPreference.save(mContext, user.getId(), WsConstant.userId);
 //                MainActivity.checkChatTheme(mContext);
                 MainActivity.showpart1();
-                MessageFragment.sendMessage(mContext, fuser.getUid(), user.getId(), meg, isimage, url, "");
+                MessageFragment.sendMessageToPersonal(mContext, fuser.getUid(), user.getId(), meg, isimage, url, "", false, "default", "default");
                 alertDialog.dismiss();
                 FragmentManager fragmentManager = ((FragmentActivity) mContext).getSupportFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new MessageFragment()).commit();

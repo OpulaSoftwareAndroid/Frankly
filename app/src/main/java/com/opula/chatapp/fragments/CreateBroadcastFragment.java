@@ -97,12 +97,12 @@ public class CreateBroadcastFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 txtSelectedCount.performClick();
-                if (commaSepValueBuilder.toString().equalsIgnoreCase("") ) {
+                if (commaSepValueBuilder.toString().equalsIgnoreCase("")) {
                     Toast.makeText(getContext(), "Please select members!", Toast.LENGTH_SHORT).show();
                 } else {
                     int i = commaSepValueBuilder.length();
-                    if (!(i<57)){
-                        if (txt_broadcast_name.getText().toString().equalsIgnoreCase("")){
+                    if (!(i < 57)) {
+                        if (txt_broadcast_name.getText().toString().equalsIgnoreCase("")) {
                             Toast.makeText(getContext(), "Please enter broadcast name!", Toast.LENGTH_SHORT).show();
                         } else {
                             createBroadcast();
