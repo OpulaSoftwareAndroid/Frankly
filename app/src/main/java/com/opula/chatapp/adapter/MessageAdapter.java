@@ -42,6 +42,7 @@ import com.opula.chatapp.MainActivity;
 import com.opula.chatapp.R;
 import com.opula.chatapp.constant.AppGlobal;
 import com.opula.chatapp.constant.WsConstant;
+import com.opula.chatapp.model.BroadcastUser;
 import com.opula.chatapp.model.Chat;
 import com.opula.chatapp.model.User;
 import com.shockwave.pdfium.PdfDocument;
@@ -154,18 +155,15 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         }
 
         if (chat.isIsseen()) {
-            //holder.txt_seen.setText("seen");
             holder.img_tick.setVisibility(View.GONE);
             holder.img_dtick.setVisibility(View.GONE);
             holder.img_dstick.setVisibility(View.VISIBLE);
         } else {
             if (chat.isIssend()) {
-                //holder.txt_seen.setText("delivered");
                 holder.img_tick.setVisibility(View.GONE);
                 holder.img_dtick.setVisibility(View.VISIBLE);
                 holder.img_dstick.setVisibility(View.GONE);
             } else {
-                //holder.txt_seen.setText("send");
                 holder.img_tick.setVisibility(View.VISIBLE);
                 holder.img_dtick.setVisibility(View.GONE);
                 holder.img_dstick.setVisibility(View.GONE);
@@ -391,26 +389,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         }
     }
 
-    //    private void saveImage(Bitmap bmp) {
-//        FileOutputStream out = null;
-//        try {
-//            File folder = new File(FOLDER);
-//            if (!folder.exists())
-//                folder.mkdirs();
-//            File file = new File(folder, "PDF.png");
-//            out = new FileOutputStream(file);
-//            bmp.compress(Bitmap.CompressFormat.PNG, 100, out); // bmp is your Bitmap instance
-//        } catch (Exception e) {
-//            //todo with exception
-//        } finally {
-//            try {
-//                if (out != null)
-//                    out.close();
-//            } catch (Exception e) {
-//                //todo with exception
-//            }
-//        }
-//    }
     @Override
     public int getItemCount() {
         return mChat.size();
@@ -422,10 +400,10 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         public ImageView profile_image, img_receive, img_tick, img_dtick, img_dstick, img_download;
         public TextView show_time;
         public ProgressBar progress_circular;
-        public RelativeLayout relative, txt_seen, img_blur, relative_contact;
-        public LinearLayout linear_chat;
-        public LinearLayout linmain;
-        public PDFView pdfView;
+        RelativeLayout relative, txt_seen, img_blur, relative_contact;
+        LinearLayout linear_chat;
+        LinearLayout linmain;
+        PDFView pdfView;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -592,18 +570,49 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("StarMessages").push();
         HashMap<String, Object> hashMap = new HashMap<>();
 
-        if (AppGlobal.isNetwork(context)) {
+        if (mChat.get(i).getTo().equalsIgnoreCase("broadcast")) {
+
+            DatabaseReference referenceq = FirebaseDatabase.getInstance().getReference("Groups");
+            referenceq.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    try {
+                        if (dataSnapshot.exists()) {
+                            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                BroadcastUser user = snapshot.getValue(BroadcastUser.class);
+                                if (user.getBroadcastId().equalsIgnoreCase(mChat.get(i).getSender())) {
+
+                                }
+                            }
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+        } else if (AppGlobal.isNetwork(context)) {
             hashMap.put("id", fuser.getUid());
+            hashMap.put("to", mChat.get(i).getTo());
             hashMap.put("sender", mChat.get(i).getSender());
             hashMap.put("receiver", mChat.get(i).getReceiver());
             hashMap.put("message", mChat.get(i).getMessage());
+            hashMap.put("issend", mChat.get(i).isIssend());
+            hashMap.put("isseen", mChat.get(i).isIsseen());
             hashMap.put("isimage", mChat.get(i).isIsimage());
+            hashMap.put("iscontact", mChat.get(i).isIscontact());
+            hashMap.put("contact_number", mChat.get(i).getContact_number());
+            hashMap.put("contact_name", mChat.get(i).getContact_name());
             hashMap.put("image", mChat.get(i).getImage());
+            hashMap.put("time", mChat.get(i).getTime());
+            hashMap.put("doc_uri", mChat.get(i).getDoc_uri());
             hashMap.put("table_id", reference.getKey());
         }
-
         reference.setValue(hashMap);
         Toast.makeText(context, "Message has been stared..!", Toast.LENGTH_SHORT).show();
     }
-
 }

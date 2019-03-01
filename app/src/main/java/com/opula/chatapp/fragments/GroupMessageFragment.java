@@ -372,8 +372,6 @@ public class GroupMessageFragment extends Fragment {
             public void onCancel() {
                 //On Swipe To Cancel
                 Log.d("RecordView", "onCancel");
-
-
             }
 
             @Override
@@ -404,19 +402,19 @@ public class GroupMessageFragment extends Fragment {
             }
         });
 
-        KeyboardVisibilityEvent.setEventListener(Objects.requireNonNull(getActivity()),
-                new KeyboardVisibilityEventListener() {
-                    @Override
-                    public void onVisibilityChanged(boolean isOpen) {
-                        if (isOpen) {
-                            recordButton.setVisibility(View.GONE);
-                            send_image.setVisibility(View.GONE);
-                        } else {
-                            recordButton.setVisibility(View.VISIBLE);
-                            send_image.setVisibility(View.VISIBLE);
-                        }
-                    }
-                });
+//        KeyboardVisibilityEvent.setEventListener(Objects.requireNonNull(getActivity()),
+//                new KeyboardVisibilityEventListener() {
+//                    @Override
+//                    public void onVisibilityChanged(boolean isOpen) {
+//                        if (isOpen) {
+//                            recordButton.setVisibility(View.GONE);
+//                            send_image.setVisibility(View.GONE);
+//                        } else {
+//                            recordButton.setVisibility(View.VISIBLE);
+//                            send_image.setVisibility(View.VISIBLE);
+//                        }
+//                    }
+//                });
 
 
         return view;

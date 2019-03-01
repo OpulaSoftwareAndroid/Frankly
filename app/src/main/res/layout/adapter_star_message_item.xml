@@ -63,12 +63,19 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/profile_image"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_weight="0"
+                        android:visibility="gone" />
+
                     <LinearLayout
                         android:id="@+id/linear_chat"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="4dp"
-                        android:background="@drawable/background_star_msg"
+                        android:background="@drawable/background_right"
                         android:clickable="true"
                         android:focusable="true"
                         android:orientation="vertical"
@@ -77,6 +84,12 @@
                         android:paddingRight="8dp"
                         android:paddingBottom="4dp"
                         android:visibility="visible">
+
+                        <com.github.barteksc.pdfviewer.PDFView
+                            android:id="@+id/pdfView"
+                            android:layout_width="300dp"
+                            android:layout_height="100dp"
+                            android:visibility="gone" />
 
                         <RelativeLayout
                             android:id="@+id/relative"
@@ -101,9 +114,96 @@
                                 android:adjustViewBounds="true"
                                 android:scaleType="centerCrop"
                                 android:src="@drawable/ic_edit"
-                                android:visibility="gone" />
+                                android:visibility="visible" />
 
+                            <RelativeLayout
+                                android:id="@+id/img_blur"
+                                android:layout_width="300dp"
+                                android:layout_height="300dp">
 
+                                <ImageView
+                                    android:layout_width="300dp"
+                                    android:layout_height="300dp"
+                                    android:adjustViewBounds="true"
+                                    android:alpha="0.9"
+                                    android:background="@drawable/gradient_bg"
+                                    android:scaleType="centerCrop"
+                                    android:visibility="gone" />
+
+                                <ImageView
+                                    android:id="@+id/img_download"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentStart="true"
+                                    android:layout_centerVertical="true"
+                                    android:layout_marginStart="110dp"
+                                    android:src="@drawable/ic_downward"
+                                    android:visibility="gone" />
+                            </RelativeLayout>
+
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:id="@+id/relative_contact"
+                            android:layout_width="300dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:visibility="gone">
+
+                            <LinearLayout
+                                android:id="@+id/lin_con"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/txtContactName"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_margin="2dp"
+                                    android:fontFamily="@font/m_m"
+                                    android:gravity="start"
+                                    android:text="fsdfjskdfjks"
+                                    android:textAlignment="gravity"
+                                    android:textColor="@color/black"
+                                    android:textSize="14sp"
+                                    android:visibility="visible" />
+
+                                <TextView
+                                    android:id="@+id/txtContactNumber"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_margin="2dp"
+                                    android:fontFamily="@font/m_m"
+                                    android:gravity="start"
+                                    android:text="456982323"
+                                    android:textAlignment="gravity"
+                                    android:textColor="@color/black"
+                                    android:textSize="18sp"
+                                    android:visibility="visible" />
+                            </LinearLayout>
+
+                            <View
+                                android:id="@+id/vi"
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_below="@id/lin_con"
+                                android:layout_marginTop="4dp"
+                                android:layout_marginBottom="4dp"
+                                android:background="#ccc" />
+
+                            <TextView
+                                android:id="@+id/txtAddContact"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@id/vi"
+                                android:fontFamily="@font/m_m"
+                                android:gravity="center"
+                                android:text="Add To Contact"
+                                android:textAlignment="gravity"
+                                android:textColor="@color/colorPrimaryDark"
+                                android:textSize="18sp"
+                                android:visibility="visible" />
                         </RelativeLayout>
 
                         <hani.momanii.supernova_emoji_library.Helper.EmojiconTextView
@@ -115,7 +215,7 @@
                             android:textAlignment="gravity"
                             android:textColor="@color/black"
                             android:textSize="18sp"
-                            android:visibility="visible"
+                            android:visibility="gone"
                             emojicon:emojiconSize="22sp" />
 
                         <TextView
@@ -126,7 +226,7 @@
                             android:layout_marginTop="2dp"
                             android:fontFamily="@font/m"
                             android:textSize="10sp"
-                            android:visibility="gone" />
+                            android:visibility="visible" />
 
                         <RelativeLayout
                             android:id="@+id/txt_seen"
