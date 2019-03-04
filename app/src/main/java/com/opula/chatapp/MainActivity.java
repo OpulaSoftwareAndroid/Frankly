@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int TIME_INTERVAL = 2000;
     public static TextView text;
     public static LinearLayout txt_globle, txt_my_wallate;
+    String TAG="MainActivity";
     ImageView img_setting, img_chat;
     public static FragmentManager fragmentManager;
     public static FirebaseUser firebaseUser;
@@ -187,6 +188,8 @@ public class MainActivity extends AppCompatActivity {
                     assert user != null;
                     sharedPreference.save(MainActivity.this, user.getUsername(), WsConstant.userUsername);
                     sharedPreference.save(MainActivity.this, user.getImageURL(), WsConstant.userImage);
+                    Log.d(TAG,"jigar the main chat list  have "+ user.getUsername());
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

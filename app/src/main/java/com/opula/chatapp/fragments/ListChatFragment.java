@@ -34,6 +34,7 @@ import com.opula.chatapp.model.User;
 import com.opula.chatapp.notifications.Token;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -126,7 +127,9 @@ public class ListChatFragment extends Fragment {
                 try {
                     usersList.clear();
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+
                         chatlist = snapshot.getValue(Chatlist.class);
+
                         if (!("group".equalsIgnoreCase(snapshot.getKey()) || ("broadcast".equalsIgnoreCase(snapshot.getKey())))) {
                             Log.d(TAG,"jigar the message snapshot have "+ snapshot.getValue() + "//" + chatlist);
                             usersList.add(chatlist);
@@ -155,6 +158,8 @@ public class ListChatFragment extends Fragment {
                     broadcastList.clear();
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         broadcastList.add(snapshot.getKey());
+                        Log.d(TAG,"jigar the message from broad cast chat list  have " );
+
                     }
                     broadcastList();
                 } catch (Exception e) {
@@ -185,17 +190,22 @@ public class ListChatFragment extends Fragment {
                     mUsers.clear();
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         User user = snapshot.getValue(User.class);
+                        String strUserChatID=chatlist.getId();
+
                         for (Chatlist chatlist : usersList) {
                             assert user != null;
+
                             if (chatlist.getId().equalsIgnoreCase(user.getId())) {
                                 mUsers.add(user);
-                                Log.d(TAG,"jigar the message chat list  have "+ chatlist.getId());
-
+                                strUserChatID=strUserChatID+","+chatlist.getId();
                             }
+                            Log.d(TAG,"jigar the message chat list  have "+ strUserChatID);
+
                         }
                     }
 
                     userAdapter = new UserAdapter(getContext(), mUsers, mBroadcast, true, true);
+
                     WsConstant.check = "fragment";
                     setAdapter(userAdapter, broadcastAdapter);
 

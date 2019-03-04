@@ -295,7 +295,9 @@ public class MessageFragment extends Fragment {
                 try {
                     User user = dataSnapshot.getValue(User.class);
                     assert user != null;
-                    txtUserName.setText(user.getUsername());
+                    String str1 = user.getUsername();
+                    String strUsername = str1.substring(0, 1).toUpperCase() + str1.substring(1);
+                    txtUserName.setText(strUsername);
                     CheckActive = user.getStatus();
 
                     if (user.getStatus().equalsIgnoreCase("online")) {

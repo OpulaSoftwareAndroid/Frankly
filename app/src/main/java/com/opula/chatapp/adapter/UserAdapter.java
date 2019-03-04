@@ -60,7 +60,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> im
     String theLastMessage, thetime;
     String AES = "AES";
     static String TAG="UserAdapter";
-
+    ArrayList <String> arrayListUserLastMessageTime;
     public UserAdapter(Context mContext, List<User> mUsers, List<BroadcastUser> mBroadcast, boolean ischat, boolean is) {
         this.mUsers = mUsers;
         this.mUsersFilteredList = mUsers;
@@ -68,6 +68,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> im
         this.mContext = mContext;
         this.ischat = ischat;
         this.is = is;
+        arrayListUserLastMessageTime=new ArrayList<>();
     }
 
     @NonNull
@@ -101,6 +102,8 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> im
             } else {
                 holder.last_msg.setVisibility(View.GONE);
             }
+
+//            Log.d(TAG,"jigar the last time message is "+holder.time.getText().toString());
 
             if (ischat) {
                 if (user.getStatus().equals("online")) {
@@ -151,6 +154,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> im
 
             if (ischat) {
                 Log.d(TAG,"jigar the broadcast is called  "+user.getBroadcastId());
+
                 lastMessageBroadcast(user.getBroadcastId(), holder.last_msg, holder.time);
             } else {
                 holder.last_msg.setVisibility(View.GONE);
@@ -162,12 +166,10 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> im
                     MainActivity.hideFloatingActionButton();
                     sharedPreference.save(mContext, user.getBroadcastId(), WsConstant.broadcastId);
                     holder.textViewUnreadBadge.setVisibility(View.GONE);
-
 //                    MainActivity.checkChatTheme(mContext);
                     MainActivity.showpart1();
                     FragmentManager fragmentManager = ((FragmentActivity) mContext).getSupportFragmentManager();
                     fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new BroadcastMessageFragment()).addToBackStack(null).commit();
-
                 }
             });
         }
@@ -269,16 +271,20 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> im
                                 theLastMessage = chat.getMessage();
                                 String tiime = getDateCurrentTimeZone(Long.parseLong(chat.getTime()));
                                 time.setText(tiime);
+                                arrayListUserLastMessageTime.add(tiime);
 
                             }
+//                            Log.d(TAG,"jigar the user last message list have is "+arrayListUserLastMessageTime.toString());
                         } else if (chat.getTo().equalsIgnoreCase("broadcast")) {
                             for (int i = 0; i < chat.getBroadcast_receiver().size(); i++) {
                                 if (chat.getBroadcast_receiver().get(i).equalsIgnoreCase(userid)) {
                                     theLastMessage = chat.getMessage();
                                     String tiime = getDateCurrentTimeZone(Long.parseLong(chat.getTime()));
                                     time.setText(tiime);
+                                    arrayListUserLastMessageTime.add(tiime);
                                 }
                             }
+                          //  Log.d(TAG,"jigar the user broadcast last message list have is "+arrayListUserLastMessageTime.toString());
                         }
 
                     }

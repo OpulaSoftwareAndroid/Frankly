@@ -49,7 +49,8 @@ public class NewChatUserAdapter extends RecyclerView.Adapter<NewChatUserAdapter.
         sharedPreference = new SharedPreference();
 
         final User user = mUsers.get(position);
-        holder.username.setText(user.getUsername());
+        String strUsername = user.getUsername().substring(0, 1).toUpperCase() + user.getUsername().substring(1);
+        holder.username.setText(strUsername);
         holder.last_msg.setText(user.getEmail());
         if (user.getImageURL().equals("default")) {
             holder.profile_image.setImageResource(R.drawable.image_boy);
@@ -74,9 +75,7 @@ public class NewChatUserAdapter extends RecyclerView.Adapter<NewChatUserAdapter.
             @Override
             public void onClick(View view) {
                 sharedPreference.save(mContext, user.getId(), WsConstant.userId);
-
                 MainActivity.showpart2();
-
                 FragmentManager fragmentManager = ((FragmentActivity) mContext).getSupportFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new UserProfileFragment()).addToBackStack(null).commit();
 
