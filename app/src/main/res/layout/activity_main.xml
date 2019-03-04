@@ -312,7 +312,7 @@
                     android:layout_alignParentBottom="true"
                     android:layout_gravity="bottom|end"
                     android:layout_marginEnd="16dp"
-                    android:layout_marginBottom="16dp"
+                    android:layout_marginBottom="70dp"
                     android:clickable="true"
                     android:focusable="true"
                     android:src="@drawable/add"
@@ -322,7 +322,26 @@
                     app:fabSize="normal"
                     app:pressedTranslationZ="12dp" />
 
+
+                <com.luseen.spacenavigation.SpaceNavigationView
+                    android:id="@+id/space"
+                    android:layout_alignParentBottom="true"
+                    android:gravity="bottom"
+                    app:space_background_color="@color/white"
+                    app:inactive_item_color="@color/grayone"
+                    app:active_item_color="@color/colorPrimarytwo"
+                    app:centre_button_icon="@drawable/ic_action_camera"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    app:centre_button_color="@color/colorPrimaryone"
+                    app:space_item_icon_size="25dp"
+                    android:layout_marginBottom="1dp"
+                    android:layout_gravity="bottom"/>
+
             </RelativeLayout>
+
+
         </LinearLayout>
+
     </LinearLayout>
 </LinearLayout>

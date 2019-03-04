@@ -80,15 +80,22 @@
                     android:layout_marginRight="@dimen/_8sdp"
                     android:orientation="vertical">
 
-                    <de.hdodenhof.circleimageview.CircleImageView
+                    <ImageView
+                        android:layout_width="match_parent"
                         android:id="@+id/image_PersonalInfo_DP"
-                        android:layout_width="@dimen/_90sdp"
-                        android:layout_height="@dimen/_90sdp"
-                        android:layout_below="@id/toolbarLayout"
-                        android:layout_centerHorizontal="true"
+                        android:layout_height="200dp"
                         android:layout_gravity="center"
-                        android:layout_marginTop="@dimen/_6sdp"
-                        android:background="@android:color/transparent" />
+                        android:layout_marginTop="@dimen/_6sdp"/>
+
+                <!--&lt;!&ndash;<de.hdodenhof.circleimageview.CircleImageView&ndash;&gt;-->
+                        <!--android:id="@+id/image_PersonalInfo_DP"-->
+                        <!--android:layout_width="@dimen/_90sdp"-->
+                        <!--android:layout_height="@dimen/_90sdp"-->
+                        <!--android:layout_below="@id/toolbarLayout"-->
+                        <!--android:layout_centerHorizontal="true"-->
+                        <!--android:layout_gravity="center"-->
+                        <!--android:layout_marginTop="@dimen/_6sdp"-->
+                        <!--android:background="@android:color/transparent" />-->
 
                     <TextView
                         android:id="@+id/txtName"
@@ -114,6 +121,35 @@
                         android:textColor="@android:color/darker_gray"
                         android:textSize="@dimen/_10sdp" />
 
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:orientation="horizontal"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+
+                        android:layout_height="wrap_content">
+
+                        <ImageView
+                            android:layout_width="25dp"
+                            android:id="@+id/imageViewChat"
+                            android:layout_margin="10dp"
+                            android:src="@drawable/ic_action_chat"
+                            android:layout_height="25dp" />
+
+                        <ImageView
+                            android:layout_width="25dp"
+                            android:layout_margin="10dp"
+                            android:id="@+id/imageViewCall"
+                            android:src="@drawable/ic_action_call"
+                            android:layout_height="25dp" />
+                        <ImageView
+                            android:layout_width="25dp"
+                            android:layout_margin="10dp"
+                            android:id="@+id/imageViewVideo"
+                            android:src="@drawable/ic_action_video"
+                            android:layout_height="25dp" />
+
+                    </LinearLayout>
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/_1sdp"
@@ -121,6 +157,11 @@
                         android:layout_marginTop="@dimen/_24sdp"
                         android:background="@color/gray" />
 
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:id="@+id/linearLayoutMainMedia"
+                        android:orientation="vertical"
+                        android:layout_height="wrap_content">
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
@@ -145,7 +186,7 @@
                             android:layout_marginTop="@dimen/_10sdp"
                             android:fontFamily="@font/m"
                             android:gravity="end"
-                            android:text="View All"
+                            android:text="None"
                             android:textColor="@color/black"
                             android:textSize="@dimen/_8sdp"
                             android:textStyle="bold" />
@@ -179,7 +220,7 @@
                             android:visibility="visible" />
 
                     </RelativeLayout>
-
+                    </LinearLayout>
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/_1sdp"

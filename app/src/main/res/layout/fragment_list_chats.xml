@@ -75,7 +75,17 @@
                 android:text="the bottom of your screen."
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
+
         </LinearLayout>
+        <SearchView
+            android:id="@+id/searchView"
+            android:layout_alignParentBottom="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:queryHint="Search Here..."
+            android:iconifiedByDefault="false"
+
+            />
 
     </RelativeLayout>
 

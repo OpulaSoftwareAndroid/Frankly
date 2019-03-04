@@ -1,6 +1,7 @@
 package com.opula.chatapp.fragments;
 
 import android.app.Activity;
+import android.media.Image;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -41,6 +42,7 @@ import com.opula.chatapp.constant.WsConstant;
 import com.opula.chatapp.model.Chat;
 import com.opula.chatapp.model.Chatlist;
 import com.opula.chatapp.model.User;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,8 +56,9 @@ public class UserProfileFragment extends Fragment {
     String userid;
     TextView txtName, txtEmail, text_no_image, txtViewAll;
     TextView txtOnOff;
-    LinearLayout imgBack;
-    CircleImageView image_PersonalInfo_DP;
+    LinearLayout imgBack,linearLayoutMainMedia;
+//    CircleImageView image_PersonalInfo_DP;
+    ImageView image_PersonalInfo_DP;
     Switch chkNotification;
     DatabaseReference reference;
     RecyclerView recycler_image;
@@ -64,7 +67,7 @@ public class UserProfileFragment extends Fragment {
     FirebaseUser fuser;
     public static FirebaseUser firebaseUser;
     String image;
-
+    ImageView imageViewChat;
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -102,7 +105,15 @@ public class UserProfileFragment extends Fragment {
                     if (image.equals("default")) {
                         image_PersonalInfo_DP.setImageResource(R.drawable.image_boy);
                     } else {
-                        Glide.with(getContext()).load(image).into(image_PersonalInfo_DP);
+
+                        Picasso.get().load(image)
+                                .fit()
+                                .into(image_PersonalInfo_DP);
+//                        Picasso.with(getContext())
+//                                .load(image)
+//                                .fitCenter()
+//                                .into(image_PersonalInfo_DP);
+
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -115,6 +126,13 @@ public class UserProfileFragment extends Fragment {
             }
         });
 
+        imageViewChat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FragmentManager fragmentManager = ((FragmentActivity) getContext()).getSupportFragmentManager();
+                fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new MessageFragment()).addToBackStack(null).commit();
+            }
+        });
         image_PersonalInfo_DP.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -238,6 +256,8 @@ public class UserProfileFragment extends Fragment {
         recycler_image = view.findViewById(R.id.recycler_image);
         txtViewAll = view.findViewById(R.id.txtViewAll);
         text_no_image = view.findViewById(R.id.text_no_image);
+        linearLayoutMainMedia=view.findViewById(R.id.linearLayoutMainMedia);
+        imageViewChat=view.findViewById(R.id.imageViewChat);
     }
 
     private void readMesagges(final String myid, final String userid) {
@@ -266,11 +286,14 @@ public class UserProfileFragment extends Fragment {
 
                         if (userSharedAdapter.getItemCount() > 0) {
                             // listView not empty
+                            linearLayoutMainMedia.setVisibility(View.VISIBLE);
+                            txtViewAll.setText("View All");
                             recycler_image.setVisibility(View.VISIBLE);
                             text_no_image.setVisibility(View.GONE);
                             recycler_image.setAdapter(userSharedAdapter);
                         } else {
                             // listView  empty
+                            linearLayoutMainMedia.setVisibility(View.GONE);
                             recycler_image.setVisibility(View.GONE);
                             text_no_image.setVisibility(View.VISIBLE);
                         }

@@ -1,15 +1,24 @@
 package com.opula.chatapp;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -25,6 +34,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.luseen.spacenavigation.SpaceItem;
+import com.luseen.spacenavigation.SpaceNavigationView;
+import com.luseen.spacenavigation.SpaceOnClickListener;
 import com.opula.chatapp.adapter.MessageAdapter;
 import com.opula.chatapp.constant.SharedPreference;
 import com.opula.chatapp.constant.WsConstant;
@@ -53,8 +65,12 @@ public class MainActivity extends AppCompatActivity {
     FirebaseDatabase mFirebaseInstance;
     FirebaseAuth firebaseAuth;
     SharedPreference sharedPreference;
+    SpaceNavigationView spaceNavigationView;
     LinearLayout imgBack, imgTrash, imgCopy, imgForward, imgStar;
     public static FirebaseUser fuser;
+    private static final int CAMERA_REQUEST = 1888;
+    private ImageView imageView;
+    private static final int MY_CAMERA_PERMISSION_CODE = 100;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,8 +104,65 @@ public class MainActivity extends AppCompatActivity {
 
         mUser = FirebaseAuth.getInstance().getCurrentUser();
         mFirebaseInstance = FirebaseDatabase.getInstance();
+        spaceNavigationView = (SpaceNavigationView) findViewById(R.id.space);
+        spaceNavigationView.setSpaceBackgroundColor(ContextCompat.getColor(this, R.color.gray));
+        spaceNavigationView.initWithSaveInstanceState(savedInstanceState);
+        spaceNavigationView.shouldShowFullBadgeText(true);
+//        spaceNavigationView.addSpaceItem(new SpaceItem("Status", R.drawable.ic_bottom_chat));
+//        spaceNavigationView.addSpaceItem(new SpaceItem("Call", R.drawable.ic_bottom_call));
+//        spaceNavigationView.addSpaceItem(new SpaceItem("Chats", R.drawable.ic_bottom_chat));
+//        spaceNavigationView.addSpaceItem(new SpaceItem("Search", R.drawable.ic_bottom_chat));
+        spaceNavigationView.addSpaceItem(new SpaceItem("", R.drawable.ic_action_status));
+        spaceNavigationView.addSpaceItem(new SpaceItem("", R.drawable.ic_action_call));
+        spaceNavigationView.addSpaceItem(new SpaceItem("", R.drawable.ic_action_chat));
+        spaceNavigationView.addSpaceItem(new SpaceItem("", R.drawable.ic_action_search));
 
-        showFloatingActionButton();
+//        spaceNavigationView.setSpaceOnClickListener(new SpaceOnClickListener() {
+//            @RequiresApi(api = Build.VERSION_CODES.M)
+//            @Override
+//            public void onCentreButtonClick() {
+//                Log.d("onCentreButtonClick ", "onCentreButtonClick");
+//                if (checkSelfPermission(Manifest.permission.CAMERA)
+//                        != PackageManager.PERMISSION_GRANTED) {
+//                    requestPermissions(new String[]{Manifest.permission.CAMERA},
+//                            MY_CAMERA_PERMISSION_CODE);
+//                } else {
+//                    Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+//                    startActivityForResult(cameraIntent, CAMERA_REQUEST);
+//                }
+//            }
+//
+//            @Override
+//            public void onItemClick(int itemIndex, String itemName) {
+//                Log.d("onItemClick ", "" + itemIndex + " " + itemName);
+//            }
+//
+//            @Override
+//            public void onItemReselected(int itemIndex, String itemName) {
+//                Log.d("onItemReselected ", "" + itemIndex + " " + itemName);
+//            }
+//        });
+
+
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+//                spaceNavigationView.changeCenterButtonIcon( R.drawable.ic__bottom_camera);
+
+                spaceNavigationView.shouldShowFullBadgeText(true);
+                spaceNavigationView.showBadgeAtIndex(2, 3, Color.RED);
+                spaceNavigationView.setInActiveCentreButtonIconColor(ContextCompat.getColor(MainActivity.this, R.color.colorPrimaryone));
+                spaceNavigationView.changeCurrentItem(2);
+            }
+        }, 700);
+
+     //   spaceNavigationView.showBadgeAtIndex(1,3,getResources().getColor(R.color.colorRed));
+ //       spaceNavigationView.showBadgeAtIndex(int itemIndexToShowBadge, int badgeCountText, int badgeBackgroundColor);
+
+//        spaceNavigationView.addSpaceItem(new SpaceItem("Settings", R.drawable.ic_double_tick_send_indicator));
+
+     //   showFloatingActionButton();
         showpart1();
 
         //save userdata
@@ -173,6 +246,7 @@ public class MainActivity extends AppCompatActivity {
         fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new ListChatFragment()).addToBackStack(null).commit();
 
 
+
         txt_my_wallate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -195,6 +269,8 @@ public class MainActivity extends AppCompatActivity {
                 showpart2();
                 FragmentManager fragmentManager = getSupportFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new MyProfileFragment()).addToBackStack(null).commit();
+                spaceNavigationView.setVisibility(View.GONE);
+
             }
         });
 
@@ -212,10 +288,28 @@ public class MainActivity extends AppCompatActivity {
                     img_chat.setImageDrawable(getResources().getDrawable(R.drawable.groupchat));
                     showpart1();
                     FragmentManager fragmentPersonal = getSupportFragmentManager();
+                    spaceNavigationView.setVisibility(View.GONE);
                     fragmentPersonal.beginTransaction().replace(R.id.frame_mainactivity, new ListChatFragment()).addToBackStack(null).commit();
                 }
             }
         });
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == MY_CAMERA_PERMISSION_CODE) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "camera permission granted", Toast.LENGTH_LONG).show();
+                Intent cameraIntent = new
+                        Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(cameraIntent, CAMERA_REQUEST);
+            } else {
+                Toast.makeText(this, "camera permission denied", Toast.LENGTH_LONG).show();
+            }
+
+        }
+
     }
 
     public static void showpart1() {
@@ -243,7 +337,13 @@ public class MainActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 FragmentManager fragmentManager = getSupportFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new MessageFragment()).addToBackStack(null).commit();
+                spaceNavigationView.setVisibility(View.GONE);
+
             }
+        }
+        if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
+            Bitmap photo = (Bitmap) data.getExtras().get("data");
+            imageView.setImageBitmap(photo);
         }
     }
 

@@ -26,8 +26,7 @@
                 android:layout_height="@dimen/_50sdp"
                 android:layout_centerHorizontal="true"
                 android:layout_gravity="center"
-                android:background="@android:color/transparent"
-                android:src="@color/colorPrimary" />
+                android:background="@drawable/ic_action_right_arrow" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -44,6 +43,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:layout_weight="1"
+            android:background="@color/grayone"
             android:foreground="?attr/selectableItemBackground"
             android:orientation="vertical">
 
@@ -52,8 +52,8 @@
                 android:layout_height="@dimen/_50sdp"
                 android:layout_centerHorizontal="true"
                 android:layout_gravity="center"
-                android:background="@android:color/transparent"
-                android:src="@color/colorPrimary" />
+                android:src="@drawable/ic_action_camera"
+                 />
 
             <TextView
                 android:layout_width="match_parent"

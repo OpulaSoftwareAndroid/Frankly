@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -20,6 +21,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.luseen.spacenavigation.SpaceNavigationView;
 import com.opula.chatapp.MainActivity;
 import com.opula.chatapp.R;
 import com.opula.chatapp.adapter.UserAdapter;
@@ -46,7 +48,8 @@ public class ListChatFragment extends Fragment {
     private List<String> broadcastList;
     ConstraintLayout task_list;
     LinearLayout no_chat;
-
+    String TAG="ListChatFragment";
+    SpaceNavigationView spaceNavigationView;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -60,7 +63,8 @@ public class ListChatFragment extends Fragment {
         recycler_view1 = view.findViewById(R.id.recycler_view1);
         task_list = view.findViewById(R.id.task_list);
         no_chat = view.findViewById(R.id.no_chat);
-
+        spaceNavigationView = getActivity().findViewById(R.id.space);
+        spaceNavigationView.setVisibility(View.VISIBLE);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recycler_view1.setHasFixedSize(true);
@@ -89,7 +93,7 @@ public class ListChatFragment extends Fragment {
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         chatlist = snapshot.getValue(Chatlist.class);
                         if (!("group".equalsIgnoreCase(snapshot.getKey()) || ("broadcast".equalsIgnoreCase(snapshot.getKey())))) {
-                            Log.d("DATAA22", snapshot.getValue() + "//" + chatlist);
+                            Log.d(TAG,"jigar the message snapshot have "+ snapshot.getValue() + "//" + chatlist);
                             usersList.add(chatlist);
                         }
                     }
@@ -150,6 +154,8 @@ public class ListChatFragment extends Fragment {
                             assert user != null;
                             if (chatlist.getId().equalsIgnoreCase(user.getId())) {
                                 mUsers.add(user);
+                                Log.d(TAG,"jigar the message chat list  have "+ chatlist.getId());
+
                             }
                         }
                     }
@@ -211,6 +217,8 @@ public class ListChatFragment extends Fragment {
             no_chat.setVisibility(View.VISIBLE);
         } else {
             recyclerView.setAdapter(userAdapter);
+            recyclerView.addItemDecoration(new DividerItemDecoration(getContext(),
+                    DividerItemDecoration.VERTICAL));
             recycler_view1.setAdapter(broadcastAdapter);
         }
 

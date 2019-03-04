@@ -40,6 +40,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.devlomi.record_view.OnBasketAnimationEnd;
+import com.devlomi.record_view.OnRecordClickListener;
 import com.devlomi.record_view.OnRecordListener;
 import com.devlomi.record_view.RecordButton;
 import com.devlomi.record_view.RecordView;
@@ -59,6 +60,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
+import com.luseen.spacenavigation.SpaceNavigationView;
 import com.mlsdev.rximagepicker.RxImagePicker;
 import com.mlsdev.rximagepicker.Sources;
 import com.opula.chatapp.MainActivity;
@@ -126,6 +128,7 @@ public class MessageFragment extends Fragment {
     EmojiconEditText text_send;
     ImageView emojiButton, send_image;
     View rootView;
+    final static String TAG="MessageFragment";
     EmojIconActions emojIcon;
     //pickimae
     StorageReference storageReference;
@@ -541,6 +544,9 @@ public class MessageFragment extends Fragment {
         emojiButton = view.findViewById(R.id.emoji_btn);
         send_image = view.findViewById(R.id.send_image);
         is_text = view.findViewById(R.id.is_text);
+        SpaceNavigationView spaceNavigationView=getActivity().findViewById(R.id.space);
+        spaceNavigationView.setVisibility(View.GONE);
+
     }
 
     public void choosePhotoFromGallary() {
@@ -994,12 +1000,14 @@ public class MessageFragment extends Fragment {
                     }
                     notify = false;
                 } catch (Exception e) {
+                    Log.d(TAG,"jigar the exception is main reference in "+e);
                     e.printStackTrace();
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d(TAG,"jigar the oncancelled error is main reference in "+databaseError.getMessage());
 
             }
         });
@@ -1014,7 +1022,8 @@ public class MessageFragment extends Fragment {
                 try {
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         Token token = snapshot.getValue(Token.class);
-                        Data data = new Data(fuser.getUid(), R.mipmap.ic_launcher, username + ": " + message, "New Message",
+                        Data data = new Data(fuser.getUid()
+                                , R.mipmap.ic_launcher, username + ": " + message, "New Message",
                                 userid);
 
                         Sender sender = new Sender(data, token.getToken());
@@ -1023,7 +1032,10 @@ public class MessageFragment extends Fragment {
                                 .enqueue(new Callback<MyResponse>() {
                                     @Override
                                     public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
+                                        Log.d(TAG,"jigar the on notification response we have in notification is "+response.code());
+
                                         if (response.code() == 200) {
+
                                             if (response.body().success != 1) {
 
                                             }
@@ -1032,18 +1044,20 @@ public class MessageFragment extends Fragment {
 
                                     @Override
                                     public void onFailure(Call<MyResponse> call, Throwable t) {
+                                        Log.d(TAG,"jigar the on notification failure  in notification is "+call.toString());
 
                                     }
                                 });
                     }
                 } catch (Exception e) {
+                    Log.d(TAG,"jigar the main exception in notification is "+e);
                     e.printStackTrace();
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                Log.d(TAG,"jigar the notification cancelled is "+databaseError.getMessage());
             }
         });
     }

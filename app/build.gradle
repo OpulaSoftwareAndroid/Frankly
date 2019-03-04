@@ -78,9 +78,13 @@ dependencies {
     //PDF Viewer
     implementation 'com.github.barteksc:android-pdf-viewer:2.0.3'
     implementation 'com.github.barteksc:pdfium-android:1.4.0'
-
+    implementation 'com.github.armcha:SpaceNavigationView:1.6.0'
     //MaterialChips
     implementation 'com.github.pchmn:MaterialChipsInput:1.0.8'
+
+    //badge
+    implementation 'com.github.minibugdev:drawablebadge:1.0.3'
+
 }
 
 apply plugin: 'com.google.gms.google-services'

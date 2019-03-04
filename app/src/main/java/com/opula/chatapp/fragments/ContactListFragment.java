@@ -95,6 +95,7 @@ public class ContactListFragment extends Fragment {
                         }
                         FragmentManager fragmentManager = ((FragmentActivity) getContext()).getSupportFragmentManager();
                         fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new MessageFragment()).commit();
+
                     }
 
                 }

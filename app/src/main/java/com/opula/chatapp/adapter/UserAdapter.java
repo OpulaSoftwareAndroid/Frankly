@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.luseen.spacenavigation.SpaceNavigationView;
 import com.opula.chatapp.MainActivity;
 import com.opula.chatapp.R;
 import com.opula.chatapp.constant.SharedPreference;
@@ -51,6 +53,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
     SharedPreference sharedPreference;
     String theLastMessage, thetime;
     String AES = "AES";
+    static String TAG="UserAdapter";
 
     public UserAdapter(Context mContext, List<User> mUsers, List<BroadcastUser> mBroadcast, boolean ischat, boolean is) {
         this.mUsers = mUsers;
@@ -74,7 +77,12 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
         if (is) {
             final User user = mUsers.get(position);
-            holder.username.setText(user.getUsername());
+            String strUserName=user.getUsername();
+            strUserName = strUserName.substring(0,1).toUpperCase() + strUserName.substring(1);
+//            holder.username.setText(user.getUsername());
+            holder.username.setText(strUserName);
+
+
             if (user.getImageURL().equals("default")) {
                 holder.profile_image.setImageResource(R.drawable.image_boy);
             } else {
@@ -107,6 +115,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                     sharedPreference.save(mContext, user.getId(), WsConstant.userId);
 //                    MainActivity.checkChatTheme(mContext);
                     MainActivity.showpart1();
+                    holder.textViewUnreadBadge.setVisibility(View.GONE);
                     FragmentManager fragmentManager = ((FragmentActivity) mContext).getSupportFragmentManager();
                     fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new MessageFragment()).addToBackStack(null).commit();
 
@@ -134,6 +143,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
             holder.profile_image.setImageResource(R.drawable.broadcast);
 
             if (ischat) {
+                Log.d(TAG,"jigar the broadcast is called  "+user.getBroadcastId());
                 lastMessageBroadcast(user.getBroadcastId(), holder.last_msg, holder.time);
             } else {
                 holder.last_msg.setVisibility(View.GONE);
@@ -144,6 +154,8 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                 public void onClick(View view) {
                     MainActivity.hideFloatingActionButton();
                     sharedPreference.save(mContext, user.getBroadcastId(), WsConstant.broadcastId);
+                    holder.textViewUnreadBadge.setVisibility(View.GONE);
+
 //                    MainActivity.checkChatTheme(mContext);
                     MainActivity.showpart1();
                     FragmentManager fragmentManager = ((FragmentActivity) mContext).getSupportFragmentManager();
@@ -171,7 +183,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         public ImageView profile_image;
         private ImageView img_on;
         private ImageView img_off;
-        private TextView last_msg, time;
+        private TextView last_msg, time,textViewUnreadBadge;
         LinearLayout click_layout;
 
         public ViewHolder(View itemView) {
@@ -184,7 +196,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
             last_msg = itemView.findViewById(R.id.last_msg);
             time = itemView.findViewById(R.id.time);
             click_layout = itemView.findViewById(R.id.click_layout);
-
+            textViewUnreadBadge=itemView.findViewById(R.id.textViewUnreadBadge);
         }
     }
 
@@ -268,6 +280,9 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                         if (chat.getTo().equalsIgnoreCase("broadcast")) {
                             if (chat.getSender().equalsIgnoreCase(userid)) {
                                 theLastMessage = chat.getMessage();
+                                Log.d(TAG,"jigar is the image sent in chat ? "+chat.isIsimage());
+                                Log.d(TAG,"jigar is the  last message is  "+chat.getMessage());
+
                                 String tiime = getDateCurrentTimeZone(Long.parseLong(chat.getTime()));
                                 time.setText(tiime);
                             }
