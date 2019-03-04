@@ -17,6 +17,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.luseen.spacenavigation.SpaceNavigationView;
 import com.opula.chatapp.MainActivity;
 import com.opula.chatapp.R;
 import com.opula.chatapp.adapter.StarMessageAdapter;
@@ -52,6 +53,8 @@ public class StarMessagesFragment extends Fragment {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(Objects.requireNonNull(getActivity()).getApplicationContext());
         recycler_view.setLayoutManager(linearLayoutManager);
         getAllStarMessages();
+        SpaceNavigationView spaceNavigationView = (SpaceNavigationView) getActivity().findViewById(R.id.space);
+        spaceNavigationView.setVisibility(View.GONE);
 
         imgBack.setOnClickListener(new View.OnClickListener() {
             @Override

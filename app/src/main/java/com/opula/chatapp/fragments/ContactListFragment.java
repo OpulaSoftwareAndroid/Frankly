@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.luseen.spacenavigation.SpaceNavigationView;
 import com.opula.chatapp.MainActivity;
 import com.opula.chatapp.R;
 import com.opula.chatapp.constant.SharedPreference;
@@ -61,6 +62,8 @@ public class ContactListFragment extends Fragment {
         groupUserId = sharedPreference.getValue(getActivity(), WsConstant.groupUserId);
         fuser = FirebaseAuth.getInstance().getCurrentUser();
         initViews(view);
+        SpaceNavigationView spaceNavigationView = (SpaceNavigationView) getActivity().findViewById(R.id.space);
+        spaceNavigationView.setVisibility(View.GONE);
 
         recycler_contact.setHasFixedSize(true);
         recycler_contact.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -138,6 +141,7 @@ public class ContactListFragment extends Fragment {
         recycler_contact = view.findViewById(R.id.recycler_contact);
         btnNext = view.findViewById(R.id.btnNext);
         no_chat = view.findViewById(R.id.no_chat);
+
     }
 
     //Contact list Adapter

@@ -60,6 +60,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
+import com.luseen.spacenavigation.SpaceNavigationView;
 import com.mlsdev.rximagepicker.RxImagePicker;
 import com.mlsdev.rximagepicker.Sources;
 import com.opula.chatapp.MainActivity;
@@ -73,6 +74,7 @@ import com.opula.chatapp.constant.WsConstant;
 import com.opula.chatapp.model.Chat;
 import com.opula.chatapp.model.GroupUser;
 import com.opula.chatapp.model.User;
+import com.opula.chatapp.notifications.Client;
 import com.opula.chatapp.notifications.Data;
 import com.opula.chatapp.notifications.MyResponse;
 import com.opula.chatapp.notifications.Sender;
@@ -107,7 +109,7 @@ public class GroupMessageFragment extends Fragment {
 
     DatabaseReference reference;
     SharedPreference sharedPreference;
-    String groupUserId;
+    static String groupUserId;
     RecyclerView recyclerView;
     RelativeLayout btn_send;
     CircleImageView imgUser;
@@ -125,9 +127,10 @@ public class GroupMessageFragment extends Fragment {
     ValueEventListener seenListener;
     static String userusername;
     static String userimage;
-    APIService apiService;
+    static APIService apiService;
     BottomSheetDialog dialogMenu;
     int AUDIO_FROM_GALLERY = 2;
+    static String TAG="GroupMessageFragment";
     //pickimage
     StorageReference storageReference;
     private StorageTask uploadTask;
@@ -172,6 +175,7 @@ public class GroupMessageFragment extends Fragment {
         userimage = sharedPreference.getValue(getActivity(), WsConstant.userImage);
 
         fileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + "AudioRecording.mp3";
+        apiService = Client.getClient("https://fcm.googleapis.com/").create(APIService.class);
 
         initViews(view);
         emojIcon = new EmojIconActions(getActivity(), rootView, text_send, emojiButton);
@@ -549,6 +553,9 @@ public class GroupMessageFragment extends Fragment {
         send_image = view.findViewById(R.id.send_image);
         groupName = view.findViewById(R.id.groupName);
         is_text = view.findViewById(R.id.is_text);
+        SpaceNavigationView spaceNavigationView = (SpaceNavigationView) getActivity().findViewById(R.id.space);
+        spaceNavigationView.setVisibility(View.GONE);
+
     }
 
     private void readMesagges(final String groupid, final String imageurl) {
@@ -855,7 +862,7 @@ public class GroupMessageFragment extends Fragment {
         }
     }
 
-    public static void sendMessageToGrp(final Context context, final String sender, final String receiver, String message, boolean isimage, String uri, String docUri, boolean iscontact, String con_name, String con_num) {
+    public static void sendMessageToGrp(final Context context, final String sender, final String receiver,final String message, boolean isimage, String uri, String docUri, boolean iscontact, String con_name, String con_num) {
 
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
         randomString(9);
@@ -915,10 +922,11 @@ public class GroupMessageFragment extends Fragment {
                 try {
                     User user = dataSnapshot.getValue(User.class);
                     if (notify) {
-//                        sendNotifiaction(receiver, user.getUsername(), message);
+                        sendNotifiaction(context,receiver, user.getUsername(), message);
                     }
                     notify = false;
                 } catch (Exception e) {
+                    Log.d(TAG,"jigar the exception error in notification is "+e);
                     e.printStackTrace();
                 }
             }
@@ -929,8 +937,7 @@ public class GroupMessageFragment extends Fragment {
             }
         });
     }
-
-    private void sendNotifiaction(String receiver, final String username, final String message) {
+    private static void sendNotifiaction(final Context context, String receiver, final String username, final String message) {
         DatabaseReference tokens = FirebaseDatabase.getInstance().getReference("Tokens");
         Query query = tokens.orderByKey().equalTo(receiver);
         query.addValueEventListener(new ValueEventListener() {
@@ -939,7 +946,8 @@ public class GroupMessageFragment extends Fragment {
                 try {
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         Token token = snapshot.getValue(Token.class);
-                        Data data = new Data(fuser.getUid(), R.mipmap.ic_launcher, username + ": " + message, "New Message",
+                        Data data = new Data(fuser.getUid()
+                                , R.mipmap.ic_launcher, username + ": " + message, "New Message",
                                 groupUserId);
 
                         Sender sender = new Sender(data, token.getToken());
@@ -948,30 +956,80 @@ public class GroupMessageFragment extends Fragment {
                                 .enqueue(new Callback<MyResponse>() {
                                     @Override
                                     public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
+                                        Log.d(TAG,"jigar the on notification response we have in notification is "+response.code());
+
                                         if (response.code() == 200) {
+
                                             if (response.body().success != 1) {
-                                                Toast.makeText(getActivity(), "Failed!", Toast.LENGTH_SHORT).show();
+
                                             }
                                         }
                                     }
 
                                     @Override
                                     public void onFailure(Call<MyResponse> call, Throwable t) {
+                                        Log.d(TAG,"jigar the on notification failure  in notification is "+call.toString());
 
                                     }
                                 });
                     }
                 } catch (Exception e) {
+                    Log.d(TAG,"jigar the main exception in notification is "+e);
                     e.printStackTrace();
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                Log.d(TAG,"jigar the on notification cancelled is "+databaseError.getMessage());
             }
         });
     }
+
+//    private static void sendNotifiaction(String receiver, final String username, final String message) {
+//        DatabaseReference tokens = FirebaseDatabase.getInstance().getReference("Tokens");
+//        Query query = tokens.orderByKey().equalTo(receiver);
+//        query.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                try {
+//                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+//                        Token token = snapshot.getValue(Token.class);
+//                        Data data = new Data(fuser.getUid(), R.mipmap.ic_launcher, username + ": " + message, "New Message",
+//                                groupUserId);
+//
+//                        Sender sender = new Sender(data, token.getToken());
+//
+//                        apiService.sendNotification(sender)
+//                                .enqueue(new Callback<MyResponse>() {
+//                                    @Override
+//                                    public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
+//                                        if (response.code() == 200) {
+//                                            if (response.body().success != 1) {
+////                                                Toast.makeText(getActivity(), "Failed!", Toast.LENGTH_SHORT).show();
+//
+//                                                Log.d(TAG,"jigar the notificatin is send"+response.body());
+//                                            }
+//                                        }
+//                                    }
+//
+//                                    @Override
+//                                    public void onFailure(Call<MyResponse> call, Throwable t) {
+//
+//                                    }
+//                                });
+//                    }
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
+//    }
 
 
 }

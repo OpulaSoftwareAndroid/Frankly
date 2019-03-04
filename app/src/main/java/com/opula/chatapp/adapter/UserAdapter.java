@@ -5,6 +5,8 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.InputFilter;
+import android.text.Spanned;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -36,6 +38,7 @@ import com.opula.chatapp.model.User;
 
 import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -43,11 +46,14 @@ import java.util.TimeZone;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
-
-public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
+import android.widget.Filter;
+import android.widget.Filterable;
+public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> implements Filterable {
 
     private Context mContext;
     private List<User> mUsers;
+    private List<User> mUsersFilteredList;
+
     private List<BroadcastUser> mBroadcast;
     private boolean ischat, is;
     SharedPreference sharedPreference;
@@ -57,6 +63,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
     public UserAdapter(Context mContext, List<User> mUsers, List<BroadcastUser> mBroadcast, boolean ischat, boolean is) {
         this.mUsers = mUsers;
+        this.mUsersFilteredList = mUsers;
         this.mBroadcast = mBroadcast;
         this.mContext = mContext;
         this.ischat = ischat;
@@ -76,7 +83,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         sharedPreference = new SharedPreference();
 
         if (is) {
-            final User user = mUsers.get(position);
+            final User user = mUsersFilteredList.get(position);
             String strUserName=user.getUsername();
             strUserName = strUserName.substring(0,1).toUpperCase() + strUserName.substring(1);
 //            holder.username.setText(user.getUsername());
@@ -171,12 +178,53 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
     @Override
     public int getItemCount() {
         if (is) {
-            return mUsers.size();
+//            return mUsers.size();
+            return mUsersFilteredList.size();
+
         } else {
             return mBroadcast.size();
         }
     }
+    @Override
+    public Filter getFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence charSequence) {
+                String charString = charSequence.toString();
+                if (charString.isEmpty()) {
+                    mUsersFilteredList = mUsers;
+                } else {
+                    List<User> filteredList = new ArrayList<>();
+                    for (User row : mUsers) {
 
+                        // name match condition. this might differ depending on your requirement
+                        // here we are looking for name or phone number match
+                        Log.d(TAG,"jigar the query for search is "+charString.toString());
+
+                        if (row.getUsername().toLowerCase().contains(charString.toLowerCase())) {
+                            filteredList.add(row);
+                            Log.d(TAG,"jigar the query match for search is "+row.getUsername());
+
+                        }
+                    }
+
+                    mUsersFilteredList = filteredList;
+                }
+
+                FilterResults filterResults = new FilterResults();
+                filterResults.values = mUsersFilteredList;
+                return filterResults;
+            }
+
+            @Override
+            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+                mUsersFilteredList = (ArrayList<User>) filterResults.values;
+
+                // refresh the list with filtered data
+                notifyDataSetChanged();
+            }
+        };
+    }
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         public TextView username;

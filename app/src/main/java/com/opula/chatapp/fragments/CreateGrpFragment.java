@@ -27,6 +27,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.luseen.spacenavigation.SpaceNavigationView;
 import com.opula.chatapp.MainActivity;
 import com.opula.chatapp.R;
 import com.opula.chatapp.constant.WsConstant;
@@ -54,6 +55,10 @@ public class CreateGrpFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_create_grp, container, false);
 
         MainActivity.hideFloatingActionButton();
+
+
+        SpaceNavigationView spaceNavigationView = getActivity().findViewById(R.id.space);
+        spaceNavigationView.setVisibility(View.GONE);
 
         initViews(view);
 

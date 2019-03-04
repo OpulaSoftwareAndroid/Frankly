@@ -19,6 +19,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.luseen.spacenavigation.SpaceNavigationView;
 import com.opula.chatapp.MainActivity;
 import com.opula.chatapp.R;
 import com.opula.chatapp.adapter.NewChatUserAdapter;
@@ -51,6 +52,8 @@ public class ListUserFragment extends Fragment {
         createNewGrpLayout = view.findViewById(R.id.createNewGrpLayout);
         createNewBroadcast = view.findViewById(R.id.createNewBroadcast);
         imgBack = view.findViewById(R.id.imgBack);
+        SpaceNavigationView spaceNavigationView = (SpaceNavigationView) getActivity().findViewById(R.id.space);
+        spaceNavigationView.setVisibility(View.GONE);
 
         imgBack.setOnClickListener(new View.OnClickListener() {
             @Override

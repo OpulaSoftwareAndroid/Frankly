@@ -46,6 +46,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
+import com.luseen.spacenavigation.SpaceNavigationView;
 import com.opula.chatapp.MainActivity;
 import com.opula.chatapp.R;
 import com.opula.chatapp.adapter.GroupParticipantAdapter;
@@ -122,6 +123,8 @@ public class GroupProfileFragment extends Fragment {
 
         recycler_view_member.setHasFixedSize(true);
         recycler_view_member.setLayoutManager(new LinearLayoutManager(getContext()));
+        SpaceNavigationView spaceNavigationView = (SpaceNavigationView) getActivity().findViewById(R.id.space);
+        spaceNavigationView.setVisibility(View.GONE);
 
         LinearLayoutManager horizontalLayoutManagaer = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
         recycler_image.setLayoutManager(horizontalLayoutManagaer);

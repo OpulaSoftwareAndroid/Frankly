@@ -5,11 +5,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:fillViewport="true">
 
-    <RelativeLayout
+
+    <LinearLayout
         android:background="@drawable/border_white"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:layout_width="fill_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
+
+        <SearchView
+            android:id="@+id/searchViewChatList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:queryHint="Search Here..."
+            android:iconifiedByDefault="false" />
 
         <android.support.constraint.ConstraintLayout
             android:id="@+id/task_list"
@@ -77,17 +85,9 @@
                 android:layout_height="wrap_content" />
 
         </LinearLayout>
-        <SearchView
-            android:id="@+id/searchView"
-            android:layout_alignParentBottom="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:queryHint="Search Here..."
-            android:iconifiedByDefault="false"
 
-            />
 
-    </RelativeLayout>
+    </LinearLayout>
 
 
 

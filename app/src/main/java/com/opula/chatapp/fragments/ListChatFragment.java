@@ -12,6 +12,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.SearchView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -48,6 +50,7 @@ public class ListChatFragment extends Fragment {
     private List<String> broadcastList;
     ConstraintLayout task_list;
     LinearLayout no_chat;
+    static SearchView searchViewChatList;
     String TAG="ListChatFragment";
     SpaceNavigationView spaceNavigationView;
     @Override
@@ -61,6 +64,8 @@ public class ListChatFragment extends Fragment {
 
         recyclerView = view.findViewById(R.id.recycler_view);
         recycler_view1 = view.findViewById(R.id.recycler_view1);
+        searchViewChatList=view.findViewById(R.id.searchViewChatList);
+        searchViewChatList.setVisibility(View.GONE);
         task_list = view.findViewById(R.id.task_list);
         no_chat = view.findViewById(R.id.no_chat);
         spaceNavigationView = getActivity().findViewById(R.id.space);
@@ -69,7 +74,6 @@ public class ListChatFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recycler_view1.setHasFixedSize(true);
         recycler_view1.setLayoutManager(new LinearLayoutManager(getContext()));
-
         fuser = FirebaseAuth.getInstance().getCurrentUser();
 
         usersList = new ArrayList<>();
@@ -78,9 +82,40 @@ public class ListChatFragment extends Fragment {
         getChats();
         getBroadcast();
 
+        searchViewChatList.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                //if(usersList.contains(query))
+                {
+                    Log.d(TAG,"jigar the query to send search is "+query);
+                    userAdapter.getFilter().filter(query);
+                }
+//                else{
+//                    Toast.makeText(getContext(), "No Match found",Toast.LENGTH_LONG).show();
+//                }
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String query) {
+                Log.d(TAG,"jigar the query to send search is "+query);
+
+                userAdapter.getFilter().filter(query);
+                return false;
+            }
+        });
         updateToken(FirebaseInstanceId.getInstance().getToken());
 
         return view;
+    }
+    public static void setSearchViewVisibility(boolean boolStatus){
+        if(boolStatus) {
+            searchViewChatList.setVisibility(View.VISIBLE);
+        }else
+        {
+            searchViewChatList.setVisibility(View.GONE);
+
+        }
     }
 
     public void getChats() {
@@ -229,7 +264,6 @@ public class ListChatFragment extends Fragment {
 //            task_list.setVisibility(View.GONE);
 //            no_chat.setVisibility(View.VISIBLE);
 //        }
-
        /* if (userAdapter.getItemCount() > 0) {
             if (broadcastAdapter.getItemCount() > 0) {
                 task_list.setVisibility(View.VISIBLE);

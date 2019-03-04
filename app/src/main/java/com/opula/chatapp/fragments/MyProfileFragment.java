@@ -47,6 +47,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
+import com.luseen.spacenavigation.SpaceNavigationView;
 import com.opula.chatapp.MainActivity;
 import com.opula.chatapp.R;
 import com.opula.chatapp.activity.LoginRegisterActivity;
@@ -300,6 +301,9 @@ public class MyProfileFragment extends Fragment {
         lin_logout = view.findViewById(R.id.lin_logout);
         txtName = view.findViewById(R.id.txtName);
         txtMobile = view.findViewById(R.id.txtMobile);
+        SpaceNavigationView spaceNavigationView = (SpaceNavigationView) getActivity().findViewById(R.id.space);
+        spaceNavigationView.setVisibility(View.GONE);
+
     }
 
     public void showCloseAccountDialog(Context mContext) {

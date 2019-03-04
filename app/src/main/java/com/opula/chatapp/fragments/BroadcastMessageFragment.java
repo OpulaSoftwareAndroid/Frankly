@@ -58,6 +58,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
+import com.luseen.spacenavigation.SpaceNavigationView;
 import com.mlsdev.rximagepicker.RxImagePicker;
 import com.mlsdev.rximagepicker.Sources;
 import com.opula.chatapp.MainActivity;
@@ -420,6 +421,9 @@ public class BroadcastMessageFragment extends Fragment {
         emojiButton = view.findViewById(R.id.emoji_btn);
         send_image = view.findViewById(R.id.send_image);
         is_text = view.findViewById(R.id.is_text);
+        SpaceNavigationView spaceNavigationView = (SpaceNavigationView) getActivity().findViewById(R.id.space);
+        spaceNavigationView.setVisibility(View.GONE);
+
     }
 
     private void showPictureDialog() {

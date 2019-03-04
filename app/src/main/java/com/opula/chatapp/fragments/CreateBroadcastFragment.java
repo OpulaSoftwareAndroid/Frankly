@@ -25,6 +25,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.luseen.spacenavigation.SpaceNavigationView;
 import com.opula.chatapp.MainActivity;
 import com.opula.chatapp.R;
 import com.opula.chatapp.constant.WsConstant;
@@ -306,6 +307,8 @@ public class CreateBroadcastFragment extends Fragment {
         btnNext = view.findViewById(R.id.btnNext);
         txtSelectedCount = view.findViewById(R.id.txtSelectedCount);
         txt_broadcast_name = view.findViewById(R.id.txt_broadcast_name);
+        SpaceNavigationView spaceNavigationView = (SpaceNavigationView) getActivity().findViewById(R.id.space);
+        spaceNavigationView.setVisibility(View.GONE);
     }
 
 

@@ -28,6 +28,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.luseen.spacenavigation.SpaceNavigationView;
 import com.opula.chatapp.MainActivity;
 import com.opula.chatapp.R;
 import com.opula.chatapp.constant.AppGlobal;
@@ -59,6 +60,8 @@ public class ViewAllSharedMediaFragment extends Fragment {
         userid = sharedPreference.getValue(getActivity(), WsConstant.userId);
         initViews(view);
         fuser = FirebaseAuth.getInstance().getCurrentUser();
+        SpaceNavigationView spaceNavigationView = (SpaceNavigationView) getActivity().findViewById(R.id.space);
+        spaceNavigationView.setVisibility(View.GONE);
 
         recycler_image.setLayoutManager(new GridLayoutManager(getActivity(), 3));
         readMesagges(fuser.getUid(), userid);

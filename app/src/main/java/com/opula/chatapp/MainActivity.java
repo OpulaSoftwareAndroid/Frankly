@@ -24,6 +24,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -71,7 +72,6 @@ public class MainActivity extends AppCompatActivity {
     private static final int CAMERA_REQUEST = 1888;
     private ImageView imageView;
     private static final int MY_CAMERA_PERMISSION_CODE = 100;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -106,6 +106,7 @@ public class MainActivity extends AppCompatActivity {
         mFirebaseInstance = FirebaseDatabase.getInstance();
         spaceNavigationView = (SpaceNavigationView) findViewById(R.id.space);
         spaceNavigationView.setSpaceBackgroundColor(ContextCompat.getColor(this, R.color.gray));
+        spaceNavigationView.setVisibility(View.GONE);
         spaceNavigationView.initWithSaveInstanceState(savedInstanceState);
         spaceNavigationView.shouldShowFullBadgeText(true);
 //        spaceNavigationView.addSpaceItem(new SpaceItem("Status", R.drawable.ic_bottom_chat));
@@ -117,11 +118,11 @@ public class MainActivity extends AppCompatActivity {
         spaceNavigationView.addSpaceItem(new SpaceItem("", R.drawable.ic_action_chat));
         spaceNavigationView.addSpaceItem(new SpaceItem("", R.drawable.ic_action_search));
 
-//        spaceNavigationView.setSpaceOnClickListener(new SpaceOnClickListener() {
-//            @RequiresApi(api = Build.VERSION_CODES.M)
-//            @Override
-//            public void onCentreButtonClick() {
-//                Log.d("onCentreButtonClick ", "onCentreButtonClick");
+        spaceNavigationView.setSpaceOnClickListener(new SpaceOnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.M)
+            @Override
+            public void onCentreButtonClick() {
+                Log.d("onCentreButtonClick ", "onCentreButtonClick");
 //                if (checkSelfPermission(Manifest.permission.CAMERA)
 //                        != PackageManager.PERMISSION_GRANTED) {
 //                    requestPermissions(new String[]{Manifest.permission.CAMERA},
@@ -130,18 +131,27 @@ public class MainActivity extends AppCompatActivity {
 //                    Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
 //                    startActivityForResult(cameraIntent, CAMERA_REQUEST);
 //                }
-//            }
-//
-//            @Override
-//            public void onItemClick(int itemIndex, String itemName) {
-//                Log.d("onItemClick ", "" + itemIndex + " " + itemName);
-//            }
-//
-//            @Override
-//            public void onItemReselected(int itemIndex, String itemName) {
-//                Log.d("onItemReselected ", "" + itemIndex + " " + itemName);
-//            }
-//        });
+            }
+
+            @Override
+            public void onItemClick(int itemIndex, String itemName) {
+                Log.d("onItemClick ", "" + itemIndex + " " + itemName);
+                if(itemIndex==3)
+                {
+
+                    ListChatFragment.setSearchViewVisibility(true);
+                }else
+                {
+                    ListChatFragment.setSearchViewVisibility(false);
+
+                }
+            }
+
+            @Override
+            public void onItemReselected(int itemIndex, String itemName) {
+                Log.d("onItemReselected ", "" + itemIndex + " " + itemName);
+            }
+        });
 
 
 
@@ -155,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
                 spaceNavigationView.setInActiveCentreButtonIconColor(ContextCompat.getColor(MainActivity.this, R.color.colorPrimaryone));
                 spaceNavigationView.changeCurrentItem(2);
             }
-        }, 700);
+        }, 2000);
 
      //   spaceNavigationView.showBadgeAtIndex(1,3,getResources().getColor(R.color.colorRed));
  //       spaceNavigationView.showBadgeAtIndex(int itemIndexToShowBadge, int badgeCountText, int badgeBackgroundColor);
