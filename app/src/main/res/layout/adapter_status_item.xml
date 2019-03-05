@@ -78,7 +78,7 @@
                     <!--android:layout_width="25dp"-->
                     <!--android:layout_height="" />-->
                 <hani.momanii.supernova_emoji_library.Helper.EmojiconTextView
-                    android:id="@+id/last_msg"
+                    android:id="@+id/textViewStatusTime"
                     android:fontFamily="@font/m"
                     emojicon:emojiconSize="14sp"
                     android:layout_width="wrap_content"
@@ -97,14 +97,14 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <TextView
-                android:textColor="@color/mainscreen_black"
-                android:fontFamily="@font/m"
-                android:id="@+id/time"
+            <!--<TextView-->
+                <!--android:textColor="@color/mainscreen_black"-->
+                <!--android:fontFamily="@font/m"-->
+                <!--android:id="@+id/time"-->
 
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="12sp" />
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:textSize="12sp" />-->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -116,9 +116,9 @@
                 android:textStyle="bold"
                 android:background="@drawable/badge_circle"/>
         </LinearLayout>
-        <ImageView
-            android:layout_width="20dp"
-            android:src="@drawable/ic_action_right_arrow"
-            android:layout_height="20dp" />
+        <!--<ImageView-->
+            <!--android:layout_width="20dp"-->
+            <!--android:src="@drawable/ic_action_right_arrow"-->
+            <!--android:layout_height="20dp" />-->
     </LinearLayout>
 </LinearLayout>

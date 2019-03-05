@@ -173,7 +173,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         String str = getDateCurrentTimeZone(Long.parseLong(chat.getTime()));
         holder.show_time.setText(str);
 
-//        holder.img_download.setOnClickListener(new View.OnClickListener() {
+        //        holder.img_download.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View view) {
 //                holder.progress_circular.setVisibility(View.VISIBLE);

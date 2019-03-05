@@ -17,6 +17,8 @@ public class WsConstant {
 
     public static String check = "check";
     public static String ismain = "ismain";
+    public static String FRAGMENT_NAME = "fragment_name";
+    public static String FRAGMENT_SEARCH = "fragment_search";
 
 
 

@@ -763,7 +763,6 @@ public class MessageFragment extends Fragment {
         pd.show();
         pd.setCancelable(false);
 
-
         if (mImageUri != null) {
             storageReference = FirebaseStorage.getInstance().getReference("chats");
 
@@ -905,7 +904,10 @@ public class MessageFragment extends Fragment {
         return secretKeySpec;
     }
 
-    public static void sendMessageToPersonal(final Context context, final String sender, final String receiver, String message, boolean isimage, String uri, String docUri, boolean iscontact, String con_name, String con_num) {
+    public static void sendMessageToPersonal(final Context context
+            , final String sender, final String receiver
+            , String message, boolean isimage, String uri, String docUri
+            , boolean iscontact, String con_name, String con_num) {
 
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Chats").push();
         randomString(9);

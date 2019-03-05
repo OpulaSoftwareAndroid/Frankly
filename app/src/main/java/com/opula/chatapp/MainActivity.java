@@ -43,6 +43,7 @@ import com.opula.chatapp.constant.SharedPreference;
 import com.opula.chatapp.constant.WsConstant;
 import com.opula.chatapp.fragments.ListChatFragment;
 import com.opula.chatapp.fragments.ListGroupChatFragment;
+import com.opula.chatapp.fragments.ListStatusFragment;
 import com.opula.chatapp.fragments.ListUserFragment;
 import com.opula.chatapp.fragments.MessageFragment;
 import com.opula.chatapp.fragments.MyProfileFragment;
@@ -102,9 +103,9 @@ public class MainActivity extends AppCompatActivity {
         imgCopy = findViewById(R.id.imgCopy);
         imgForward = findViewById(R.id.imgForward);
         imgStar = findViewById(R.id.imgStar);
-
         mUser = FirebaseAuth.getInstance().getCurrentUser();
         mFirebaseInstance = FirebaseDatabase.getInstance();
+
         spaceNavigationView = (SpaceNavigationView) findViewById(R.id.space);
         spaceNavigationView.setSpaceBackgroundColor(ContextCompat.getColor(this, R.color.gray));
         spaceNavigationView.setVisibility(View.GONE);
@@ -115,36 +116,51 @@ public class MainActivity extends AppCompatActivity {
 //        spaceNavigationView.addSpaceItem(new SpaceItem("Chats", R.drawable.ic_bottom_chat));
 //        spaceNavigationView.addSpaceItem(new SpaceItem("Search", R.drawable.ic_bottom_chat));
         spaceNavigationView.addSpaceItem(new SpaceItem("", R.drawable.ic_action_status));
-        spaceNavigationView.addSpaceItem(new SpaceItem("", R.drawable.ic_action_call));
+        spaceNavigationView.addSpaceItem(new SpaceItem("", R.drawable.ic_action_profile_grey));
         spaceNavigationView.addSpaceItem(new SpaceItem("", R.drawable.ic_action_chat));
         spaceNavigationView.addSpaceItem(new SpaceItem("", R.drawable.ic_action_search));
-
         spaceNavigationView.setSpaceOnClickListener(new SpaceOnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
             public void onCentreButtonClick() {
                 Log.d("onCentreButtonClick ", "onCentreButtonClick");
-//                if (checkSelfPermission(Manifest.permission.CAMERA)
-//                        != PackageManager.PERMISSION_GRANTED) {
-//                    requestPermissions(new String[]{Manifest.permission.CAMERA},
-//                            MY_CAMERA_PERMISSION_CODE);
-//                } else {
-//                    Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-//                    startActivityForResult(cameraIntent, CAMERA_REQUEST);
-//                }
-            }
 
+            }
             @Override
             public void onItemClick(int itemIndex, String itemName) {
                 Log.d("onItemClick ", "" + itemIndex + " " + itemName);
                 if(itemIndex==3)
                 {
-
+                    ListChatFragment listChatFragment = new ListChatFragment();
                     ListChatFragment.setSearchViewVisibility(true);
+                    spaceNavigationView.setVisibility(View.GONE);
+                    Bundle bundle = new Bundle();
+                    bundle.putString(WsConstant.FRAGMENT_NAME, WsConstant.FRAGMENT_SEARCH);
+                    listChatFragment.setArguments(bundle);
+                    FragmentManager fragmentManager = getSupportFragmentManager();
+                    fragmentManager.beginTransaction().replace(R.id.frame_mainactivity,
+                            listChatFragment).addToBackStack(null).commit();
                 }else
                 {
                     ListChatFragment.setSearchViewVisibility(false);
-
+                }
+                if(itemIndex==1)
+                {
+                    FragmentManager fragmentManager = getSupportFragmentManager();
+                    fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new MyProfileFragment()).addToBackStack(null).commit();
+                    spaceNavigationView.setVisibility(View.GONE);
+                }
+                if(itemIndex==0)
+                {
+                    FragmentManager fragmentManager = getSupportFragmentManager();
+                    fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new ListStatusFragment()).addToBackStack(null).commit();
+                    spaceNavigationView.setVisibility(View.GONE);
+                }
+                if(itemIndex==2)
+                {
+                    FragmentManager fragmentManager = getSupportFragmentManager();
+                    fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new ListChatFragment()).addToBackStack(null).commit();
+                    spaceNavigationView.setVisibility(View.GONE);
                 }
             }
 
@@ -155,14 +171,12 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-//                spaceNavigationView.changeCenterButtonIcon( R.drawable.ic__bottom_camera);
-
-                spaceNavigationView.shouldShowFullBadgeText(true);
-                spaceNavigationView.showBadgeAtIndex(2, 3, Color.RED);
+                //                spaceNavigationView.changeCenterButtonIcon( R.drawable.ic__bottom_camera);
+                //                spaceNavigationView.shouldShowFullBadgeText(true);
+                //                spaceNavigationView.showBadgeAtIndex(2, 3, Color.RED);
                 spaceNavigationView.setInActiveCentreButtonIconColor(ContextCompat.getColor(MainActivity.this, R.color.colorPrimaryone));
                 spaceNavigationView.changeCurrentItem(2);
             }
@@ -257,8 +271,6 @@ public class MainActivity extends AppCompatActivity {
 
         fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new ListChatFragment()).addToBackStack(null).commit();
-
-
 
         txt_my_wallate.setOnClickListener(new View.OnClickListener() {
             @Override

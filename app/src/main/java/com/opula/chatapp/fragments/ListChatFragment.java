@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SearchView;
 import android.widget.Toast;
@@ -32,7 +33,6 @@ import com.opula.chatapp.model.BroadcastUser;
 import com.opula.chatapp.model.Chatlist;
 import com.opula.chatapp.model.User;
 import com.opula.chatapp.notifications.Token;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -62,7 +62,6 @@ public class ListChatFragment extends Fragment {
         MainActivity.showpart1();
         MainActivity.showFloatingActionButton();
         WsConstant.ismain = "p";
-
         recyclerView = view.findViewById(R.id.recycler_view);
         recycler_view1 = view.findViewById(R.id.recycler_view1);
         searchViewChatList=view.findViewById(R.id.searchViewChatList);
@@ -76,10 +75,14 @@ public class ListChatFragment extends Fragment {
         recycler_view1.setHasFixedSize(true);
         recycler_view1.setLayoutManager(new LinearLayoutManager(getContext()));
         fuser = FirebaseAuth.getInstance().getCurrentUser();
-
         usersList = new ArrayList<>();
         broadcastList = new ArrayList<>();
-
+        Bundle bundle = this.getArguments();
+        if (bundle != null) {
+            String strFragmentName = bundle.getString(WsConstant.FRAGMENT_NAME, "");
+            Log.d(TAG,"jigar the fragment we came is "+strFragmentName);
+            searchViewChatList.setVisibility(View.VISIBLE);
+        }
         getChats();
         getBroadcast();
 
@@ -115,7 +118,6 @@ public class ListChatFragment extends Fragment {
         }else
         {
             searchViewChatList.setVisibility(View.GONE);
-
         }
     }
 
@@ -205,6 +207,7 @@ public class ListChatFragment extends Fragment {
                     }
 
                     userAdapter = new UserAdapter(getContext(), mUsers, mBroadcast, true, true);
+//                    userAdapter = new UserAdapter(getContext(),spaceNavigationView, mUsers, mBroadcast, true, true);
 
                     WsConstant.check = "fragment";
                     setAdapter(userAdapter, broadcastAdapter);
