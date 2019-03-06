@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.webkit.MimeTypeMap;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -22,6 +23,7 @@ import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.devlomi.circularstatusview.CircularStatusView;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -44,12 +46,12 @@ import com.mlsdev.rximagepicker.Sources;
 import com.opula.chatapp.MainActivity;
 import com.opula.chatapp.R;
 import com.opula.chatapp.adapter.StatusAdapter;
-import com.opula.chatapp.adapter.UserAdapter;
 import com.opula.chatapp.constant.AppGlobal;
 import com.opula.chatapp.constant.WsConstant;
 import com.opula.chatapp.model.BroadcastUser;
 import com.opula.chatapp.model.Chat;
 import com.opula.chatapp.model.Chatlist;
+import com.opula.chatapp.model.POJOStatus;
 import com.opula.chatapp.model.User;
 import com.opula.chatapp.notifications.Token;
 
@@ -63,7 +65,14 @@ public class ListStatusFragment extends Fragment {
 
     private RecyclerView recyclerView, recycler_view1;
     private StatusAdapter statusAdapter;
-    private List<User> mUsers;
+    private List<POJOStatus> pojoStatusList;
+    private List<POJOStatus> pojoFilteredStatusList;
+    private ArrayList<String> arrayListFilteredSenderID;
+
+    private POJOStatus pojoStatus;
+    private String strStatusUserName;
+
+    static String TAG="ListStatusFragment";
     FirebaseUser firebaseUser;
     ImageView imageViewProfileImage;
     private List<BroadcastUser> mBroadcast;
@@ -83,7 +92,6 @@ public class ListStatusFragment extends Fragment {
     static SecureRandom rnd = new SecureRandom();
     LinearLayout linearLayoutStatus;
     static SearchView searchViewChatList;
-    String TAG="ListChatFragment";
     User user;
     SpaceNavigationView spaceNavigationView;
     @Override
@@ -93,6 +101,7 @@ public class ListStatusFragment extends Fragment {
         MainActivity.showpart1();
         MainActivity.showFloatingActionButton();
         WsConstant.ismain = "p";
+
         recyclerView = view.findViewById(R.id.recycler_view);
         recycler_view1 = view.findViewById(R.id.recycler_view1);
         searchViewChatList=view.findViewById(R.id.searchViewChatList);
@@ -115,6 +124,9 @@ public class ListStatusFragment extends Fragment {
             }
         });
         imageViewProfileImage=view.findViewById(R.id.imageViewProfileImage);
+        CircularStatusView circularStatusView = view.findViewById(R.id.circular_status_view);
+        circularStatusView.setPortionsCount(2);
+        circularStatusView.setPortionsColor(getResources().getColor(R.color.colorPrimaryone));
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         spaceNavigationView = getActivity().findViewById(R.id.space);
         spaceNavigationView.setVisibility(View.VISIBLE);
@@ -125,7 +137,9 @@ public class ListStatusFragment extends Fragment {
         fuser = FirebaseAuth.getInstance().getCurrentUser();
         usersList = new ArrayList<>();
         broadcastList = new ArrayList<>();
-        getChats();
+        pojoStatusList=new ArrayList<>();
+
+        //getChats();
         checkImage();
         getStatusList();
         //getBroadcast();
@@ -174,11 +188,14 @@ public class ListStatusFragment extends Fragment {
                     assert user != null;
 //                    txtName.setText(user.getUsername());
 //                    txtMobile.setText(firebaseUser.getEmail());
+                    strStatusUserName=user.getUsername();
                     if (user.getImageURL().equals("default")) {
                         imageViewProfileImage.setImageResource(R.drawable.image_boy);
                     } else {
                         Glide.with(getActivity()).load(user.getImageURL()).into(imageViewProfileImage);
                     }
+
+
                 } catch (Exception e) {
                     Log.d(TAG,"jigar the exception in image is "+e);
                     e.printStackTrace();
@@ -198,9 +215,12 @@ public class ListStatusFragment extends Fragment {
         return sb.toString();
     }
     public static void uploadNewStatus(final Context context
-            , final String sender, String message, boolean isimage
+            , final String sender,final String strStatusUserName, String message, boolean isimage
             , String uri, String docUri)
     {
+
+//        Log.d(TAG,"jigar the sender name is "+strStatusUserName);
+//        Log.d(TAG,"jigar the sender name is "+strStatusUserName);
 
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Status").push();
         randomString(9);
@@ -218,31 +238,61 @@ public class ListStatusFragment extends Fragment {
         HashMap<String, Object> hashMap = new HashMap<>();
 
         if (AppGlobal.isNetwork(context)) {
-            hashMap.put("id", sb.toString());
-            hashMap.put("sender", sender);
-            hashMap.put("message", message);
-            hashMap.put("issend", true);
-            hashMap.put("isseen", false);
-            hashMap.put("isimage", isimage);
-            hashMap.put("image", uri);
-            hashMap.put("time", ts);
-            hashMap.put("storage_uri", "default");
-            hashMap.put("audio_uri", "default");
-            hashMap.put("doc_uri", docUri);
-            hashMap.put("table_id", reference.getKey());
+
+            hashMap.put(WsConstant.STATUS_ID, sb.toString());
+            hashMap.put(WsConstant.STATUS_SENDER_ID, sender);
+            hashMap.put(WsConstant.STATUS_SENDER_DISPLAY_NAME, strStatusUserName);
+            hashMap.put(WsConstant.STATUS_MESSAGE, message);
+            hashMap.put(WsConstant.STATUS_IS_SEND, true);
+            hashMap.put(WsConstant.STATUS_IS_STATUS_SEEN, false);
+            hashMap.put(WsConstant.STATUS_IS_IMAGE, isimage);
+            hashMap.put(WsConstant.STATUS_IMAGE_URL, uri);
+            hashMap.put(WsConstant.STATUS_UPLOAD_TIME, ts);
+            hashMap.put(WsConstant.STATUS_STORAGE_URI, "default");
+            hashMap.put(WsConstant.STATUS_AUDIO_URI, "default");
+            hashMap.put(WsConstant.STATUS_DOCUMENT_URI, docUri);
+            hashMap.put(WsConstant.STATUS_TABLE_ID, reference.getKey());
+
+
+//            hashMap.put("id", sb.toString());
+//            hashMap.put("sender", sender);
+//            hashMap.put("message", message);
+//            hashMap.put("issend", true);
+//            hashMap.put("isseen", false);
+//            hashMap.put("isimage", isimage);
+//            hashMap.put("image", uri);
+//            hashMap.put("time", ts);
+//            hashMap.put("storage_uri", "default");
+//            hashMap.put("audio_uri", "default");
+//            hashMap.put("doc_uri", docUri);
+//            hashMap.put("table_id", reference.getKey());
         } else {
-            hashMap.put("id", sb.toString());
-            hashMap.put("sender", sender);
-            hashMap.put("message", message);
-            hashMap.put("issend", false);
-            hashMap.put("isseen", false);
-            hashMap.put("isimage", isimage);
-            hashMap.put("image", uri);
-            hashMap.put("time", ts);
-            hashMap.put("table_id", reference.getKey());
-            hashMap.put("audio_uri", "default");
-            hashMap.put("doc_uri", docUri);
-            hashMap.put("storage_uri", "default");
+            hashMap.put(WsConstant.STATUS_ID, sb.toString());
+            hashMap.put(WsConstant.STATUS_SENDER_ID, sender);
+            hashMap.put(WsConstant.STATUS_SENDER_DISPLAY_NAME, strStatusUserName);
+            hashMap.put(WsConstant.STATUS_MESSAGE, message);
+            hashMap.put(WsConstant.STATUS_IS_SEND, false);
+            hashMap.put(WsConstant.STATUS_IS_STATUS_SEEN, false);
+            hashMap.put(WsConstant.STATUS_IS_IMAGE, isimage);
+            hashMap.put(WsConstant.STATUS_IMAGE_URL, uri);
+            hashMap.put(WsConstant.STATUS_UPLOAD_TIME, ts);
+            hashMap.put(WsConstant.STATUS_STORAGE_URI, "default");
+            hashMap.put(WsConstant.STATUS_AUDIO_URI, "default");
+            hashMap.put(WsConstant.STATUS_DOCUMENT_URI, docUri);
+            hashMap.put(WsConstant.STATUS_TABLE_ID, reference.getKey());
+
+//            hashMap.put("id", sb.toString());
+//            hashMap.put("sender", sender);
+//            hashMap.put("message", message);
+//            hashMap.put("issend", false);
+//            hashMap.put("isseen", false);
+//            hashMap.put("isimage", isimage);
+//            hashMap.put("image", uri);
+//            hashMap.put("time", ts);
+//            hashMap.put("table_id", reference.getKey());
+//            hashMap.put("audio_uri", "default");
+//            hashMap.put("doc_uri", docUri);
+//            hashMap.put("storage_uri", "default");
         }
         reference.setValue(hashMap);
     }
@@ -298,7 +348,7 @@ public class ListStatusFragment extends Fragment {
                         Uri downloadUri = task.getResult();
                         String mUri = downloadUri.toString();
 
-                        uploadNewStatus(getActivity(), fuser.getUid(), "Image", true, mUri, "default");
+                        uploadNewStatus(getActivity(), fuser.getUid(),strStatusUserName, "Image", true, mUri, "default");
 //                        public static void uploadNewStatus(final Context context
 //            , final String sender, String message, boolean isimage
 //            , String uri, String docUri)
@@ -351,34 +401,34 @@ public class ListStatusFragment extends Fragment {
      //   mSendEventListner = valueEventListener;
     }
 
-    public void getChats() {
-        reference = FirebaseDatabase.getInstance().getReference("Chatlist").child(fuser.getUid());
-        reference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                try {
-                    usersList.clear();
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        chatlist = snapshot.getValue(Chatlist.class);
-
-                        if (!("group".equalsIgnoreCase(snapshot.getKey()) || ("broadcast".equalsIgnoreCase(snapshot.getKey())))) {
-                            Log.d(TAG,"jigar the message snapshot have "+ snapshot.getValue() + "//" + chatlist);
-                            usersList.add(chatlist);
-                        }
-                    }
-                    chatList();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {}
-
-        });
-    }
+//    public void getChats() {
+//        reference = FirebaseDatabase.getInstance().getReference("Chatlist").child(fuser.getUid());
+//        reference.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                try {
+//                    usersList.clear();
+//                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+//                        chatlist = snapshot.getValue(Chatlist.class);
+//
+//                        if (!("group".equalsIgnoreCase(snapshot.getKey()) || ("broadcast".equalsIgnoreCase(snapshot.getKey())))) {
+//                            Log.d(TAG,"jigar the message snapshot have "+ snapshot.getValue() + "//" + chatlist);
+//                            usersList.add(chatlist);
+//                        }
+//                    }
+//                    chatList();
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {}
+//
+//        });
+//    }
 
     public void getStatusList() {
-        reference = FirebaseDatabase.getInstance().getReference("Status").child(fuser.getUid());
+        reference = FirebaseDatabase.getInstance().getReference("Status");
         Log.d(TAG,"jigar the url of status list we have "+ reference);
 
 //        https://shreem-connect-814a3.firebaseio.com/Status
@@ -386,14 +436,45 @@ public class ListStatusFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 try {
-                  //  usersList.clear();
+                    pojoStatusList.clear();
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                 //       chatlist = snapshot.getValue(Chatlist.class);
-                       // if (!("group".equalsIgnoreCase(snapshot.getKey()) || ("broadcast".equalsIgnoreCase(snapshot.getKey())))) {
-                            Log.d(TAG,"jigar the status list have "+ snapshot.getValue() + "//" + chatlist);
-           //                 usersList.add(chatlist);//}
+                        pojoStatus = snapshot.getValue(POJOStatus.class);
+                        // if (!("group".equalsIgnoreCase(snapshot.getKey()) || ("broadcast".equalsIgnoreCase(snapshot.getKey())))) {
+                        Log.d(TAG,"jigar the status list have "+ snapshot.getValue() + "//" + pojoStatus.getImageUrl());
+                        pojoStatusList.add(pojoStatus);//}
+
+//                        if(!arrayListFilteredSenderID.contains(pojoStatus.getSenderID()))
+//                        {
+//                            arrayListFilteredSenderID.add(pojoStatus.getSenderID());
+//                            pojoStatusList.add(pojoStatus);//}
+//
+//                        }else
+//                        {
+//                            int intIndexPosition= arrayListFilteredSenderID.indexOf(pojoStatus.getSenderID());
+//                            String strImageUrlList=pojoStatusList.get(intIndexPosition).getImageUrl();
+//                            strImageUrlList=strImageUrlList+","+pojoStatus.getImageUrl();
+//                            //arrayListStatusImageList.add(intIndexPosition,strImageUrlList);
+////                            pojoStatus.set
+//                            pojoStatus.setImageUrl(strImageUrlList);
+//                            pojoStatusList.remove(intIndexPosition);
+//                            pojoStatusList.add(pojoStatus);//}
+//                        }
+                        Log.d(TAG,"jigar the status image list have "+ pojoStatus.getImageUrl());
+                        Log.d(TAG,"jigar the status sender name have "+ pojoStatus.getSenderDisplayName());
+                        Log.d(TAG,"jigar the status sender time have "+ pojoStatus.getTime());
+                        Log.d(TAG,"jigar the status count have "+ pojoStatusList.size());
+
+                        //                        for (String list : broadcastList) {
+//                            assert user != null;
+//                            if (user.getBroadcastId().equals(list)) {
+//                                mBroadcast.add(user);
+//                            }
+//                        }
                     }
-           //         chatList();
+                    statusAdapter = new StatusAdapter(getContext(), pojoStatusList);
+                    recyclerView.setAdapter(statusAdapter);
+
+                    //         chatList();
                 } catch (Exception e) {
                     Log.d(TAG,"jigar the status exception have "+e);
                     e.printStackTrace();
@@ -409,30 +490,30 @@ public class ListStatusFragment extends Fragment {
 
     }
 
-    public void getBroadcast() {
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Chatlist").child(fuser.getUid()).child("broadcast");
-        reference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                try {
-                    broadcastList.clear();
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        broadcastList.add(snapshot.getKey());
-                        Log.d(TAG,"jigar the message from broad cast chat list  have " );
-
-                    }
-                    broadcastList();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-    }
+//    public void getBroadcast() {
+//        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Chatlist").child(fuser.getUid()).child("broadcast");
+//        reference.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                try {
+//                    broadcastList.clear();
+//                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+//                        broadcastList.add(snapshot.getKey());
+//                        Log.d(TAG,"jigar the message from broad cast chat list  have " );
+//
+//                    }
+//                    broadcastList();
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
+//    }
 
     private void updateToken(String token) {
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Tokens");
@@ -440,77 +521,77 @@ public class ListStatusFragment extends Fragment {
         reference.child(fuser.getUid()).setValue(token1);
     }
 
-    private void chatList() {
-        mUsers = new ArrayList<>();
-        reference = FirebaseDatabase.getInstance().getReference("Users");
-        reference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                try {
-                    mUsers.clear();
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        User user = snapshot.getValue(User.class);
-                        String strUserChatID=chatlist.getId();
-
-                        for (Chatlist chatlist : usersList) {
-                            assert user != null;
-
-                            if (chatlist.getId().equalsIgnoreCase(user.getId())) {
-                                mUsers.add(user);
-                                strUserChatID=strUserChatID+","+chatlist.getId();
-                            }
-                            Log.d(TAG,"jigar the message chat list  have "+ strUserChatID);
-
-                        }
-                    }
-                    statusAdapter = new StatusAdapter(getContext(), mUsers, mBroadcast, true, true);
-//                    statusAdapter = new UserAdapter(getContext(),spaceNavigationView, mUsers, mBroadcast, true, true);
-                    WsConstant.check = "fragment";
-                    setAdapter(statusAdapter);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-        });
-    }
-
-    private void broadcastList() {
-        mBroadcast = new ArrayList<>();
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Broadcast");
-        reference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                try {
-                    mBroadcast.clear();
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        BroadcastUser user = snapshot.getValue(BroadcastUser.class);
-                        for (String list : broadcastList) {
-                            assert user != null;
-                            if (user.getBroadcastId().equals(list)) {
-                                mBroadcast.add(user);
-                            }
-                        }
-                    }
-//                    broadcastAdapter = new UserAdapter(getContext(), mUsers, mBroadcast, true, false);
+//    private void chatList() {
+//        pojoStatuses = new ArrayList<>();
+//        reference = FirebaseDatabase.getInstance().getReference("Users");
+//        reference.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                try {
+//                    pojoStatuses.clear();
+//                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+//                        User user = snapshot.getValue(User.class);
+//                        String strUserChatID=chatlist.getId();
+//
+//                        for (Chatlist chatlist : usersList) {
+//                            assert user != null;
+//
+//                            if (chatlist.getId().equalsIgnoreCase(user.getId())) {
+//                                pojoStatuses.add(user);
+//                                strUserChatID=strUserChatID+","+chatlist.getId();
+//                            }
+//                            Log.d(TAG,"jigar the message chat list  have "+ strUserChatID);
+//
+//                        }
+//                    }
+//                    statusAdapter = new StatusAdapter(getContext(), pojoStatuses, mBroadcast, true, true);
+////                    statusAdapter = new UserAdapter(getContext(),spaceNavigationView, pojoStatuses, mBroadcast, true, true);
 //                    WsConstant.check = "fragment";
-//                    setAdapter(statusAdapter, broadcastAdapter);
+//                    setAdapter(statusAdapter);
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//            }
+//        });
+//    }
 
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-    }
+//    private void broadcastList() {
+//        mBroadcast = new ArrayList<>();
+//        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Broadcast");
+//        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                try {
+//                    mBroadcast.clear();
+//                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+//                        BroadcastUser user = snapshot.getValue(BroadcastUser.class);
+//                        for (String list : broadcastList) {
+//                            assert user != null;
+//                            if (user.getBroadcastId().equals(list)) {
+//                                mBroadcast.add(user);
+//                            }
+//                        }
+//                    }
+////                    broadcastAdapter = new UserAdapter(getContext(), pojoStatuses, mBroadcast, true, false);
+////                    WsConstant.check = "fragment";
+////                    setAdapter(statusAdapter, broadcastAdapter);
+//
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
+//    }
 
     public void setAdapter(StatusAdapter userAdapter) {
 
@@ -520,7 +601,7 @@ public class ListStatusFragment extends Fragment {
             task_list.setVisibility(View.GONE);
             no_chat.setVisibility(View.VISIBLE);
         } else {
-            recyclerView.setAdapter(userAdapter);
+            recyclerView.setAdapter(statusAdapter);
             recyclerView.addItemDecoration(new DividerItemDecoration(getContext(),
                     DividerItemDecoration.VERTICAL));
 //            recycler_view1.setAdapter(broadcastAdapter);
@@ -564,4 +645,18 @@ public class ListStatusFragment extends Fragment {
         }*/
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        final InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        final InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);
+
+    }
 }

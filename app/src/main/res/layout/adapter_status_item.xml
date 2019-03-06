@@ -13,10 +13,14 @@
         android:layout_height="wrap_content"
         android:layout_weight="0">
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/profile_image"
-            android:layout_width="48dp"
-            android:layout_height="48dp" />
+            android:layout_width="54dp"
+            android:layout_height="54dp" />
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/img_on"
@@ -41,6 +45,16 @@
             app:layout_constraintEnd_toEndOf="parent"
             tools:ignore="MissingConstraints" />
 
+        <com.devlomi.circularstatusview.CircularStatusView
+            android:id="@+id/circular_status_view"
+            android:layout_width="55dp"
+            android:layout_height="55dp"
+            android:layout_centerInParent="true"
+            app:portion_color="@color/colorPrimaryone"
+            app:portion_spacing="7dp"
+            app:portion_width="3dp"
+            app:portions_count="4" />
+        </RelativeLayout>
     </android.support.constraint.ConstraintLayout>
 
 

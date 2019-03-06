@@ -85,6 +85,10 @@ dependencies {
     //badge
     implementation 'com.github.minibugdev:drawablebadge:1.0.3'
 
+    //whatsapp stories progressbar
+    implementation 'com.github.shts:StoriesProgressView:3.0.0'
+    implementation 'com.devlomi:circularstatusview:1.0.0'
+
 }
 
 apply plugin: 'com.google.gms.google-services'

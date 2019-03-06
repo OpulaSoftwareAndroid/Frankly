@@ -138,7 +138,6 @@ public class ListChatFragment extends Fragment {
                         }
                     }
                     chatList();
-
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

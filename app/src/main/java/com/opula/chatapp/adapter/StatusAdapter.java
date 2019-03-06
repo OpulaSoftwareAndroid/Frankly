@@ -1,6 +1,8 @@
 package com.opula.chatapp.adapter;
 
+import android.app.ActivityOptions;
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -17,6 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.devlomi.circularstatusview.CircularStatusView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -27,13 +30,13 @@ import com.google.firebase.database.ValueEventListener;
 import com.luseen.spacenavigation.SpaceNavigationView;
 import com.opula.chatapp.MainActivity;
 import com.opula.chatapp.R;
+import com.opula.chatapp.activity.MainShowStatusActivity;
 import com.opula.chatapp.constant.SharedPreference;
 import com.opula.chatapp.constant.WsConstant;
-import com.opula.chatapp.fragments.BroadcastMessageFragment;
-import com.opula.chatapp.fragments.MessageFragment;
-import com.opula.chatapp.fragments.UserProfileFragment;
+import com.opula.chatapp.fragments.ShowStatusFragment;
 import com.opula.chatapp.model.BroadcastUser;
 import com.opula.chatapp.model.Chat;
+import com.opula.chatapp.model.POJOStatus;
 import com.opula.chatapp.model.User;
 
 import java.security.MessageDigest;
@@ -43,7 +46,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
-import java.util.concurrent.TimeUnit;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
@@ -51,30 +53,43 @@ import javax.crypto.spec.SecretKeySpec;
 public class StatusAdapter extends RecyclerView.Adapter<StatusAdapter.ViewHolder> implements Filterable {
 
     private Context mContext;
-    private List<User> mUsers;
-    private List<User> mUsersFilteredList;
-    SpaceNavigationView spaceNavigationView;
-    private List<BroadcastUser> mBroadcast;
-    private boolean ischat, is;
+    private  ArrayList<String> arrayListStatusSenderID;
+    private  ArrayList<String> arrayListStatusImageList;
+
+    private List<POJOStatus> pojoStatusList;
+    private List<POJOStatus> mStatusFilteredList;
+  //  SpaceNavigationView spaceNavigationView;
+    // private boolean ischat, is;
     SharedPreference sharedPreference;
     private int intNotificationCount=0;
     String theLastMessage, thetime;
     ArrayList<String> arrayListUserName;
     String AES = "AES";
     static String TAG="UserAdapter";
-    ArrayList <String> arrayListUserLastMessageTime;
-    public StatusAdapter(Context mContext, List<User> mUsers, List<BroadcastUser> mBroadcast, boolean ischat, boolean is) {
-        this.mUsers = mUsers;
-        this.mUsersFilteredList = mUsers;
-        this.mBroadcast = mBroadcast;
+
+  //  ArrayList <String> arrayListUserLastMessageTime;
+//    public StatusAdapter(Context mContext, List<POJOStatus> mUsers, List<BroadcastUser> mBroadcast, boolean ischat, boolean is) {
+//        this.pojoStatusList = mUsers;
+//        this.mStatusFilteredList = mUsers;
+//     //   this.mBroadcast = mBroadcast;
+//        this.mContext = mContext;
+////        this.ischat = ischat;
+////        this.is = is;
+//    //    arrayListUserLastMessageTime=new ArrayList<>();
+//    }
+
+    public StatusAdapter(Context mContext, List<POJOStatus> mPojoStatusList) {
+        this.pojoStatusList = mPojoStatusList;
+        this.mStatusFilteredList = mPojoStatusList;
         this.mContext = mContext;
-        this.ischat = ischat;
-        this.is = is;
-        arrayListUserLastMessageTime=new ArrayList<>();
+        arrayListStatusSenderID=new ArrayList<>();
+        arrayListStatusImageList=new ArrayList<>();
+
+//       Log.d(TAG,"jigar the adapter filter constructor have "+mStatusFilteredList.get(0).getSenderDisplayName());
     }
-//    public UserAdapter(Context mContext,SpaceNavigationView spaceNavigationView, List<User> mUsers, List<BroadcastUser> mBroadcast, boolean ischat, boolean is) {
-//        this.mUsers = mUsers;
-//        this.mUsersFilteredList = mUsers;
+//    public UserAdapter(Context mContext,SpaceNavigationView spaceNavigationView, List<User> pojoStatusList, List<BroadcastUser> mBroadcast, boolean ischat, boolean is) {
+//        this.pojoStatusList = pojoStatusList;
+//        this.mStatusFilteredList = pojoStatusList;
 //        this.mBroadcast = mBroadcast;
 //        this.mContext = mContext;
 //        this.ischat = ischat;
@@ -90,59 +105,120 @@ public class StatusAdapter extends RecyclerView.Adapter<StatusAdapter.ViewHolder
         return new StatusAdapter.ViewHolder(view);
     }
 
+
     @Override
-    public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull StatusAdapter.ViewHolder holder, final int position) {
 
-        sharedPreference = new SharedPreference();
 
-        if (is) {
-            final User user = mUsersFilteredList.get(position);
-            String strUserName=user.getUsername();
+    sharedPreference = new SharedPreference();
+
+        //if (is)
+        {
+            final POJOStatus user = mStatusFilteredList.get(position);
+            String strUserName=user.getSenderDisplayName();
             strUserName = strUserName.substring(0,1).toUpperCase() + strUserName.substring(1);
 //            holder.username.setText(user.getUsername());
             holder.username.setText(strUserName);
-
-
-            if (user.getImageURL().equals("default")) {
+            Log.d(TAG,"jigar the status adapter list image is "+user.getImageUrl());
+            if (user.getImageUrl().equals("default")) {
                 holder.profile_image.setImageResource(R.drawable.image_boy);
             } else {
-                Glide.with(mContext).load(user.getImageURL()).into(holder.profile_image);
+                Glide.with(mContext).load(user.getImageUrl()).into(holder.profile_image);
+            }
+            long longCurrentTime=System.currentTimeMillis();
+            long longStatusTime=Long.valueOf(user.getTime())*1000;
+            long longDifferenceTime=longCurrentTime-longStatusTime;
+            long seconds = longDifferenceTime / 1000;
+            long longStatusAgoSeconds = seconds % 60;
+            long longStatusAgoMinute = (seconds / 60) % 60;
+            long longStatusAgoHour = (seconds / (60 * 60)) % 24;
+
+            Log.d(TAG,"jigar the current time is " +longCurrentTime );
+            Log.d(TAG,"jigar the statuss time is " +longStatusTime);
+            Log.d(TAG,"jigar the differr time is " +longStatusAgoHour);
+
+            if(longStatusAgoHour>0)
+            {
+                holder. textViewStatusTime.setText(longStatusAgoHour+"h Ago");
+            }else if(longStatusAgoMinute>0)
+            {
+                holder. textViewStatusTime.setText(longStatusAgoMinute+"m Ago");
+            }
+            else if(longStatusAgoSeconds>0)
+            {
+                holder. textViewStatusTime.setText(longStatusAgoSeconds+" Sec Ago");
             }
 
-            if (ischat) {
-                lastMessage(mUsersFilteredList,position,user.getId(), holder.textViewStatus,holder.textViewUnreadBadge);
-            } else {
-                holder.textViewStatus.setVisibility(View.GONE);
+            if(!arrayListStatusSenderID.contains(user.getSenderID()))
+            {
+
+                arrayListStatusSenderID.add(user.getSenderID());
+                arrayListStatusImageList.add(user.getImageUrl());
+
+                holder.circularStatusView.setPortionsCount(arrayListStatusImageList.size());
+
+
+            } else
+            {
+                //mStatusFilteredList.remove(position);
+               int intIndexPosition= arrayListStatusSenderID.indexOf(user.getSenderID());
+               String strImageUrlList=arrayListStatusImageList.get(intIndexPosition);
+               strImageUrlList=strImageUrlList+","+user.getImageUrl();
+               arrayListStatusImageList.add(intIndexPosition,strImageUrlList);
+               holder.circularStatusView.setPortionsCount(arrayListStatusImageList.size());
             }
+            Log.d(TAG,"jigar the status adapter list image url we have "+ arrayListStatusImageList.size()
+                    +" and "+arrayListStatusImageList.toString());
 
-//            Log.d(TAG,"jigar the last time message is "+holder.time.getText().toString());
 
-            if (ischat) {
-                if (user.getStatus().equals("online")) {
-                    holder.img_on.setVisibility(View.VISIBLE);
-                    holder.img_off.setVisibility(View.GONE);
-                } else {
-                    holder.img_on.setVisibility(View.GONE);
-                    holder.img_off.setVisibility(View.VISIBLE);
-                }
-            } else {
-                holder.img_on.setVisibility(View.GONE);
-                holder.img_off.setVisibility(View.GONE);
-            }
+//                                String hms = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(longDifferenceTime),
+//                                        TimeUnit.MILLISECONDS.toMinutes(longDifferenceTime) % TimeUnit.HOURS.toMinutes(1),
+//                                        TimeUnit.MILLISECONDS.toSeconds(longDifferenceTime) % TimeUnit.MINUTES.toSeconds(1));
+            //holder.textViewStatusTime.setText(user.getTime());
 
-//            holder.click_layout.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//                    MainActivity.hideFloatingActionButton();
-//                    sharedPreference.save(mContext, user.getId(), WsConstant.userId);
-////                    MainActivity.checkChatTheme(mContext);
-//                    MainActivity.showpart1();
+
+//            if (ischat) {
+//           //     lastMessage(mStatusFilteredList,position,user.getId(), holder.textViewStatus,holder.textViewUnreadBadge);
+//            } else {
+//                holder.textViewStatus.setVisibility(View.GONE);
+//            }
+            //            Log.d(TAG,"jigar the last time message is "+holder.time.getText().toString());
+
+//            if (ischat) {
+//                if (user.getStatus().equals("online"))
+//                {
+//                    holder.img_on.setVisibility(View.VISIBLE);
+//                    holder.img_off.setVisibility(View.GONE);
+//                } else {
+//                    holder.img_on.setVisibility(View.GONE);
+//                    holder.img_off.setVisibility(View.VISIBLE);
+//                }
+//            } else {
+//                holder.img_on.setVisibility(View.GONE);
+//                holder.img_off.setVisibility(View.GONE);
+//            }
+            holder.click_layout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    MainActivity.hideFloatingActionButton();
+                    sharedPreference.save(mContext, user.getId(), WsConstant.userId);
+//                    MainActivity.checkChatTheme(mContext);
+                    MainActivity.showpart1();
+
+//                    ArrayList<String> arrayListStatusImageUrl=new ArrayList<>();
+//                    arrayListStatusImageUrl.add(user.getImageUrl());
+                    Intent myIntent = new Intent(mContext, MainShowStatusActivity.class);
+                    myIntent.putExtra(WsConstant.STATUS_IMAGE_URL,arrayListStatusImageList.get(position));
+                    ActivityOptions options =
+                            ActivityOptions.makeCustomAnimation(mContext, R.anim.fade_in, R.anim.fade_out);
+                    mContext.startActivity(myIntent, options.toBundle());
+                  //  mContext.startActivity(myIntent);
 //                    holder.textViewUnreadBadge.setVisibility(View.GONE);
 //                    FragmentManager fragmentManager = ((FragmentActivity) mContext).getSupportFragmentManager();
-//                    fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new MessageFragment()).addToBackStack(null).commit();
-//
-//                }
-//            });
+//                    fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new ShowStatusFragment()).addToBackStack(null).commit();
+
+                }
+            });
 //
 //            holder.profile_image.setOnClickListener(new View.OnClickListener() {
 //                @Override
@@ -156,48 +232,47 @@ public class StatusAdapter extends RecyclerView.Adapter<StatusAdapter.ViewHolder
 //
 //                }
 //            });
-
-        } else {
-
-            final BroadcastUser user = mBroadcast.get(position);
-            holder.username.setText(user.getBroadcastName());
-
-            holder.profile_image.setImageResource(R.drawable.broadcast);
-
-            if (ischat) {
-                Log.d(TAG,"jigar the broadcast is called  "+user.getBroadcastId());
-
-//                lastMessageBroadcast(user.getBroadcastId(), holder.textViewStatus, holder.time);
-            } else {
-                holder.textViewStatus.setVisibility(View.GONE);
-            }
-            holder.click_layout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    MainActivity.hideFloatingActionButton();
-                    sharedPreference.save(mContext, user.getBroadcastId(), WsConstant.broadcastId);
-                    holder.textViewUnreadBadge.setVisibility(View.GONE);
-//                    MainActivity.checkChatTheme(mContext);
-                    MainActivity.showpart1();
-                    FragmentManager fragmentManager = ((FragmentActivity) mContext).getSupportFragmentManager();
-                    fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new BroadcastMessageFragment()).addToBackStack(null).commit();
-                }
-            });
         }
+//        else {
+//
+//            final BroadcastUser user = mBroadcast.get(position);
+//            holder.username.setText(user.getBroadcastName());
+//
+//            holder.profile_image.setImageResource(R.drawable.broadcast);
+//
+//            if (ischat) {
+//
+////                lastMessageBroadcast(user.getBroadcastId(), holder.textViewStatus, holder.time);
+//            } else {
+//                holder.textViewStatus.setVisibility(View.GONE);
+//            }
+//            holder.click_layout.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    MainActivity.hideFloatingActionButton();
+//                    sharedPreference.save(mContext, user.getBroadcastId(), WsConstant.broadcastId);
+//                    holder.textViewUnreadBadge.setVisibility(View.GONE);
+////                    MainActivity.checkChatTheme(mContext);
+//                    MainActivity.showpart1();
+//                    FragmentManager fragmentManager = ((FragmentActivity) mContext).getSupportFragmentManager();
+//                    fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new BroadcastMessageFragment()).addToBackStack(null).commit();
+//                }
+//            });
+//        }
 
 
     }
 
     @Override
     public int getItemCount() {
-        if (is) {
-//            return mUsers.size();
-            return mUsersFilteredList.size();
-
-        } else {
-            return mBroadcast.size();
-        }
+//        if (is) {
+//            return pojoStatusList.size();
+        return mStatusFilteredList.size();
     }
+//        else {
+//            return mBroadcast.size();
+//        }
+
     @Override
     public Filter getFilter() {
         return new Filter() {
@@ -205,33 +280,33 @@ public class StatusAdapter extends RecyclerView.Adapter<StatusAdapter.ViewHolder
             protected FilterResults performFiltering(CharSequence charSequence) {
                 String charString = charSequence.toString();
                 if (charString.isEmpty()) {
-                    mUsersFilteredList = mUsers;
+                    mStatusFilteredList = pojoStatusList;
                 } else {
-                    List<User> filteredList = new ArrayList<>();
-                    for (User row : mUsers) {
+                    List<POJOStatus> filteredList = new ArrayList<>();
+                    for (POJOStatus row : pojoStatusList) {
 
                         // name match condition. this might differ depending on your requirement
                         // here we are looking for name or phone number match
                         Log.d(TAG,"jigar the query for search is "+charString.toString());
 
-                        if (row.getUsername().toLowerCase().contains(charString.toLowerCase())) {
-                            filteredList.add(row);
-                            Log.d(TAG,"jigar the query match for search is "+row.getUsername());
-
-                        }
+//                        if (row.getUsername().toLowerCase().contains(charString.toLowerCase())) {
+//                            filteredList.add(row);
+//                            Log.d(TAG,"jigar the query match for search is "+row.getUsername());
+//
+//                        }
                     }
 
-                    mUsersFilteredList = filteredList;
+                    mStatusFilteredList = filteredList;
                 }
 
                 FilterResults filterResults = new FilterResults();
-                filterResults.values = mUsersFilteredList;
+                filterResults.values = mStatusFilteredList;
                 return filterResults;
             }
 
             @Override
             protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-                mUsersFilteredList = (ArrayList<User>) filterResults.values;
+                mStatusFilteredList = (ArrayList<POJOStatus>) filterResults.values;
 
                 // refresh the list with filtered data
                 notifyDataSetChanged();
@@ -244,8 +319,9 @@ public class StatusAdapter extends RecyclerView.Adapter<StatusAdapter.ViewHolder
         public ImageView profile_image;
         private ImageView img_on;
         private ImageView img_off;
-        private TextView textViewStatus,textViewUnreadBadge;
+        private TextView textViewStatusTime,textViewUnreadBadge;
         LinearLayout click_layout;
+        CircularStatusView circularStatusView;
         SpaceNavigationView spaceNavigationView;
         public ViewHolder(View itemView) {
             super(itemView);
@@ -254,9 +330,10 @@ public class StatusAdapter extends RecyclerView.Adapter<StatusAdapter.ViewHolder
             profile_image = itemView.findViewById(R.id.profile_image);
             img_on = itemView.findViewById(R.id.img_on);
             img_off = itemView.findViewById(R.id.img_off);
-            textViewStatus = itemView.findViewById(R.id.textViewStatusTime);
-             click_layout = itemView.findViewById(R.id.click_layout);
+            textViewStatusTime = itemView.findViewById(R.id.textViewStatusTime);
+            click_layout = itemView.findViewById(R.id.click_layout);
             textViewUnreadBadge=itemView.findViewById(R.id.textViewUnreadBadge);
+            circularStatusView=itemView.findViewById(R.id.circular_status_view);
 
         }
     }
@@ -311,7 +388,7 @@ public class StatusAdapter extends RecyclerView.Adapter<StatusAdapter.ViewHolder
                                 }
 
 //                                textViewStatusTime.setText(tiime);
-                                arrayListUserLastMessageTime.add(tiime);
+                       //         arrayListUserLastMessageTime.add(tiime);
 //                                Log.d(TAG,"jigar the user last message list have is "
 //                                        +arrayListUserLastMessageTime.toString()+"and user is "+userid);
                                 //                                items.removeAt(currentPosition).also {
