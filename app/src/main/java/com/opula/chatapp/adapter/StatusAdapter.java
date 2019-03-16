@@ -204,8 +204,7 @@ public class StatusAdapter extends RecyclerView.Adapter<StatusAdapter.ViewHolder
                     sharedPreference.save(mContext, user.getId(), WsConstant.userId);
 //                    MainActivity.checkChatTheme(mContext);
                     MainActivity.showpart1();
-
-//                    ArrayList<String> arrayListStatusImageUrl=new ArrayList<>();
+                    //                    ArrayList<String> arrayListStatusImageUrl=new ArrayList<>();
 //                    arrayListStatusImageUrl.add(user.getImageUrl());
                     Intent myIntent = new Intent(mContext, MainShowStatusActivity.class);
                     myIntent.putExtra(WsConstant.STATUS_IMAGE_URL,arrayListStatusImageList.get(position));
@@ -216,10 +215,9 @@ public class StatusAdapter extends RecyclerView.Adapter<StatusAdapter.ViewHolder
 //                    holder.textViewUnreadBadge.setVisibility(View.GONE);
 //                    FragmentManager fragmentManager = ((FragmentActivity) mContext).getSupportFragmentManager();
 //                    fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new ShowStatusFragment()).addToBackStack(null).commit();
-
                 }
             });
-//
+            //
 //            holder.profile_image.setOnClickListener(new View.OnClickListener() {
 //                @Override
 //                public void onClick(View view) {
@@ -233,7 +231,7 @@ public class StatusAdapter extends RecyclerView.Adapter<StatusAdapter.ViewHolder
 //                }
 //            });
         }
-//        else {
+        //        else {
 //
 //            final BroadcastUser user = mBroadcast.get(position);
 //            holder.username.setText(user.getBroadcastName());
@@ -259,8 +257,6 @@ public class StatusAdapter extends RecyclerView.Adapter<StatusAdapter.ViewHolder
 //                }
 //            });
 //        }
-
-
     }
 
     @Override
@@ -459,6 +455,7 @@ public class StatusAdapter extends RecyclerView.Adapter<StatusAdapter.ViewHolder
             }
         });
     }
+
     public static String convertSecondsToHMmSs(long seconds) {
         long s = seconds % 60;
         long m = (seconds / 60) % 60;

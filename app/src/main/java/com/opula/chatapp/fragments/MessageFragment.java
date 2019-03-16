@@ -940,6 +940,8 @@ public class MessageFragment extends Fragment {
             hashMap.put("audio_uri", "default");
             hashMap.put("doc_uri", docUri);
             hashMap.put("table_id", reference.getKey());
+            hashMap.put("isstatus", "0");
+
         } else {
             hashMap.put("id", sb.toString());
             hashMap.put("to", "personal");
@@ -958,6 +960,8 @@ public class MessageFragment extends Fragment {
             hashMap.put("audio_uri", "default");
             hashMap.put("doc_uri", docUri);
             hashMap.put("storage_uri", "default");
+            hashMap.put("isstatus", "0");
+
         }
         reference.setValue(hashMap);
 
