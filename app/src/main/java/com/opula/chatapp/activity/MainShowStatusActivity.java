@@ -37,6 +37,7 @@ public class MainShowStatusActivity extends AppCompatActivity implements Stories
 //            R.drawable.avatar,
 //            R.drawable.avatar,
 //    };
+
     private  String[] resources = new String[]{};
 
     private final long[] durations = new long[]{
@@ -85,10 +86,11 @@ public class MainShowStatusActivity extends AppCompatActivity implements Stories
 //
 //
 //        }
-                resources = new String[]{
-                        strStatusImage
-                };
-//                R.drawable.avatar,
+
+        resources = new String[]{
+                strStatusImage
+        };
+                //                R.drawable.avatar,
 //                R.drawable.avatar,
 //                R.drawable.avatar,
 //                R.drawable.avatar,
@@ -139,12 +141,12 @@ public class MainShowStatusActivity extends AppCompatActivity implements Stories
 
     @Override
     public void onNext() {
-//         image.setImageResource(resources[++counter]);
+        //         image.setImageResource(resources[++counter]);
 //        Picasso.get().load(resources[counter]).into(image);
 
         Picasso.get().load(arrayListStatusImageUrl.get(++counter))
     //            .placeholder(R.drawable.image_blur_place_holder)
-                .into(image);
+                     .into(image);
 
 
     }
@@ -155,7 +157,7 @@ public class MainShowStatusActivity extends AppCompatActivity implements Stories
         Picasso.get().load(arrayListStatusImageUrl.get(--counter))
           //      .placeholder(R.drawable.image_blur_place_holder)
                 .into(image);
-//        storiesProgressView.pause();
+        //        storiesProgressView.pause();
 //        counter=counter--;
 //        Picasso.get()
 //                .load(arrayListStatusImageUrl.get(--counter))

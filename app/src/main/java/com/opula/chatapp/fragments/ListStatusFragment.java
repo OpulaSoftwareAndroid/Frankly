@@ -34,6 +34,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.storage.FirebaseStorage;
@@ -180,6 +181,7 @@ public class ListStatusFragment extends Fragment {
     }
     private void checkImage() {
         reference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
+
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -323,15 +325,16 @@ public class ListStatusFragment extends Fragment {
         pd.setMessage("Uploading...");
         pd.show();
         pd.setCancelable(false);
+        final String[] mUri = new String[1];
 
 
         if (mImageUri != null) {
             storageReference = FirebaseStorage.getInstance().getReference("Status");
 
-            final StorageReference fileReference = storageReference.child(System.currentTimeMillis()
-                    + "." + getFileExtension(mImageUri));
+            final StorageReference[] fileReference = {storageReference.child(System.currentTimeMillis()
+                    + "." + getFileExtension(mImageUri))};
 
-            uploadTask = fileReference.putFile(mImageUri);
+            uploadTask = fileReference[0].putFile(mImageUri);
             uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
                 @Override
                 public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
@@ -339,16 +342,18 @@ public class ListStatusFragment extends Fragment {
                         throw task.getException();
                     }
 
-                    return fileReference.getDownloadUrl();
+                    return fileReference[0].getDownloadUrl();
                 }
             }).addOnCompleteListener(new OnCompleteListener<Uri>() {
                 @Override
                 public void onComplete(@NonNull Task<Uri> task) {
                     if (task.isSuccessful()) {
                         Uri downloadUri = task.getResult();
-                        String mUri = downloadUri.toString();
+                        mUri[0] = downloadUri.toString();
 
-                        uploadNewStatus(getActivity(), fuser.getUid(),strStatusUserName, "Image", true, mUri, "default");
+//                        uploadNewStatus(getActivity(), fuser.getUid(),strStatusUserName, "Image", true, mUri[0]
+//                                , "default");
+//
 //                        public static void uploadNewStatus(final Context context
 //            , final String sender, String message, boolean isimage
 //            , String uri, String docUri)
@@ -369,6 +374,63 @@ public class ListStatusFragment extends Fragment {
         } else {
             Toast.makeText(getContext(), "No image selected", Toast.LENGTH_SHORT).show();
         }
+            storageReference = FirebaseStorage.getInstance().getReference("Status");
+
+
+           String strCurrentUser= fuser.getUid();
+
+            for(int i=0;i<pojoStatusList.size();i++)
+            {
+                if(strCurrentUser.equals(pojoStatusList.get(i).getSenderID()))
+                {
+                    randomString(9);
+
+                    try {
+                        DatabaseReference databaseReference=FirebaseDatabase.getInstance().getReference("Status").child(fuser.getUid());
+                        HashMap<String, Object> hashMap = new HashMap<>();
+                        Long tsLong = (System.currentTimeMillis() / 1000);
+                        String ts = tsLong.toString();
+                        if (AppGlobal.isNetwork(getContext())) {
+
+                            hashMap.put(WsConstant.STATUS_ID, sb.toString());
+                            hashMap.put(WsConstant.STATUS_SENDER_ID,  fuser.getUid());
+                            hashMap.put(WsConstant.STATUS_SENDER_DISPLAY_NAME, strStatusUserName);
+                            hashMap.put(WsConstant.STATUS_MESSAGE, "Image");
+                            hashMap.put(WsConstant.STATUS_IS_SEND, true);
+                            hashMap.put(WsConstant.STATUS_IS_STATUS_SEEN, false);
+                            hashMap.put(WsConstant.STATUS_IS_IMAGE, true);
+                            hashMap.put(WsConstant.STATUS_IMAGE_URL, pojoStatusList.get(i).getImageUrl()+","+mUri);
+                            hashMap.put(WsConstant.STATUS_UPLOAD_TIME, ts);
+                            hashMap.put(WsConstant.STATUS_STORAGE_URI, "default");
+                            hashMap.put(WsConstant.STATUS_AUDIO_URI, "default");
+                            hashMap.put(WsConstant.STATUS_DOCUMENT_URI, "default");
+                            hashMap.put(WsConstant.STATUS_TABLE_ID, reference.getKey());
+
+
+                        } else {
+                            hashMap.put(WsConstant.STATUS_ID, sb.toString());
+                            hashMap.put(WsConstant.STATUS_SENDER_ID, fuser.getUid());
+                            hashMap.put(WsConstant.STATUS_SENDER_DISPLAY_NAME, strStatusUserName);
+                            hashMap.put(WsConstant.STATUS_MESSAGE, "Image");
+                            hashMap.put(WsConstant.STATUS_IS_SEND, false);
+                            hashMap.put(WsConstant.STATUS_IS_STATUS_SEEN, false);
+                            hashMap.put(WsConstant.STATUS_IS_IMAGE, true);
+                            hashMap.put(WsConstant.STATUS_IMAGE_URL, mUri);
+                            hashMap.put(WsConstant.STATUS_UPLOAD_TIME, ts);
+                            hashMap.put(WsConstant.STATUS_STORAGE_URI, "default");
+                            hashMap.put(WsConstant.STATUS_AUDIO_URI, "default");
+                            hashMap.put(WsConstant.STATUS_DOCUMENT_URI, "default");
+                            hashMap.put(WsConstant.STATUS_TABLE_ID, reference.getKey());
+
+                        }
+                        databaseReference.setValue(hashMap);
+                    } catch (Exception e) {
+                        Log.d(TAG,"jigar the error in database update is "+e);
+                        e.printStackTrace();
+                    }
+                }
+            }
+
     }
 
     public void seenMessage(final String userid) {
@@ -428,6 +490,8 @@ public class ListStatusFragment extends Fragment {
 //    }
 
     public void getStatusList() {
+
+
         reference = FirebaseDatabase.getInstance().getReference("Status");
         Log.d(TAG,"jigar the url of status list we have "+ reference);
 
@@ -442,7 +506,6 @@ public class ListStatusFragment extends Fragment {
                         // if (!("group".equalsIgnoreCase(snapshot.getKey()) || ("broadcast".equalsIgnoreCase(snapshot.getKey())))) {
                         Log.d(TAG,"jigar the status list have "+ snapshot.getValue() + "//" + pojoStatus.getImageUrl());
                         pojoStatusList.add(pojoStatus);//}
-
 //                        if(!arrayListFilteredSenderID.contains(pojoStatus.getSenderID()))
 //                        {
 //                            arrayListFilteredSenderID.add(pojoStatus.getSenderID());
@@ -459,10 +522,13 @@ public class ListStatusFragment extends Fragment {
 //                            pojoStatusList.remove(intIndexPosition);
 //                            pojoStatusList.add(pojoStatus);//}
 //                        }
-                        Log.d(TAG,"jigar the status image list have "+ pojoStatus.getImageUrl());
-                        Log.d(TAG,"jigar the status sender name have "+ pojoStatus.getSenderDisplayName());
-                        Log.d(TAG,"jigar the status sender time have "+ pojoStatus.getTime());
-                        Log.d(TAG,"jigar the status count have "+ pojoStatusList.size());
+
+
+//                        int intIndexPosition= arrayListStatusSenderID.indexOf(user.getSenderID());
+//                        String strImageUrlList=arrayListStatusImageList.get(intIndexPosition);
+//                        strImageUrlList=strImageUrlList+","+user.getImageUrl();
+//                        arrayListStatusImageList.add(intIndexPosition,strImageUrlList);
+//                        holder.circularStatusView.setPortionsCount(arrayListStatusImageList.size());
 
                         //                        for (String list : broadcastList) {
 //                            assert user != null;
@@ -470,10 +536,13 @@ public class ListStatusFragment extends Fragment {
 //                                mBroadcast.add(user);
 //                            }
 //                        }
+                        Log.d(TAG,"jigar the status image list have "+ pojoStatus.getImageUrl());
+                        Log.d(TAG,"jigar the status sender name have "+ pojoStatus.getSenderDisplayName());
+                        Log.d(TAG,"jigar the status sender time have "+ pojoStatus.getTime());
+                        Log.d(TAG,"jigar the status count have "+ pojoStatusList.size());
                     }
-                    statusAdapter = new StatusAdapter(getContext(), pojoStatusList);
+                    statusAdapter = new StatusAdapter(getContext(), pojoStatusList,recyclerView);
                     recyclerView.setAdapter(statusAdapter);
-
                     //         chatList();
                 } catch (Exception e) {
                     Log.d(TAG,"jigar the status exception have "+e);

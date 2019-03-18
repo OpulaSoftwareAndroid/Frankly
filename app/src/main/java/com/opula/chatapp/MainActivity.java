@@ -2,11 +2,15 @@ package com.opula.chatapp;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -22,12 +26,18 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.webkit.MimeTypeMap;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -35,10 +45,17 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.StorageTask;
+import com.google.firebase.storage.UploadTask;
 import com.luseen.spacenavigation.SpaceItem;
 import com.luseen.spacenavigation.SpaceNavigationView;
 import com.luseen.spacenavigation.SpaceOnClickListener;
+import com.mlsdev.rximagepicker.RxImagePicker;
+import com.mlsdev.rximagepicker.Sources;
 import com.opula.chatapp.adapter.MessageAdapter;
+import com.opula.chatapp.constant.AppGlobal;
 import com.opula.chatapp.constant.SharedPreference;
 import com.opula.chatapp.constant.WsConstant;
 import com.opula.chatapp.fragments.ListChatFragment;
@@ -49,6 +66,7 @@ import com.opula.chatapp.fragments.MessageFragment;
 import com.opula.chatapp.fragments.MyProfileFragment;
 import com.opula.chatapp.model.User;
 
+import java.security.SecureRandom;
 import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
@@ -65,6 +83,15 @@ public class MainActivity extends AppCompatActivity {
     public static FloatingActionButton fab;
     public static LinearLayout part1, part2, part3;
     FirebaseUser mUser;
+    private StorageTask uploadTask;
+    public static StringBuilder sb;
+    static final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    static SecureRandom rnd = new SecureRandom();
+
+    String strStatusUserName;
+    StorageReference storageReference;
+    User user;
+
     FirebaseDatabase mFirebaseInstance;
     FirebaseAuth firebaseAuth;
     SharedPreference sharedPreference;
@@ -72,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
     LinearLayout imgBack, imgTrash, imgCopy, imgForward, imgStar;
     public static FirebaseUser fuser;
     private static final int CAMERA_REQUEST = 1888;
+    Uri mImageUri = null;
     private ImageView imageView;
     private static final int MY_CAMERA_PERMISSION_CODE = 100;
     @Override
@@ -124,6 +152,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onCentreButtonClick() {
                 Log.d("onCentreButtonClick ", "onCentreButtonClick");
+                takePhotoFromCamera();
 
             }
             @Override
@@ -204,6 +233,7 @@ public class MainActivity extends AppCompatActivity {
                     sharedPreference.save(MainActivity.this, user.getImageURL(), WsConstant.userImage);
                     Log.d(TAG,"jigar the main chat list  have "+ user.getUsername());
 
+                    strStatusUserName=user.getUsername();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -320,6 +350,185 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void takePhotoFromCamera() {
+        RxImagePicker.with(MainActivity.this).requestImage(Sources.CAMERA).subscribe(new io.reactivex.functions.Consumer<Uri>() {
+            @Override
+            public void accept(@io.reactivex.annotations.NonNull Uri uri) throws Exception {
+                mImageUri = uri;
+                if (uploadTask != null && uploadTask.isInProgress()) {
+                    Toast.makeText(MainActivity.this, "Upload in progress", Toast.LENGTH_SHORT).show();
+                } else {
+                    uploadImage();
+                }
+
+            }
+        });
+
+    }
+    private void checkImage() {
+        reference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                try {
+                    user = dataSnapshot.getValue(User.class);
+                    assert user != null;
+//                    txtName.setText(user.getUsername());
+//                    txtMobile.setText(firebaseUser.getEmail());
+ //                    if (user.getImageURL().equals("default")) {
+//                        imageViewProfileImage.setImageResource(R.drawable.image_boy);
+//                    } else {
+//                        Glide.with(getActivity()).load(user.getImageURL()).into(imageViewProfileImage);
+//                    }
+
+
+                } catch (Exception e) {
+                    Log.d(TAG,"jigar the exception in image is "+e);
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d(TAG,"jigar the datbase error in image is "+databaseError.getMessage());
+            }
+        });
+    }
+    private void uploadImage() {
+        final ProgressDialog pd = new ProgressDialog(this);
+        pd.setMessage("Uploading...");
+        pd.show();
+        pd.setCancelable(false);
+
+
+        if (mImageUri != null) {
+            storageReference = FirebaseStorage.getInstance().getReference("Status");
+
+            final StorageReference fileReference = storageReference.child(System.currentTimeMillis()
+                    + "." + getFileExtension(mImageUri));
+
+            uploadTask = fileReference.putFile(mImageUri);
+            uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                @Override
+                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                    if (!task.isSuccessful()) {
+                        throw task.getException();
+                    }
+
+                    return fileReference.getDownloadUrl();
+                }
+            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                @Override
+                public void onComplete(@NonNull Task<Uri> task) {
+                    if (task.isSuccessful()) {
+                        Uri downloadUri = task.getResult();
+                        String mUri = downloadUri.toString();
+
+
+                        uploadNewStatus(MainActivity.this, fuser.getUid(),strStatusUserName, "Image", true, mUri, "default");
+//                        public static void uploadNewStatus(final Context context
+//            , final String sender, String message, boolean isimage
+//            , String uri, String docUri)
+
+                        pd.dismiss();
+                    } else {
+                        Toast.makeText(MainActivity.this, "Failed!", Toast.LENGTH_SHORT).show();
+                        pd.dismiss();
+                    }
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                    pd.dismiss();
+                }
+            });
+        } else {
+            Toast.makeText(MainActivity.this, "No image selected", Toast.LENGTH_SHORT).show();
+        }
+    }
+    public static void uploadNewStatus(final Context context
+            , final String sender,final String strStatusUserName, String message, boolean isimage
+            , String uri, String docUri)
+    {
+
+//        Log.d(TAG,"jigar the sender name is "+strStatusUserName);
+//        Log.d(TAG,"jigar the sender name is "+strStatusUserName);
+
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Status").push();
+        randomString(9);
+
+        /*String encMessage = null;
+        try {
+            encMessage = encrypt(message,"Jenil");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }*/
+
+        Long tsLong = (System.currentTimeMillis() / 1000);
+        String ts = tsLong.toString();
+
+        HashMap<String, Object> hashMap = new HashMap<>();
+
+        if (AppGlobal.isNetwork(context)) {
+
+            hashMap.put(WsConstant.STATUS_ID, sb.toString());
+            hashMap.put(WsConstant.STATUS_SENDER_ID, sender);
+            hashMap.put(WsConstant.STATUS_SENDER_DISPLAY_NAME, strStatusUserName);
+            hashMap.put(WsConstant.STATUS_MESSAGE, message);
+            hashMap.put(WsConstant.STATUS_IS_SEND, true);
+            hashMap.put(WsConstant.STATUS_IS_STATUS_SEEN, false);
+            hashMap.put(WsConstant.STATUS_IS_IMAGE, isimage);
+            hashMap.put(WsConstant.STATUS_IMAGE_URL, uri);
+            hashMap.put(WsConstant.STATUS_UPLOAD_TIME, ts);
+            hashMap.put(WsConstant.STATUS_STORAGE_URI, "default");
+            hashMap.put(WsConstant.STATUS_AUDIO_URI, "default");
+            hashMap.put(WsConstant.STATUS_DOCUMENT_URI, docUri);
+            hashMap.put(WsConstant.STATUS_TABLE_ID, reference.getKey());
+
+
+//            hashMap.put("id", sb.toString());
+//            hashMap.put("sender", sender);
+//            hashMap.put("message", message);
+//            hashMap.put("issend", true);
+//            hashMap.put("isseen", false);
+//            hashMap.put("isimage", isimage);
+//            hashMap.put("image", uri);
+//            hashMap.put("time", ts);
+//            hashMap.put("storage_uri", "default");
+//            hashMap.put("audio_uri", "default");
+//            hashMap.put("doc_uri", docUri);
+//            hashMap.put("table_id", reference.getKey());
+        } else {
+            hashMap.put(WsConstant.STATUS_ID, sb.toString());
+            hashMap.put(WsConstant.STATUS_SENDER_ID, sender);
+            hashMap.put(WsConstant.STATUS_SENDER_DISPLAY_NAME, strStatusUserName);
+            hashMap.put(WsConstant.STATUS_MESSAGE, message);
+            hashMap.put(WsConstant.STATUS_IS_SEND, false);
+            hashMap.put(WsConstant.STATUS_IS_STATUS_SEEN, false);
+            hashMap.put(WsConstant.STATUS_IS_IMAGE, isimage);
+            hashMap.put(WsConstant.STATUS_IMAGE_URL, uri);
+            hashMap.put(WsConstant.STATUS_UPLOAD_TIME, ts);
+            hashMap.put(WsConstant.STATUS_STORAGE_URI, "default");
+            hashMap.put(WsConstant.STATUS_AUDIO_URI, "default");
+            hashMap.put(WsConstant.STATUS_DOCUMENT_URI, docUri);
+            hashMap.put(WsConstant.STATUS_TABLE_ID, reference.getKey());
+
+//            hashMap.put("id", sb.toString());
+//            hashMap.put("sender", sender);
+//            hashMap.put("message", message);
+//            hashMap.put("issend", false);
+//            hashMap.put("isseen", false);
+//            hashMap.put("isimage", isimage);
+//            hashMap.put("image", uri);
+//            hashMap.put("time", ts);
+//            hashMap.put("table_id", reference.getKey());
+//            hashMap.put("audio_uri", "default");
+//            hashMap.put("doc_uri", docUri);
+//            hashMap.put("storage_uri", "default");
+        }
+        reference.setValue(hashMap);
+    }
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -342,11 +551,22 @@ public class MainActivity extends AppCompatActivity {
         part2.setVisibility(View.GONE);
         part3.setVisibility(View.GONE);
     }
+    private String getFileExtension(Uri uri) {
+        ContentResolver contentResolver = getContentResolver();
+        MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
+        return mimeTypeMap.getExtensionFromMimeType(contentResolver.getType(uri));
+    }
 
     public static void showpart2() {
         part1.setVisibility(View.GONE);
         part2.setVisibility(View.VISIBLE);
         part3.setVisibility(View.GONE);
+    }
+    public static String randomString(int len) {
+        sb = new StringBuilder(len);
+        for (int i = 0; i < len; i++)
+            sb.append(AB.charAt(rnd.nextInt(AB.length())));
+        return sb.toString();
     }
 
     public static void showpart3() {

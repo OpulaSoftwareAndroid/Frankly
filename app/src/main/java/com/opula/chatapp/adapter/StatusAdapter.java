@@ -55,7 +55,9 @@ public class StatusAdapter extends RecyclerView.Adapter<StatusAdapter.ViewHolder
     private Context mContext;
     private  ArrayList<String> arrayListStatusSenderID;
     private  ArrayList<String> arrayListStatusImageList;
+    private  ArrayList<Integer> arrayListStatusToBeRemoved;
 
+    private RecyclerView recyclerViewStatus;
     private List<POJOStatus> pojoStatusList;
     private List<POJOStatus> mStatusFilteredList;
   //  SpaceNavigationView spaceNavigationView;
@@ -78,12 +80,14 @@ public class StatusAdapter extends RecyclerView.Adapter<StatusAdapter.ViewHolder
 //    //    arrayListUserLastMessageTime=new ArrayList<>();
 //    }
 
-    public StatusAdapter(Context mContext, List<POJOStatus> mPojoStatusList) {
+    public StatusAdapter(Context mContext, List<POJOStatus> mPojoStatusList,RecyclerView recyclerViewStatus) {
         this.pojoStatusList = mPojoStatusList;
         this.mStatusFilteredList = mPojoStatusList;
         this.mContext = mContext;
+        this.recyclerViewStatus=recyclerViewStatus;
         arrayListStatusSenderID=new ArrayList<>();
         arrayListStatusImageList=new ArrayList<>();
+        arrayListStatusToBeRemoved=new ArrayList<>();
 
 //       Log.d(TAG,"jigar the adapter filter constructor have "+mStatusFilteredList.get(0).getSenderDisplayName());
     }
@@ -149,27 +153,54 @@ public class StatusAdapter extends RecyclerView.Adapter<StatusAdapter.ViewHolder
                 holder. textViewStatusTime.setText(longStatusAgoSeconds+" Sec Ago");
             }
 
+            Log.d(TAG,"jigar the status upload ALL MAIN list have is " +user.getSenderID()+" and position is "+position);
+
             if(!arrayListStatusSenderID.contains(user.getSenderID()))
             {
-
                 arrayListStatusSenderID.add(user.getSenderID());
                 arrayListStatusImageList.add(user.getImageUrl());
-
                 holder.circularStatusView.setPortionsCount(arrayListStatusImageList.size());
-
-
             } else
             {
                 //mStatusFilteredList.remove(position);
-               int intIndexPosition= arrayListStatusSenderID.indexOf(user.getSenderID());
+                arrayListStatusToBeRemoved.add(arrayListStatusSenderID.indexOf(user.getSenderID()));
+               final int intIndexPosition= arrayListStatusSenderID.indexOf(user.getSenderID());
                String strImageUrlList=arrayListStatusImageList.get(intIndexPosition);
                strImageUrlList=strImageUrlList+","+user.getImageUrl();
                arrayListStatusImageList.add(intIndexPosition,strImageUrlList);
                holder.circularStatusView.setPortionsCount(arrayListStatusImageList.size());
-            }
-            Log.d(TAG,"jigar the status adapter list image url we have "+ arrayListStatusImageList.size()
-                    +" and "+arrayListStatusImageList.toString());
 
+               //              int intIndexToDelete= mStatusFilteredList.indexOf(arrayListStatusSenderID.get(intIndexPosition));
+//               mStatusFilteredList.remove(intIndexToDelete);
+
+               Log.d(TAG,"jigar the status upload from main match list is " +user.getSenderID()+" and position is "+arrayListStatusSenderID.indexOf(user.getSenderID()));
+               Log.d(TAG,"jigar the status upload before index from main match list is " +mStatusFilteredList.indexOf(mStatusFilteredList.get(position).getSenderID())+" and current position is "+position);
+
+                Log.d(TAG,"jigar the status upload match found at " +intIndexPosition
+                       +" and id  is "+arrayListStatusSenderID.get(intIndexPosition));
+           //    mStatusFilteredList.remove(position);
+
+                recyclerViewStatus.post(new Runnable()
+                {
+                    @Override
+                    public void run() {
+                        Log.d(TAG,"jigar the status upload removing list have is " +arrayListStatusToBeRemoved.toString());
+
+                        for(int i=0;i<arrayListStatusToBeRemoved.size();i++)
+                        {
+                            mStatusFilteredList.remove(arrayListStatusToBeRemoved.get(i));
+                            //                        for(int i=0;i<arrayListStatusSenderID.size();i++)
+//                        {
+//                            mStatusFilteredList.remove(arrayListStatusImageList.get(i));
+//                            //                            mStatusFilteredList.remove(1);
+////                            mStatusFilteredList.remove(2);
+                          //  notifyDataSetChanged();
+                        }
+                    }
+                });
+            }
+//            Log.d(TAG,"jigar the status adapter list image url we have "+ arrayListStatusImageList.size()
+//                    +" and "+arrayListStatusImageList.toString());
 
 //                                String hms = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(longDifferenceTime),
 //                                        TimeUnit.MILLISECONDS.toMinutes(longDifferenceTime) % TimeUnit.HOURS.toMinutes(1),
@@ -211,8 +242,9 @@ public class StatusAdapter extends RecyclerView.Adapter<StatusAdapter.ViewHolder
                     ActivityOptions options =
                             ActivityOptions.makeCustomAnimation(mContext, R.anim.fade_in, R.anim.fade_out);
                     mContext.startActivity(myIntent, options.toBundle());
-                  //  mContext.startActivity(myIntent);
+                    //  mContext.startActivity(myIntent);
 //                    holder.textViewUnreadBadge.setVisibility(View.GONE);
+
 //                    FragmentManager fragmentManager = ((FragmentActivity) mContext).getSupportFragmentManager();
 //                    fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new ShowStatusFragment()).addToBackStack(null).commit();
                 }
@@ -269,6 +301,11 @@ public class StatusAdapter extends RecyclerView.Adapter<StatusAdapter.ViewHolder
 //            return mBroadcast.size();
 //        }
 
+    public void removeAt(int position) {
+        mStatusFilteredList.remove(position);
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(position, mStatusFilteredList.size());
+    }
     @Override
     public Filter getFilter() {
         return new Filter() {

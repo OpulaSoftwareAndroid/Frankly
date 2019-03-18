@@ -30,6 +30,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
@@ -47,6 +48,7 @@ import com.devlomi.record_view.RecordView;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -168,13 +170,15 @@ public class MessageFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_message, container, false);
-        if (android.os.Build.VERSION.SDK_INT > 9) {
+        //if (android.os.Build.VERSION.SDK_INT > 9)
+        {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
         }
         // Record to the external cache directory for visibility
+        String strFileName=  randomString(8);
         fileName = Environment.getExternalStorageDirectory().getAbsolutePath();
-        fileName += "/audiorecordtest.3gp";
+        fileName += "/franklyAudio"+strFileName+".3gp";
 
         ActivityCompat.requestPermissions(getActivity(), permissions, REQUEST_RECORD_AUDIO_PERMISSION);
 
@@ -338,6 +342,17 @@ public class MessageFragment extends Fragment {
         recordButton = (RecordButton) rootView.findViewById(R.id.record_button);
         recordButton.setRecordView(recordView);
 
+//        recordButton.setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View view, MotionEvent motionEvent) {
+//                if(motionEvent.getAction()== MotionEvent.ACTION_DOWN)
+//                {
+//
+//                }
+//                else if(motionEvent.getAction()== MotionEvent.ACTION_)
+//                return false;
+//            }
+//        });
         recordView.setOnRecordListener(new OnRecordListener() {
             @Override
             public void onStart() {
@@ -347,8 +362,13 @@ public class MessageFragment extends Fragment {
                 recordView.setVisibility(View.VISIBLE);
                 onRecord(mStartRecording);
                 if (mStartRecording) {
+
+                    Toast.makeText(getContext(),"jigar the start recording started",Toast.LENGTH_LONG).show();
+
 //                    setText("Stop recording");
                 } else {
+                    Toast.makeText(getContext(),"jigar the stop recording stop",Toast.LENGTH_LONG).show();
+
 //                    setText("Start recording");
                 }
                 mStartRecording = !mStartRecording;
@@ -358,8 +378,6 @@ public class MessageFragment extends Fragment {
             public void onCancel() {
                 //On Swipe To Cancel
                 Log.d("RecordView", "onCancel");
-
-
             }
 
             @Override
@@ -367,6 +385,8 @@ public class MessageFragment extends Fragment {
                 Log.d("RecordView", "onFinish");
                 is_text.setVisibility(View.VISIBLE);
                 recordView.setVisibility(View.GONE);
+                Uri audioFileUri=Uri.fromFile(new File(fileName));
+                uploadAudio(audioFileUri,"3gp");
             }
 
             @Override
@@ -648,17 +668,26 @@ public class MessageFragment extends Fragment {
         }
     }
 
-    private void uploadAudio(Uri data, String ext) {
+    private void uploadAudio(final Uri data, String ext) {
+
+
         final ProgressDialog pd = new ProgressDialog(getContext());
-        pd.setMessage("Uploading...");
+        pd.setMessage("Uploading Audio...");
         pd.show();
         pd.setCancelable(false);
         if (data != null) {
-            storageReference = FirebaseStorage.getInstance().getReference("audio");
+            storageReference = FirebaseStorage.getInstance().getReference("chats");
 
-            final StorageReference fileReference = storageReference.child(System.currentTimeMillis() + ext);
+            final StorageReference fileReference = storageReference.child(System.currentTimeMillis() +"."+ ext);
 
+            fileReference.putFile(data).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+                }
+            });
             uploadTask = fileReference.putFile(data);
+
             uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
                 @Override
                 public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
@@ -675,7 +704,12 @@ public class MessageFragment extends Fragment {
                         Uri downloadUri = task.getResult();
                         String mUri = downloadUri.toString();
                         Log.d("UploadFile", mUri);
-//                        sendMessage(getActivity(), fuser.getUid(), userid, "Document", false, "default", mUri);
+//                        sendMessage(userid);
+                        sendAudioToPersonal(getActivity(), fuser.getUid(), userid, fileName
+                                , false,mUri, "default", false, "default"
+                                , "default");
+
+                        //getActivity(), fuser.getUid(), userid, "Document", false, "default", mUri);
                         pd.dismiss();
                     } else {
                         Toast.makeText(getContext(), "Failed!", Toast.LENGTH_SHORT).show();
@@ -1020,7 +1054,122 @@ public class MessageFragment extends Fragment {
             }
         });
     }
+    public static void sendAudioToPersonal(final Context context
+            , final String sender, final String receiver
+            , String message, boolean isimage, String uri, String docUri
+            , boolean iscontact, String con_name, String con_num) {
 
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Chats").push();
+        randomString(9);
+
+        //        /*String encMessage = null;
+//        try {
+//            encMessage = encrypt(message,"Jenil");
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }*/
+
+        Long tsLong = (System.currentTimeMillis() / 1000);
+        String ts = tsLong.toString();
+        HashMap<String, Object> hashMap = new HashMap<>();
+
+        if (AppGlobal.isNetwork(context)) {
+            hashMap.put("id", sb.toString());
+            hashMap.put("to", "personal");
+            hashMap.put("sender", sender);
+            hashMap.put("receiver", receiver);
+            hashMap.put("message", message);
+            hashMap.put("issend", true);
+            hashMap.put("isseen", false);
+            hashMap.put("isimage", isimage);
+            hashMap.put("iscontact", iscontact);
+            hashMap.put("contact_number", con_num);
+            hashMap.put("contact_name", con_name);
+            hashMap.put("image","default" );
+            hashMap.put("time", ts);
+            hashMap.put("storage_uri", "default");
+            hashMap.put("audio_uri", uri);
+            hashMap.put("doc_uri", docUri);
+            hashMap.put("table_id", reference.getKey());
+            hashMap.put("isstatus", "0");
+
+        } else {
+            hashMap.put("id", sb.toString());
+            hashMap.put("to", "personal");
+            hashMap.put("sender", sender);
+            hashMap.put("receiver", receiver);
+            hashMap.put("message", message);
+            hashMap.put("issend", false);
+            hashMap.put("isseen", false);
+            hashMap.put("isimage", isimage);
+            hashMap.put("iscontact", iscontact);
+            hashMap.put("contact_number", con_num);
+            hashMap.put("contact_name", con_name);
+            hashMap.put("image", "default");
+            hashMap.put("time", ts);
+            hashMap.put("table_id", reference.getKey());
+            hashMap.put("audio_uri",uri );
+            hashMap.put("doc_uri", docUri);
+            hashMap.put("storage_uri", "default");
+            hashMap.put("isstatus", "0");
+        }
+        reference.setValue(hashMap);
+
+        // add user to chat fragment
+        final DatabaseReference chatRef = FirebaseDatabase.getInstance().getReference("Chatlist").child(sender).child(receiver);
+        chatRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                try {
+                    if (!dataSnapshot.exists()) {
+                        chatRef.child("id").setValue(receiver);
+                        chatRef.child("istyping").setValue(false);
+                        chatRef.child("isnotification").setValue(false);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        try {
+            final DatabaseReference chatRefReceiver = FirebaseDatabase.getInstance().getReference("Chatlist").child(receiver).child(sender);
+            chatRefReceiver.child("id").setValue(sender);
+            chatRefReceiver.child("istyping").setValue(false);
+            chatRefReceiver.child("isnotification").setValue(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        final String msg = message;
+        reference = FirebaseDatabase.getInstance().getReference("Users").child(sender);
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                try {
+                    User user = dataSnapshot.getValue(User.class);
+                    if (notify) {
+                        sendNotifiaction(context, receiver, user.getUsername(), msg);
+                    }
+                    notify = false;
+                } catch (Exception e) {
+                    Log.d(TAG,"jigar the exception is main reference in "+e);
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d(TAG,"jigar the oncancelled error is main reference in "+databaseError.getMessage());
+
+            }
+        });
+    }
     private static void sendNotifiaction(final Context context, String receiver, final String username, final String message) {
         DatabaseReference tokens = FirebaseDatabase.getInstance().getReference("Tokens");
         Query query = tokens.orderByKey().equalTo(receiver);
