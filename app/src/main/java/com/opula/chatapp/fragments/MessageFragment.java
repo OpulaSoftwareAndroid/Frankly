@@ -72,6 +72,7 @@ import com.opula.chatapp.api.APIService;
 import com.opula.chatapp.constant.AppGlobal;
 import com.opula.chatapp.constant.SharedPreference;
 import com.opula.chatapp.constant.WsConstant;
+import com.opula.chatapp.model.AESUtils;
 import com.opula.chatapp.model.Chat;
 import com.opula.chatapp.model.User;
 import com.opula.chatapp.notifications.Client;
@@ -79,6 +80,7 @@ import com.opula.chatapp.notifications.Data;
 import com.opula.chatapp.notifications.MyResponse;
 import com.opula.chatapp.notifications.Sender;
 import com.opula.chatapp.notifications.Token;
+import com.rygelouv.audiosensei.player.AudioSenseiListObserver;
 import com.squareup.picasso.Picasso;
 
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
@@ -193,7 +195,7 @@ public class MessageFragment extends Fragment {
         emojIcon = new EmojIconActions(getActivity(), rootView, text_send, emojiButton);
         emojIcon.ShowEmojIcon();
         emojIcon.setIconsIds(R.drawable.ic_keyboard_black_24dp, R.drawable.ic_sentiment_satisfied_black_24dp);
-
+        AudioSenseiListObserver.getInstance().registerLifecycle(getLifecycle());
         recyclerView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(Objects.requireNonNull(getActivity()).getApplicationContext());
         linearLayoutManager.setStackFromEnd(true);
@@ -706,7 +708,7 @@ public class MessageFragment extends Fragment {
                         Log.d("UploadFile", mUri);
 //                        sendMessage(userid);
                         sendAudioToPersonal(getActivity(), fuser.getUid(), userid, fileName
-                                , false,mUri, "default", false, "default"
+                                , false,mUri, "default", true, "default"
                                 , "default");
 
                         //getActivity(), fuser.getUid(), userid, "Document", false, "default", mUri);
@@ -943,6 +945,17 @@ public class MessageFragment extends Fragment {
             , String message, boolean isimage, String uri, String docUri
             , boolean iscontact, String con_name, String con_num) {
 
+        String encrypted = message;
+        String sourceStr = "This is any source string";
+        try {
+            encrypted = AESUtils.encrypt(encrypted);
+            Log.d("TEST", "encrypted:" + encrypted);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        message=encrypted;
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Chats").push();
         randomString(9);
         /*String encMessage = null;
@@ -966,6 +979,7 @@ public class MessageFragment extends Fragment {
             hashMap.put("isseen", false);
             hashMap.put("isimage", isimage);
             hashMap.put("iscontact", iscontact);
+            hashMap.put("isaudio", false);
             hashMap.put("contact_number", con_num);
             hashMap.put("contact_name", con_name);
             hashMap.put("image", uri);
@@ -986,6 +1000,7 @@ public class MessageFragment extends Fragment {
             hashMap.put("isseen", false);
             hashMap.put("isimage", isimage);
             hashMap.put("iscontact", iscontact);
+            hashMap.put("isaudio", false);
             hashMap.put("contact_number", con_num);
             hashMap.put("contact_name", con_name);
             hashMap.put("image", uri);
@@ -1057,7 +1072,7 @@ public class MessageFragment extends Fragment {
     public static void sendAudioToPersonal(final Context context
             , final String sender, final String receiver
             , String message, boolean isimage, String uri, String docUri
-            , boolean iscontact, String con_name, String con_num) {
+            , boolean isAudio, String con_name, String con_num) {
 
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Chats").push();
         randomString(9);
@@ -1082,7 +1097,8 @@ public class MessageFragment extends Fragment {
             hashMap.put("issend", true);
             hashMap.put("isseen", false);
             hashMap.put("isimage", isimage);
-            hashMap.put("iscontact", iscontact);
+            hashMap.put("iscontact", false);
+            hashMap.put("isaudio", isAudio);
             hashMap.put("contact_number", con_num);
             hashMap.put("contact_name", con_name);
             hashMap.put("image","default" );
@@ -1102,7 +1118,8 @@ public class MessageFragment extends Fragment {
             hashMap.put("issend", false);
             hashMap.put("isseen", false);
             hashMap.put("isimage", isimage);
-            hashMap.put("iscontact", iscontact);
+            hashMap.put("iscontact", false);
+            hashMap.put("isaudio", isAudio);
             hashMap.put("contact_number", con_num);
             hashMap.put("contact_name", con_name);
             hashMap.put("image", "default");

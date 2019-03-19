@@ -1,5 +1,6 @@
 package com.opula.chatapp.fragments;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -103,6 +104,7 @@ public class ListStatusFragment extends Fragment {
         MainActivity.showFloatingActionButton();
         WsConstant.ismain = "p";
 
+        hideKeyboard(getActivity());
         recyclerView = view.findViewById(R.id.recycler_view);
         recycler_view1 = view.findViewById(R.id.recycler_view1);
         searchViewChatList=view.findViewById(R.id.searchViewChatList);
@@ -318,7 +320,16 @@ public class ListStatusFragment extends Fragment {
         MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
         return mimeTypeMap.getExtensionFromMimeType(contentResolver.getType(uri));
     }
-
+    public static void hideKeyboard(Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        //Find the currently focused view, so we can grab the correct window token from it.
+        View view = activity.getCurrentFocus();
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = new View(activity);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
 
     private void uploadImage() {
         final ProgressDialog pd = new ProgressDialog(getContext());

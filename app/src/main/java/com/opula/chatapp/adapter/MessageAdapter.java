@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.os.Vibrator;
@@ -23,6 +24,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,14 +44,24 @@ import com.opula.chatapp.MainActivity;
 import com.opula.chatapp.R;
 import com.opula.chatapp.constant.AppGlobal;
 import com.opula.chatapp.constant.WsConstant;
+import com.opula.chatapp.model.AESUtils;
 import com.opula.chatapp.model.BroadcastUser;
 import com.opula.chatapp.model.Chat;
 import com.opula.chatapp.model.User;
+import com.rygelouv.audiosensei.player.AudioSenseiPlayerView;
+import com.rygelouv.audiosensei.player.OnPlayerViewClickListener;
 import com.shockwave.pdfium.PdfDocument;
 import com.shockwave.pdfium.PdfiumCore;
 
+import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -62,19 +74,23 @@ import java.util.TimeZone;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
+import nl.changer.audiowife.AudioWife;
+
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHolder> {
 
     public static final int MSG_TYPE_LEFT = 0;
     public static final int MSG_TYPE_RIGHT = 1;
     public Context mContext;
+    String TAG = "MessageAdapter";
     public static List<Chat> mChat;
     private String imageurl;
     String AES = "AES";
+    private String downloadAudioPath;
     public static FirebaseUser fuser;
     public static int i = 0;
     public static ForwardMessageAdapter newChatUserAdapter;
     public final static String FOLDER = Environment.getExternalStorageDirectory() + "/PDF";
-
+    public    String strUriForAudio, strUrlPath;
     public MessageAdapter(Context mContext, List<Chat> mChat, String imageurl) {
         this.mChat = mChat;
         this.mContext = mContext;
@@ -95,6 +111,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
+
 
         final Chat chat = mChat.get(position);
         Log.d("Chat_Data", chat.getContact_number() + "/" + chat.getContact_number());
@@ -140,6 +157,69 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
                     })
                     .into(holder.img_receive);
         }
+        Log.d(TAG, "jigar the is audio is active or not " + chat.isIsaudio());
+        Log.d(TAG, "jigar the is audio url we have is active or not " + chat.getAudio_uri());
+
+        if (chat.isIsaudio()) {
+            holder.show_message.setVisibility(View.GONE);
+            holder.relativeLayoutAudioPlayer.setVisibility(View.VISIBLE);
+
+
+//            holder.audioWife.init(mContext, Uri.parse("PATH")).
+//                    useDefaultUi(holder.viewRec, ((Activity) mContext).getLayoutInflater());
+            strUrlPath =chat.getAudio_uri();
+            holder.audioSenseiPlayerView
+                    .setAudioTarget(strUrlPath);
+
+
+            //            holder
+//            holder.audioSenseiPlayerView.registerViewClickListener(R.id.stop, new OnPlayerViewClickListener()
+//            {
+//                @Override
+//                public void onPlayerViewClick(View view)
+//                {
+//                    Log.i(TAG, "onPlayer view Clicked");
+//                    holder.audioSenseiPlayerView.stop();
+//                }
+//            });
+
+            holder.audioSenseiPlayerView.commitClickEvents();
+            View playerRootView = holder.audioSenseiPlayerView.getPlayerRootView();
+
+            //            holder.audioSenseiPlayerView.setAudioTarget(strUrlPath);
+
+
+//            holder.audioSenseiPlayerView.registerViewClickListener(R.id.stop, new OnPlayerViewClickListener()
+//            {
+//                @Override
+//                public void onPlayerViewClick(View view)
+//                {
+//                    Log.i(TAG, "onPlayer view Clicked");
+//                    holder.audioSenseiPlayerView.stop();
+//                }
+//            });
+
+//            holder.audioSenseiPlayerView.commitClickEvents();
+//
+//            View playerRootView =  holder.audioSenseiPlayerView.getPlayerRootView();
+//
+//            String filename = extractFilename(strUrlPath);
+//            downloadAudioPath = downloadAudioPath + File.separator + "voices" + File.separator + filename;
+//            DownloadFile downloadAudioFile = new DownloadFile();
+//            downloadAudioFile.execute(strUrlPath, downloadAudioPath);
+
+
+
+
+
+// when done playing, release the resources
+//            holder.audioWife.release();
+
+        } else {
+            holder.show_message.setVisibility(View.VISIBLE);
+            holder.relativeLayoutAudioPlayer.setVisibility(View.GONE);
+
+        }
         if (chat.isIscontact()) {
             holder.show_message.setVisibility(View.GONE);
             holder.relative_contact.setVisibility(View.VISIBLE);
@@ -151,7 +231,17 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             holder.relative.setVisibility(View.GONE);
             holder.relative_contact.setVisibility(View.GONE);
             holder.show_message.setVisibility(View.VISIBLE);
-            holder.show_message.setText(chat.getMessage());
+            String encrypted = chat.getMessage();
+            String decrypted = "";
+            try {
+                decrypted = AESUtils.decrypt(encrypted);
+                Log.d("TEST", "decrypted:" + decrypted);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+          //  holder.show_message.setText(chat.getMessage());
+            holder.show_message.setText(decrypted);
+
         }
 
         if (chat.isIsseen()) {
@@ -224,6 +314,21 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 //            }
 //        });
 
+        holder.imageViewPlayAudio.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+
+//                holder.audioWife
+//                        .init(mContext, Uri.parse(strUrlPath))
+//                        .setPlayView(holder.imageViewPlayAudio)
+//                        .setPauseView(holder.mPauseMedia)
+//                        .setSeekBar(holder.mMediaSeekBar)
+//                        .setRuntimeView(holder.mRunTime)
+//                        .setTotalTimeView(holder.mTotalTime);
+//                holder.audioWife.pause();
+            }
+        });
         holder.img_receive.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -313,9 +418,24 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         });
 
     }
+    private String extractFilename(String urlDownloadLink){
+        if(urlDownloadLink.equals("")){
+            return "";
+        }
+        String newFilename = "";
+        if(urlDownloadLink.contains("/")){
+            int dotPosition = urlDownloadLink.lastIndexOf("/");
+            newFilename = urlDownloadLink.substring(dotPosition + 1, urlDownloadLink.length());
+        }
+        else{
+            newFilename = urlDownloadLink;
+        }
+        return newFilename;
+    }
 
     public void generateImageFromPdf(Uri pdfUri, Context context) throws FileNotFoundException {
-//        int pageNumber = 0;
+
+        //        int pageNumber = 0;
 //        PdfiumCore pdfiumCore = new PdfiumCore(context);
 //        try {
 //            //http://www.programcreek.com/java-api-examples/index.php?api=android.os.ParcelFileDescriptor
@@ -335,6 +455,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
 
 //        ImageView iv = (ImageView) findViewById(R.id.imageView);
+
         ParcelFileDescriptor fd = context.getContentResolver().openFileDescriptor(pdfUri, "r");
         int pageNum = 0;
         PdfiumCore pdfiumCore = new PdfiumCore(context);
@@ -400,21 +521,31 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         public ImageView profile_image, img_receive, img_tick, img_dtick, img_dstick, img_download;
         public TextView show_time;
         public ProgressBar progress_circular;
-        RelativeLayout relative, txt_seen, img_blur, relative_contact;
+        RelativeLayout relative, txt_seen, img_blur, relative_contact, relativeLayoutAudioPlayer;
         LinearLayout linear_chat;
+        AudioSenseiPlayerView audioSenseiPlayerView;
         LinearLayout linmain;
         PDFView pdfView;
+        TextView mRunTime, mTotalTime;
+        SeekBar mMediaSeekBar;
+        ImageView mPauseMedia, mPlayMedia,imageViewPlayAudio;
+        AudioWife audioWife;
 
         public ViewHolder(View itemView) {
             super(itemView);
 
             show_message = itemView.findViewById(R.id.show_message);
+            audioWife = new AudioWife();
             profile_image = itemView.findViewById(R.id.profile_image);
+            relativeLayoutAudioPlayer = itemView.findViewById(R.id.relativeLayoutAudioPlayer);
+
+            imageViewPlayAudio=itemView.findViewById(R.id.imageViewPlayAudio);
             img_receive = itemView.findViewById(R.id.img_receive);
             txt_seen = itemView.findViewById(R.id.txt_seen);
             show_time = itemView.findViewById(R.id.show_time);
             progress_circular = itemView.findViewById(R.id.progress_circular);
             relative = itemView.findViewById(R.id.relative);
+            audioSenseiPlayerView = itemView.findViewById(R.id.audio_player);
             img_tick = itemView.findViewById(R.id.img_tick);
             img_dtick = itemView.findViewById(R.id.img_dtick);
             img_dstick = itemView.findViewById(R.id.img_dstick);
@@ -427,7 +558,13 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             txtAddContact = itemView.findViewById(R.id.txtAddContact);
             txtContactName = itemView.findViewById(R.id.txtContactName);
             txtContactNumber = itemView.findViewById(R.id.txtContactNumber);
+            mPlayMedia = itemView.findViewById(R.id.play);
+            mPauseMedia = itemView.findViewById(R.id.pause);
+            mMediaSeekBar = (SeekBar) itemView.findViewById(R.id.media_seekbar);
+            mRunTime = (TextView) itemView.findViewById(R.id.run_time);
+            mTotalTime = (TextView) itemView.findViewById(R.id.total_time);
         }
+
     }
 
     @Override
@@ -615,4 +752,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         reference.setValue(hashMap);
         Toast.makeText(context, "Message has been stared..!", Toast.LENGTH_SHORT).show();
     }
+
+
+
 }

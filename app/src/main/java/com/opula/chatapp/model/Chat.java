@@ -14,12 +14,15 @@ public class Chat {
     private boolean isseen;
     private boolean isimage;
     private boolean iscontact;
+    private boolean isaudio;
     private String image;
     private String time;
     private String sender_username;
     private String sender_image;
     private String table_id;
     private String doc_uri;
+    private String audio_uri;
+
     private String contact_name;
     private String contact_number;
 
@@ -103,6 +106,14 @@ public class Chat {
         this.iscontact = iscontact;
     }
 
+    public boolean isIsaudio() {
+        return isaudio;
+    }
+
+    public void setIsaudio(boolean isaudio) {
+        this.isaudio = isaudio;
+    }
+
     public String getImage() {
         return image;
     }
@@ -149,6 +160,14 @@ public class Chat {
 
     public void setDoc_uri(String doc_uri) {
         this.doc_uri = doc_uri;
+    }
+
+    public String getAudio_uri() {
+        return audio_uri;
+    }
+
+    public void setAudio_uri(String audio_uri) {
+        this.audio_uri = audio_uri;
     }
 
     public String getContact_number() {
