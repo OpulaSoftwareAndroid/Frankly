@@ -54,6 +54,7 @@ import com.opula.chatapp.activity.LoginRegisterActivity;
 import com.opula.chatapp.constant.AppGlobal;
 import com.opula.chatapp.model.StarMessage;
 import com.opula.chatapp.model.User;
+import com.opula.chatapp.notifications.Token;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -212,6 +213,7 @@ public class MyProfileFragment extends Fragment {
         return view;
 
     }
+
 
 
     private void checkImage() {

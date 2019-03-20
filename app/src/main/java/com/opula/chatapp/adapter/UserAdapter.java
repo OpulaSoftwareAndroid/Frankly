@@ -2,7 +2,9 @@ package com.opula.chatapp.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
@@ -34,8 +36,10 @@ import com.opula.chatapp.constant.WsConstant;
 import com.opula.chatapp.fragments.BroadcastMessageFragment;
 import com.opula.chatapp.fragments.MessageFragment;
 import com.opula.chatapp.fragments.UserProfileFragment;
+import com.opula.chatapp.model.AESUtils;
 import com.opula.chatapp.model.BroadcastUser;
 import com.opula.chatapp.model.Chat;
+import com.opula.chatapp.model.Chatlist;
 import com.opula.chatapp.model.User;
 
 import java.security.MessageDigest;
@@ -54,6 +58,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> im
 
     private Context mContext;
     private List<User> mUsers;
+    private List<Chatlist> mChatListDetails;
     private List<User> mUsersFilteredList;
     SpaceNavigationView spaceNavigationView;
     private List<BroadcastUser> mBroadcast;
@@ -65,6 +70,18 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> im
     String AES = "AES";
     static String TAG="UserAdapter";
     ArrayList <String> arrayListUserLastMessageTime;
+
+    public UserAdapter(Context mContext, List<User> mUsers,List<Chatlist> mChatListDetails, List<BroadcastUser> mBroadcast, boolean ischat, boolean is) {
+        this.mUsers = mUsers;
+        this.mUsersFilteredList = mUsers;
+        this.mChatListDetails = mChatListDetails;
+        this.mBroadcast = mBroadcast;
+        this.mContext = mContext;
+        this.ischat = ischat;
+        this.is = is;
+        arrayListUserLastMessageTime=new ArrayList<>();
+    }
+
     public UserAdapter(Context mContext, List<User> mUsers, List<BroadcastUser> mBroadcast, boolean ischat, boolean is) {
         this.mUsers = mUsers;
         this.mUsersFilteredList = mUsers;
@@ -99,10 +116,13 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> im
 
         if (is) {
             final User user = mUsersFilteredList.get(position);
+            final Chatlist chatlist = mChatListDetails.get(position);
+
             String strUserName=user.getUsername();
             strUserName = strUserName.substring(0,1).toUpperCase() + strUserName.substring(1);
 //            holder.username.setText(user.getUsername());
             holder.username.setText(strUserName);
+            final Boolean aBooleanIsSecure= mChatListDetails.get(position).issecure;
 
 
             if (user.getImageURL().equals("default")) {
@@ -112,6 +132,8 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> im
             }
 
             if (ischat) {
+
+
                 lastMessage(mUsersFilteredList,position,user.getId(), holder.last_msg, holder.time,holder.textViewUnreadBadge);
             } else {
                 holder.last_msg.setVisibility(View.GONE);
@@ -137,11 +159,17 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> im
                 public void onClick(View view) {
                     MainActivity.hideFloatingActionButton();
                     sharedPreference.save(mContext, user.getId(), WsConstant.userId);
-//                    MainActivity.checkChatTheme(mContext);
+ //                    MainActivity.checkChatTheme(mContext);
+                //    String strName=String.valueOf(aBooleanIsSecure);
                     MainActivity.showpart1();
                     holder.textViewUnreadBadge.setVisibility(View.GONE);
+
+                    MessageFragment fragmentMessage=new MessageFragment();
+                    Bundle args = new Bundle();
+                    args.putString(WsConstant.IS_MESSAGE_SECURE, String.valueOf(chatlist.getIssecure()));
+                    fragmentMessage.setArguments(args);
                     FragmentManager fragmentManager = ((FragmentActivity) mContext).getSupportFragmentManager();
-                    fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new MessageFragment()).addToBackStack(null).commit();
+                    fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, fragmentMessage).addToBackStack(null).commit();
 
                 }
             });
@@ -150,9 +178,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> im
                 @Override
                 public void onClick(View view) {
                     sharedPreference.save(mContext, user.getId(), WsConstant.userId);
-
                     MainActivity.showpart2();
-
                     FragmentManager fragmentManager = ((FragmentActivity) mContext).getSupportFragmentManager();
                     fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new UserProfileFragment()).addToBackStack(null).commit();
 
@@ -284,7 +310,23 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> im
                         if (chat.getTo().equalsIgnoreCase("personal")) {
                             if (chat.getReceiver().equals(firebaseUser.getUid()) && chat.getSender().equals(userid) ||
                                     chat.getReceiver().equals(userid) && chat.getSender().equals(firebaseUser.getUid())) {
-                                theLastMessage = chat.getMessage();
+
+                                if(chat.getIssecure()) {
+                                    String encrypted = chat.getMessage();
+
+                                    String decrypted = "";
+                                    try {
+                                        decrypted = AESUtils.decrypt(encrypted);
+                                        Log.d("TEST", "decrypted:" + decrypted);
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                    //  holder.show_message.setText(chat.getMessage());
+                                   theLastMessage=decrypted;
+                                }else
+                                {
+                                    theLastMessage = chat.getMessage();
+                                }
                                 String tiime = getDateCurrentTimeZone(Long.parseLong(chat.getTime()));
                                 time.setText(tiime);
                                 arrayListUserLastMessageTime.add(tiime);
@@ -295,11 +337,28 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> im
 //                                    items.add(currentPosition - 1, it)
 //                                }
 //                                notifyItemMoved(currentPosition, currentPosition - 1)
+//                                if(chat.getSender().equals(userid))
+//                                {
+//                                    textViewUnreadBadge.setVisibility(View.VISIBLE);
+//
+//                                }else
+//                                {
+//                                    textViewUnreadBadge.setVisibility(View.GONE);
+//                                }
+//
+
 
                                 if(!chat.isIsseen())
                                 {
                                     intNotificationCount=intNotificationCount+1;
-                                    textViewUnreadBadge.setVisibility(View.VISIBLE);
+                                    if(!chat.getSender().equals(userid)) {
+                                        textViewUnreadBadge.setVisibility(View.GONE);
+
+                                    }else
+                                    {
+                                        textViewUnreadBadge.setVisibility(View.VISIBLE);
+
+                                    }
                                     textViewUnreadBadge.setText("     ");
                                     User user=mUsersFilteredList.get(position);
                                     mUsersFilteredList.remove(position);
@@ -317,6 +376,8 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> im
                            //         intNotificationCount=intNotificationCount-1;
                                     textViewUnreadBadge.setVisibility(View.GONE);
                                 }
+
+
                             }
                         } else if (chat.getTo().equalsIgnoreCase("broadcast")) {
                             for (int i = 0; i < chat.getBroadcast_receiver().size(); i++) {

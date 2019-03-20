@@ -21,6 +21,9 @@ public class WsConstant {
     public static String FRAGMENT_SEARCH = "fragment_search";
 
 
+    public static String IS_MESSAGE_SECURE= "issecure";
+    public static String IS_STORED_MESSAGE_SECURE= "is_store_secure";
+
 
     // Status List Set and Get
     public static String STATUS_ID = "statusID";

@@ -7,6 +7,7 @@ public class Chatlist implements Serializable {
     public String id;
     public boolean istyping;
     public boolean isnotification;
+    public boolean issecure;
 
     public String getId() {
         return id;
@@ -30,5 +31,13 @@ public class Chatlist implements Serializable {
 
     public void setIsnotification(boolean isnotification) {
         this.isnotification = isnotification;
+    }
+
+    public boolean getIssecure() {
+        return issecure;
+    }
+
+    public void setIssecure(boolean issecure) {
+        this.issecure = issecure;
     }
 }

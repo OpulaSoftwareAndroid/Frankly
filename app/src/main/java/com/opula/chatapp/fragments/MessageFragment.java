@@ -155,7 +155,7 @@ public class MessageFragment extends Fragment {
     RecordButton recordButton;
     BottomSheetDialog dialogMenu;
     final static int PICK_PDF_CODE = 2342;
-
+    String strIsSecureChat;
     private static final String LOG_TAG = "AudioRecordTest";
     private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
     private static String fileName = null;
@@ -186,6 +186,20 @@ public class MessageFragment extends Fragment {
 
         MainActivity.hideFloatingActionButton();
         MainActivity.showpart1();
+        try {
+            if(getArguments()!=null) {
+                strIsSecureChat = getArguments().getString(WsConstant.IS_MESSAGE_SECURE, "");
+            }else
+            {
+                strIsSecureChat="false";
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            strIsSecureChat="false";
+        }
+
+        Log.d(TAG,"jigar the is secure intent have is clicked with status is "+strIsSecureChat);
 
         sharedPreference = new SharedPreference();
 
@@ -217,7 +231,7 @@ public class MessageFragment extends Fragment {
                 notify = true;
                 String msg = text_send.getText().toString();
                 if (!msg.equals("")) {
-                    sendMessageToPersonal(getActivity(), fuser.getUid(), userid, msg, false, "default", "default", false, "default", "default");
+                    sendMessageToPersonal(getActivity(), strIsSecureChat,fuser.getUid(), userid, msg, false, "default", "default", false, "default", "default");
                 }
                 text_send.setText("");
             }
@@ -767,7 +781,7 @@ public class MessageFragment extends Fragment {
                         Uri downloadUri = task.getResult();
                         String mUri = downloadUri.toString();
                         Log.d("UploadFile", mUri);
-                        sendMessageToPersonal(getActivity(), fuser.getUid(), userid, "Document", false, "default", mUri, false, "default", "default");
+                        sendMessageToPersonal(getActivity(),strIsSecureChat, fuser.getUid(), userid, "Document", false, "default", mUri, false, "default", "default");
 
                         pd.dismiss();
                     } else {
@@ -822,7 +836,7 @@ public class MessageFragment extends Fragment {
                         Uri downloadUri = task.getResult();
                         String mUri = downloadUri.toString();
 
-                        sendMessageToPersonal(getActivity(), fuser.getUid(), userid, "Image", true, mUri, "default", false, "default", "default");
+                        sendMessageToPersonal(getActivity(),strIsSecureChat, fuser.getUid(), userid, "Image", true, mUri, "default", false, "default", "default");
 
                         pd.dismiss();
                     } else {
@@ -940,22 +954,26 @@ public class MessageFragment extends Fragment {
         return secretKeySpec;
     }
 
-    public static void sendMessageToPersonal(final Context context
+    public static void sendMessageToPersonal(final Context context,
+                                             final String strIsSecureChat
             , final String sender, final String receiver
             , String message, boolean isimage, String uri, String docUri
             , boolean iscontact, String con_name, String con_num) {
 
-        String encrypted = message;
-        String sourceStr = "This is any source string";
-        try {
-            encrypted = AESUtils.encrypt(encrypted);
-            Log.d("TEST", "encrypted:" + encrypted);
-        } catch (Exception e) {
-            e.printStackTrace();
+
+        if(strIsSecureChat.equals("true")) {
+            String encrypted = message;
+            String sourceStr = "This is any source string";
+            try {
+                encrypted = AESUtils.encrypt(encrypted);
+                Log.d("TEST", "encrypted:" + encrypted);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+
+            message = encrypted;
         }
-
-
-        message=encrypted;
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Chats").push();
         randomString(9);
         /*String encMessage = null;
@@ -980,6 +998,7 @@ public class MessageFragment extends Fragment {
             hashMap.put("isimage", isimage);
             hashMap.put("iscontact", iscontact);
             hashMap.put("isaudio", false);
+            hashMap.put("issecure",Boolean.valueOf(strIsSecureChat));
             hashMap.put("contact_number", con_num);
             hashMap.put("contact_name", con_name);
             hashMap.put("image", uri);
@@ -1001,6 +1020,7 @@ public class MessageFragment extends Fragment {
             hashMap.put("isimage", isimage);
             hashMap.put("iscontact", iscontact);
             hashMap.put("isaudio", false);
+            hashMap.put("issecure", Boolean.valueOf(strIsSecureChat));
             hashMap.put("contact_number", con_num);
             hashMap.put("contact_name", con_name);
             hashMap.put("image", uri);
@@ -1024,6 +1044,9 @@ public class MessageFragment extends Fragment {
                         chatRef.child("id").setValue(receiver);
                         chatRef.child("istyping").setValue(false);
                         chatRef.child("isnotification").setValue(false);
+                        chatRef.child("issecure").setValue(false);
+                        chatRef.child("issender").setValue(true);
+
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -1041,6 +1064,8 @@ public class MessageFragment extends Fragment {
             chatRefReceiver.child("id").setValue(sender);
             chatRefReceiver.child("istyping").setValue(false);
             chatRefReceiver.child("isnotification").setValue(true);
+            chatRefReceiver.child("issecure").setValue(false);
+            chatRefReceiver.child("issender").setValue(false);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -1142,6 +1167,9 @@ public class MessageFragment extends Fragment {
                         chatRef.child("id").setValue(receiver);
                         chatRef.child("istyping").setValue(false);
                         chatRef.child("isnotification").setValue(false);
+                        chatRef.child("issecure").setValue(false);
+                        chatRef.child("issender").setValue(true);
+
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -1159,6 +1187,9 @@ public class MessageFragment extends Fragment {
             chatRefReceiver.child("id").setValue(sender);
             chatRefReceiver.child("istyping").setValue(false);
             chatRefReceiver.child("isnotification").setValue(true);
+            chatRefReceiver.child("issecure").setValue(false);
+            chatRefReceiver.child("issender").setValue(false);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -1261,7 +1292,7 @@ public class MessageFragment extends Fragment {
                             }
                         }
                     }
-                    messageAdapter = new MessageAdapter(getActivity(), mchat, imageurl);
+                    messageAdapter = new MessageAdapter(getActivity(), mchat, imageurl,strIsSecureChat);
                     recyclerView.setAdapter(messageAdapter);
                 } catch (Exception e) {
                     e.printStackTrace();

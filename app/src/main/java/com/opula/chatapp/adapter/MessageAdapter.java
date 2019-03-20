@@ -43,6 +43,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.opula.chatapp.MainActivity;
 import com.opula.chatapp.R;
 import com.opula.chatapp.constant.AppGlobal;
+import com.opula.chatapp.constant.SharedPreference;
 import com.opula.chatapp.constant.WsConstant;
 import com.opula.chatapp.model.AESUtils;
 import com.opula.chatapp.model.BroadcastUser;
@@ -86,15 +87,20 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     private String imageurl;
     String AES = "AES";
     private String downloadAudioPath;
+    String strIsSecureChat;
+    SharedPreference sharedPreference;
     public static FirebaseUser fuser;
     public static int i = 0;
     public static ForwardMessageAdapter newChatUserAdapter;
     public final static String FOLDER = Environment.getExternalStorageDirectory() + "/PDF";
     public    String strUriForAudio, strUrlPath;
-    public MessageAdapter(Context mContext, List<Chat> mChat, String imageurl) {
+    public MessageAdapter(Context mContext, List<Chat> mChat, String imageurl,String strIsSecureChat)
+    {
         this.mChat = mChat;
         this.mContext = mContext;
         this.imageurl = imageurl;
+        this. strIsSecureChat=strIsSecureChat;
+        sharedPreference=new SharedPreference();
     }
 
     @NonNull
@@ -165,55 +171,18 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             holder.relativeLayoutAudioPlayer.setVisibility(View.VISIBLE);
 
 
-//            holder.audioWife.init(mContext, Uri.parse("PATH")).
-//                    useDefaultUi(holder.viewRec, ((Activity) mContext).getLayoutInflater());
+
             strUrlPath =chat.getAudio_uri();
             holder.audioSenseiPlayerView
                     .setAudioTarget(strUrlPath);
 
 
-            //            holder
-//            holder.audioSenseiPlayerView.registerViewClickListener(R.id.stop, new OnPlayerViewClickListener()
-//            {
-//                @Override
-//                public void onPlayerViewClick(View view)
-//                {
-//                    Log.i(TAG, "onPlayer view Clicked");
-//                    holder.audioSenseiPlayerView.stop();
-//                }
-//            });
 
             holder.audioSenseiPlayerView.commitClickEvents();
             View playerRootView = holder.audioSenseiPlayerView.getPlayerRootView();
 
             //            holder.audioSenseiPlayerView.setAudioTarget(strUrlPath);
 
-
-//            holder.audioSenseiPlayerView.registerViewClickListener(R.id.stop, new OnPlayerViewClickListener()
-//            {
-//                @Override
-//                public void onPlayerViewClick(View view)
-//                {
-//                    Log.i(TAG, "onPlayer view Clicked");
-//                    holder.audioSenseiPlayerView.stop();
-//                }
-//            });
-
-//            holder.audioSenseiPlayerView.commitClickEvents();
-//
-//            View playerRootView =  holder.audioSenseiPlayerView.getPlayerRootView();
-//
-//            String filename = extractFilename(strUrlPath);
-//            downloadAudioPath = downloadAudioPath + File.separator + "voices" + File.separator + filename;
-//            DownloadFile downloadAudioFile = new DownloadFile();
-//            downloadAudioFile.execute(strUrlPath, downloadAudioPath);
-
-
-
-
-
-// when done playing, release the resources
-//            holder.audioWife.release();
 
         } else {
             holder.show_message.setVisibility(View.VISIBLE);
@@ -231,18 +200,54 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             holder.relative.setVisibility(View.GONE);
             holder.relative_contact.setVisibility(View.GONE);
             holder.show_message.setVisibility(View.VISIBLE);
-            String encrypted = chat.getMessage();
-            String decrypted = "";
-            try {
-                decrypted = AESUtils.decrypt(encrypted);
-                Log.d("TEST", "decrypted:" + decrypted);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-          //  holder.show_message.setText(chat.getMessage());
-            holder.show_message.setText(decrypted);
 
+
+//            if(strIsSecureChat.equals("true"))
+//            {
+//                if (sharedPreference.getValue(mContext, WsConstant.IS_STORED_MESSAGE_SECURE).equals("true")) {
+//                    String encrypted = chat.getMessage();
+//
+//                    String decrypted = "";
+//                    try {
+//                        decrypted = AESUtils.decrypt(encrypted);
+//                        Log.d("TEST", "decrypted:" + decrypted);
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+//                    //  holder.show_message.setText(chat.getMessage());
+//                    holder.show_message.setText(decrypted);
+//                    if (holder.show_message.getText().equals("")) {
+//                        holder.show_message.setText(chat.getMessage());
+//                    }
+//                }else
+//                {
+//                    holder.show_message.setText(chat.getMessage());
+//                }
+//            }else
+//            {
+//                holder.show_message.setText(chat.getMessage());
+//            }
+            if(chat.getIssecure())
+            {
+                String encrypted = chat.getMessage();
+
+                    String decrypted = "";
+                    try {
+                        decrypted = AESUtils.decrypt(encrypted);
+                        Log.d("TEST", "decrypted:" + decrypted);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    //  holder.show_message.setText(chat.getMessage());
+                    holder.show_message.setText(decrypted);
+
+            }else
+            {
+                holder.show_message.setText(chat.getMessage());
+
+            }
         }
+
 
         if (chat.isIsseen()) {
             holder.img_tick.setVisibility(View.GONE);
@@ -263,70 +268,11 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         String str = getDateCurrentTimeZone(Long.parseLong(chat.getTime()));
         holder.show_time.setText(str);
 
-        //        holder.img_download.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                holder.progress_circular.setVisibility(View.VISIBLE);
-//                FirebaseStorage storageRef = FirebaseStorage.getInstance();
-//                StorageReference dateRef = storageRef.getReferenceFromUrl(chat.getImage());
-//
-//                URL url = null;
-//                InputStream input = null;
-//                try {
-//                    url = new URL(chat.getImage());
-//                    input = url.openStream();
-//                    File storagePath = Environment.getExternalStorageDirectory();
-//                    File imageDirectory = new File(storagePath+"/Shreem Connect/images");
-//                    if(!imageDirectory.exists()) {
-//                        imageDirectory.mkdirs();
-//                    }
-//                    File file = new File(imageDirectory,  "/"+System.currentTimeMillis()+".png");
-//                    Log.i("filepath:", " " + file);
-//                    DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Chats").child(chat.getTable_id());
-//                    HashMap<String, Object> map = new HashMap<>();
-//                    map.put("storage_uri", "" + file);
-//                    reference.updateChildren(map);
-//                    OutputStream output = new FileOutputStream(file);
-//                    try {
-//                        byte[] buffer = new byte[2024];
-//                        int bytesRead = 0;
-//                        while ((bytesRead = input.read(buffer, 0, buffer.length)) >= 0) {
-//                            output.write(buffer, 0, bytesRead);
-//                        }
-//                    } finally {
-//                        output.close();
-//                        input.close();
-//                        Toast.makeText(mContext, "successfully Saved", Toast.LENGTH_SHORT).show();
-//                    }
-//                } catch (FileNotFoundException e) {
-//                    e.printStackTrace();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//
-//                dateRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-//                    @Override
-//                    public void onSuccess(Uri downloadUrl) {
-//                        Toast.makeText(mContext, "successfully Download", Toast.LENGTH_SHORT).show();
-//                        holder.progress_circular.setVisibility(View.INVISIBLE);
-//                    }
-//                });
-//            }
-//        });
 
         holder.imageViewPlayAudio.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-
-//                holder.audioWife
-//                        .init(mContext, Uri.parse(strUrlPath))
-//                        .setPlayView(holder.imageViewPlayAudio)
-//                        .setPauseView(holder.mPauseMedia)
-//                        .setSeekBar(holder.mMediaSeekBar)
-//                        .setRuntimeView(holder.mRunTime)
-//                        .setTotalTimeView(holder.mTotalTime);
-//                holder.audioWife.pause();
             }
         });
         holder.img_receive.setOnClickListener(new View.OnClickListener() {

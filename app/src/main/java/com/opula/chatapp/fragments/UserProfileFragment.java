@@ -1,7 +1,6 @@
 package com.opula.chatapp.fragments;
 
 import android.app.Activity;
-import android.media.Image;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -34,36 +33,32 @@ import com.google.firebase.database.ValueEventListener;
 import com.luseen.spacenavigation.SpaceNavigationView;
 import com.opula.chatapp.MainActivity;
 import com.opula.chatapp.R;
-import com.opula.chatapp.adapter.MessageAdapter;
-import com.opula.chatapp.adapter.NewChatUserAdapter;
 import com.opula.chatapp.adapter.UserSharedAdapter;
 import com.opula.chatapp.constant.AppGlobal;
 import com.opula.chatapp.constant.SharedPreference;
 import com.opula.chatapp.constant.WsConstant;
 import com.opula.chatapp.model.Chat;
-import com.opula.chatapp.model.Chatlist;
-import com.opula.chatapp.model.User;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
-
-import de.hdodenhof.circleimageview.CircleImageView;
+import java.util.Map;
 
 public class UserProfileFragment extends Fragment {
 
     SharedPreference sharedPreference;
     String userid;
     TextView txtName, txtEmail, text_no_image, txtViewAll;
-    TextView txtOnOff;
+    TextView txtOnOff,txtSecureOnOff;
     LinearLayout imgBack,linearLayoutMainMedia;
 //    CircleImageView image_PersonalInfo_DP;
     ImageView image_PersonalInfo_DP;
-    Switch chkNotification;
+    Switch chkNotification,chkSecureMessage;
     DatabaseReference reference;
     RecyclerView recycler_image;
     private List<Chat> mchat;
+    String TAG="UserProfileFragment";
     private UserSharedAdapter userSharedAdapter;
     FirebaseUser fuser;
     public static FirebaseUser firebaseUser;
@@ -78,8 +73,11 @@ public class UserProfileFragment extends Fragment {
 
         sharedPreference = new SharedPreference();
         userid = sharedPreference.getValue(getActivity(), WsConstant.userId);
+        Log.d(TAG,"jigar the user id who view profile is "+userid);
         initViews(view);
         fuser = FirebaseAuth.getInstance().getCurrentUser();
+
+        Log.d(TAG,"jigar the user only id who view profile is "+fuser.getUid());
 
         SpaceNavigationView spaceNavigationView = (SpaceNavigationView) getActivity().findViewById(R.id.space);
         spaceNavigationView.setVisibility(View.GONE);
@@ -116,7 +114,6 @@ public class UserProfileFragment extends Fragment {
 //                                .load(image)
 //                                .fitCenter()
 //                                .into(image_PersonalInfo_DP);
-
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -246,11 +243,69 @@ public class UserProfileFragment extends Fragment {
 
         readMesagges(fuser.getUid(), userid);
 
+        if(sharedPreference.getValue(getContext(),WsConstant.IS_STORED_MESSAGE_SECURE)!=null)
+        {
+            if(sharedPreference.getValue(getContext(),WsConstant.IS_STORED_MESSAGE_SECURE).equals("true"))
+            {
+                chkSecureMessage.setChecked(true);
+                txtSecureOnOff.setText("On");
+            }else
+            {
+                chkSecureMessage.setChecked(false);
+                txtSecureOnOff.setText("Off");
+            }
+
+        }
+
+        chkSecureMessage.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+
+                    /*final DatabaseReference chatRefReceiver = FirebaseDatabase.getInstance().getReference("Chatlist").child(userid).child(fuser.getUid());
+                    chatRefReceiver.child("id").setValue(fuser.getUid());
+                    chatRefReceiver.child("isnotification").setValue(true);*/
+
+                    sharedPreference.save(getContext(),"true",WsConstant.IS_STORED_MESSAGE_SECURE);
+                    txtSecureOnOff.setText("On");
+                    updateIsChatSenderSecure(true);
+                } else {
+
+                    /*final DatabaseReference chatRefReceiver = FirebaseDatabase.getInstance().getReference("Chatlist").child(userid).child(fuser.getUid());
+                    chatRefReceiver.child("id").setValue(fuser.getUid());
+                    chatRefReceiver.child("isnotification").setValue(false);*/
+                    sharedPreference.save(getContext(),"false",WsConstant.IS_STORED_MESSAGE_SECURE);
+                    txtSecureOnOff.setText("Off");
+                    updateIsChatSenderSecure(false);
+
+                }
+            }
+        });
+
         return view;
     }
+    private void updateIsChatSenderSecure(Boolean aBooleanSecure) {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Chatlist");
+        DatabaseReference hopperRef = reference.child(fuser.getUid()).child(userid);
+        Map<String, Object> hopperUpdates = new HashMap<>();
+        hopperUpdates.put("issecure", aBooleanSecure);
+        hopperRef.updateChildren(hopperUpdates);
+        updateIsChatReceiverSecure(aBooleanSecure);
+    }
+
+    private void updateIsChatReceiverSecure(Boolean aBooleanSecure) {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Chatlist");
+        DatabaseReference hopperRef = reference.child(userid).child(fuser.getUid());
+        Map<String, Object> hopperUpdates = new HashMap<>();
+        hopperUpdates.put("issecure", aBooleanSecure);
+        hopperRef.updateChildren(hopperUpdates);
+    }
+
 
     private void initViews(View view) {
         chkNotification = view.findViewById(R.id.chkNotification);
+        chkSecureMessage = view.findViewById(R.id.chkSecureMessage);
+        txtSecureOnOff = view.findViewById(R.id.txtSecureOnOff);
         txtOnOff = view.findViewById(R.id.txtOnOff);
         imgBack = view.findViewById(R.id.imgBack);
         image_PersonalInfo_DP = view.findViewById(R.id.image_PersonalInfo_DP);

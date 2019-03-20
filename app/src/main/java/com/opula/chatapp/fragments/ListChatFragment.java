@@ -28,6 +28,7 @@ import com.luseen.spacenavigation.SpaceNavigationView;
 import com.opula.chatapp.MainActivity;
 import com.opula.chatapp.R;
 import com.opula.chatapp.adapter.UserAdapter;
+import com.opula.chatapp.constant.SharedPreference;
 import com.opula.chatapp.constant.WsConstant;
 import com.opula.chatapp.model.BroadcastUser;
 import com.opula.chatapp.model.Chatlist;
@@ -47,6 +48,7 @@ public class ListChatFragment extends Fragment {
     FirebaseUser fuser;
     DatabaseReference reference;
     Chatlist chatlist;
+    ArrayList <String> arrayListIsSecure;
     private List<Chatlist> usersList;
     private List<String> broadcastList;
     ConstraintLayout task_list;
@@ -77,6 +79,7 @@ public class ListChatFragment extends Fragment {
         fuser = FirebaseAuth.getInstance().getCurrentUser();
         usersList = new ArrayList<>();
         broadcastList = new ArrayList<>();
+        arrayListIsSecure=new ArrayList<>();
         Bundle bundle = this.getArguments();
         if (bundle != null) {
             String strFragmentName = bundle.getString(WsConstant.FRAGMENT_NAME, "");
@@ -133,7 +136,7 @@ public class ListChatFragment extends Fragment {
                         chatlist = snapshot.getValue(Chatlist.class);
 
                         if (!("group".equalsIgnoreCase(snapshot.getKey()) || ("broadcast".equalsIgnoreCase(snapshot.getKey())))) {
-                            Log.d(TAG,"jigar the message snapshot have "+ snapshot.getValue() + "//" + chatlist);
+                        //    Log.d(TAG,"jigar the message snapshot have "+ snapshot.getValue() + "//" + chatlist);
                             usersList.add(chatlist);
                         }
                     }
@@ -160,7 +163,6 @@ public class ListChatFragment extends Fragment {
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         broadcastList.add(snapshot.getKey());
                         Log.d(TAG,"jigar the message from broad cast chat list  have " );
-
                     }
                     broadcastList();
                 } catch (Exception e) {
@@ -195,18 +197,21 @@ public class ListChatFragment extends Fragment {
 
                         for (Chatlist chatlist : usersList) {
                             assert user != null;
-
                             if (chatlist.getId().equalsIgnoreCase(user.getId())) {
                                 mUsers.add(user);
+                                arrayListIsSecure.add(String.valueOf(chatlist.getIssecure()));
                                 strUserChatID=strUserChatID+","+chatlist.getId();
+//                                String strisChatSecure=chatlist.getIssecure();
+                                Log.d(TAG,"jigar the chat is secure in chat list have "+chatlist.getIssecure());
                             }
                             Log.d(TAG,"jigar the message chat list  have "+ strUserChatID);
-
                         }
                     }
 
-                    userAdapter = new UserAdapter(getContext(), mUsers, mBroadcast, true, true);
-//                    userAdapter = new UserAdapter(getContext(),spaceNavigationView, mUsers, mBroadcast, true, true);
+//                    userAdapter = new UserAdapter(getContext(), mUsers, mBroadcast, true, true);
+                    userAdapter = new UserAdapter(getContext(), mUsers,usersList, mBroadcast, true, true);
+
+//                   userAdapter = new UserAdapter(getContext(),spaceNavigationView, mUsers, mBroadcast, true, true);
 
                     WsConstant.check = "fragment";
                     setAdapter(userAdapter, broadcastAdapter);
@@ -241,6 +246,8 @@ public class ListChatFragment extends Fragment {
                         }
                     }
                     broadcastAdapter = new UserAdapter(getContext(), mUsers, mBroadcast, true, false);
+//                    broadcastAdapter = new UserAdapter(getContext(), mUsers,broadcastList, mBroadcast, true, true);
+
                     WsConstant.check = "fragment";
                     setAdapter(userAdapter, broadcastAdapter);
 
@@ -269,42 +276,42 @@ public class ListChatFragment extends Fragment {
             recycler_view1.setAdapter(broadcastAdapter);
         }
 
-//        if (userAdapter.getItemCount() > 0 || broadcastAdapter.getItemCount() > 0) {
-//            recyclerView.setAdapter(userAdapter);
-//            recycler_view1.setAdapter(broadcastAdapter);
+////        if (userAdapter.getItemCount() > 0 || broadcastAdapter.getItemCount() > 0) {
+////            recyclerView.setAdapter(userAdapter);
+////            recycler_view1.setAdapter(broadcastAdapter);
+////        } else {
+////            task_list.setVisibility(View.GONE);
+////            no_chat.setVisibility(View.VISIBLE);
+////        }
+//       /* if (userAdapter.getItemCount() > 0) {
+//            if (broadcastAdapter.getItemCount() > 0) {
+//                task_list.setVisibility(View.VISIBLE);
+//                no_chat.setVisibility(View.GONE);
+//                //recycler_view1.setAdapter(broadcastAdapter);
+//                recyclerView.setAdapter(userAdapter);
+//            } else {
+//                task_list.setVisibility(View.VISIBLE);
+//                no_chat.setVisibility(View.GONE);
+//               // recycler_view1.setAdapter(broadcastAdapter);
+//                recyclerView.setAdapter(userAdapter);
+//            }
+//        } else if (broadcastAdapter.getItemCount() > 0) {
+//            if (userAdapter.getItemCount() > 0) {
+//                task_list.setVisibility(View.VISIBLE);
+//                no_chat.setVisibility(View.GONE);
+//                //recycler_view1.setAdapter(broadcastAdapter);
+//                recyclerView.setAdapter(userAdapter);
+//            } else {
+//                task_list.setVisibility(View.VISIBLE);
+//                no_chat.setVisibility(View.GONE);
+//               // recycler_view1.setAdapter(broadcastAdapter);
+//                recyclerView.setAdapter(userAdapter);
+//            }
 //        } else {
+//            // listView  empty
 //            task_list.setVisibility(View.GONE);
 //            no_chat.setVisibility(View.VISIBLE);
-//        }
-       /* if (userAdapter.getItemCount() > 0) {
-            if (broadcastAdapter.getItemCount() > 0) {
-                task_list.setVisibility(View.VISIBLE);
-                no_chat.setVisibility(View.GONE);
-                //recycler_view1.setAdapter(broadcastAdapter);
-                recyclerView.setAdapter(userAdapter);
-            } else {
-                task_list.setVisibility(View.VISIBLE);
-                no_chat.setVisibility(View.GONE);
-               // recycler_view1.setAdapter(broadcastAdapter);
-                recyclerView.setAdapter(userAdapter);
-            }
-        } else if (broadcastAdapter.getItemCount() > 0) {
-            if (userAdapter.getItemCount() > 0) {
-                task_list.setVisibility(View.VISIBLE);
-                no_chat.setVisibility(View.GONE);
-                //recycler_view1.setAdapter(broadcastAdapter);
-                recyclerView.setAdapter(userAdapter);
-            } else {
-                task_list.setVisibility(View.VISIBLE);
-                no_chat.setVisibility(View.GONE);
-               // recycler_view1.setAdapter(broadcastAdapter);
-                recyclerView.setAdapter(userAdapter);
-            }
-        } else {
-            // listView  empty
-            task_list.setVisibility(View.GONE);
-            no_chat.setVisibility(View.VISIBLE);
-        }*/
+//        }*/
     }
 
 }

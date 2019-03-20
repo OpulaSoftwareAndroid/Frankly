@@ -14,6 +14,8 @@ public class Chat {
     private boolean isseen;
     private boolean isimage;
     private boolean iscontact;
+    private boolean issecure;
+
     private boolean isaudio;
     private String image;
     private String time;
@@ -100,6 +102,14 @@ public class Chat {
 
     public boolean isIscontact() {
         return iscontact;
+    }
+
+    public void setIssecure(boolean issecure) {
+        this.issecure = issecure;
+    }
+
+    public boolean getIssecure() {
+        return issecure;
     }
 
     public void setIscontact(boolean iscontact) {

@@ -269,7 +269,62 @@
                             android:layout_height="wrap_content"
                             android:layout_below="@+id/tvStateDefault"
                             android:layout_centerHorizontal="true"
-                            android:checked="true"
+                            android:checked="false"
+                            android:textOff="OFF"
+                            android:textOn="ON"
+                            android:thumb="@drawable/customswitchselector"
+                            android:track="@drawable/custom_track" />
+                    </LinearLayout>
+
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_1sdp"
+                        android:layout_below="@id/txtName"
+                        android:layout_marginTop="@dimen/_6sdp"
+                        android:layout_marginBottom="@dimen/_6sdp"
+                        android:background="@color/gray" />
+                    <LinearLayout
+                        android:id="@+id/linearLayoutSecure"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal"
+                        android:weightSum="1">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_below="@id/image_PersonalInfo_DP"
+                            android:layout_centerHorizontal="true"
+                            android:layout_gravity="center"
+                            android:layout_weight="1"
+                            android:drawablePadding="@dimen/_8sdp"
+                            android:fontFamily="@font/m"
+                            android:gravity="center|left"
+                            android:text="Secure Message"
+                            android:textColor="@android:color/black"
+                            android:textSize="@dimen/_12sdp" />
+
+                        <TextView
+                            android:id="@+id/txtSecureOnOff"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center"
+                            android:fontFamily="@font/m"
+                            android:gravity="center"
+                            android:paddingRight="@dimen/_6sdp"
+                            android:text="On"
+                            android:textColor="@android:color/darker_gray"
+                            android:textSize="@dimen/_12sdp" />
+
+                        <Switch
+                            android:id="@+id/chkSecureMessage"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/tvStateDefault"
+                            android:layout_centerHorizontal="true"
+                            android:checked="false"
                             android:textOff="OFF"
                             android:textOn="ON"
                             android:thumb="@drawable/customswitchselector"

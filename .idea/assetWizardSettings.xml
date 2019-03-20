@@ -34,7 +34,7 @@
                                           <PersistentState>
                                             <option name="values">
                                               <map>
-                                                <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/av/ic_pause_black_24dp.xml" />
+                                                <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/action/ic_account_circle_black_24dp.xml" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -44,9 +44,9 @@
                                   </option>
                                   <option name="values">
                                     <map>
-                                      <entry key="outputName" value="ic_action_pause_button" />
+                                      <entry key="outputName" value="ic_action_profile_grey" />
                                       <entry key="theme" value="CUSTOM" />
-                                      <entry key="themeColor" value="eb268e" />
+                                      <entry key="themeColor" value="636363" />
                                     </map>
                                   </option>
                                 </PersistentState>
