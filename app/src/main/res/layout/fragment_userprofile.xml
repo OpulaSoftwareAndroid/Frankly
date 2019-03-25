@@ -139,12 +139,14 @@
                         <ImageView
                             android:layout_width="25dp"
                             android:layout_margin="10dp"
+                            android:visibility="gone"
                             android:id="@+id/imageViewCall"
                             android:src="@drawable/ic_action_call"
                             android:layout_height="25dp" />
                         <ImageView
                             android:layout_width="25dp"
                             android:layout_margin="10dp"
+                            android:visibility="gone"
                             android:id="@+id/imageViewVideo"
                             android:src="@drawable/ic_action_video"
                             android:layout_height="25dp" />

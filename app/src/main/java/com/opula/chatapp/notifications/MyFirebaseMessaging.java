@@ -1,5 +1,6 @@
 package com.opula.chatapp.notifications;
 
+import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -17,11 +18,15 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.opula.chatapp.MainActivity;
+import com.opula.chatapp.constant.WsConstant;
+
+import java.util.List;
 
 public class MyFirebaseMessaging extends FirebaseMessagingService {
 
-    @Override
-    public void onMessageReceived(RemoteMessage remoteMessage) {
+@Override
+public void onMessageReceived(RemoteMessage remoteMessage)
+{
         super.onMessageReceived(remoteMessage);
 
         String sented = remoteMessage.getData().get("sented");
@@ -35,12 +40,38 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
         if (firebaseUser != null && sented.equals(firebaseUser.getUid())){
             if (!currentUser.equals(user)) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    sendOreoNotification(remoteMessage);
+                    if (isForeground(getApplicationContext())) {
+                        //if in forground then your operation
+                        // if app is running them
+                    } else {
+                        //if in background then perform notification operation
+                        sendOreoNotification(remoteMessage);
+                    }
                 } else {
-                    sendNotification(remoteMessage);
+                    if (isForeground(getApplicationContext())) {
+                        //if in forground then your operation
+                        // if app is running them
+                    } else {
+                        //if in background then perform notification operation
+                        sendNotification(remoteMessage);
+                    }
+
                 }
             }
         }
+
+}
+
+    private static boolean isForeground(Context context) {
+        ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningAppProcessInfo> tasks = am.getRunningAppProcesses();
+        final String packageName = context.getPackageName();
+        for (ActivityManager.RunningAppProcessInfo appProcess : tasks) {
+            if (ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND == appProcess.importance && packageName.equals(appProcess.processName)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void sendOreoNotification(RemoteMessage remoteMessage){
@@ -54,7 +85,8 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
         int j = Integer.parseInt(user.replaceAll("[\\D]", ""));
         Intent intent = new Intent(this, MainActivity.class);
         Bundle bundle = new Bundle();
-        bundle.putString("userid", user);
+        bundle.putString(WsConstant.user_id_notification, user);
+        bundle.putString(WsConstant.FRAGMENT_NAME, WsConstant.FRAGMENT_CHAT);
         intent.putExtras(bundle);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, j, intent, PendingIntent.FLAG_ONE_SHOT);
@@ -65,12 +97,11 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
                 defaultSound, icon);
 
         int i = 0;
-        if (j > 0){
+        if (j > 0) {
             i = j;
         }
-
         oreoNotification.getManager().notify(i, builder.build());
-    }
+}
 
     private void sendNotification(RemoteMessage remoteMessage) {
         String user = remoteMessage.getData().get("user");
@@ -83,7 +114,10 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
         int j = Integer.parseInt(user.replaceAll("[\\D]", ""));
         Intent intent = new Intent(this, MainActivity.class);
         Bundle bundle = new Bundle();
-        bundle.putString("userid", user);
+//        bundle.putString("userid", user);
+        bundle.putString(WsConstant.user_id_notification, user);
+
+        bundle.putString(WsConstant.FRAGMENT_CHAT, WsConstant.FRAGMENT_CHAT);
         intent.putExtras(bundle);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, j, intent, PendingIntent.FLAG_ONE_SHOT);
@@ -103,7 +137,9 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
                 .setAutoCancel(true)
                 .setSound(defaultSound)
                 .setContentIntent(pendingIntent);
+
         NotificationManager noti = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+
 
         int i = 0;
         if (j > 0){

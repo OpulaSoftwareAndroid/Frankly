@@ -106,9 +106,11 @@ public class ListChatFragment extends Fragment {
             @Override
             public boolean onQueryTextChange(String query) {
                 Log.d(TAG,"jigar the query to send search is "+query);
-
-                userAdapter.getFilter().filter(query);
+                if(userAdapter!=null) {
+                    userAdapter.getFilter().filter(query);
+                }
                 return false;
+
             }
         });
         updateToken(FirebaseInstanceId.getInstance().getToken());

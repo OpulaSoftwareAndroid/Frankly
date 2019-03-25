@@ -1,6 +1,7 @@
 package com.opula.chatapp.activity;
 
 import android.Manifest;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -37,6 +38,7 @@ import com.opula.chatapp.constant.AppGlobal;
 import com.opula.chatapp.constant.SharedPreference;
 import com.opula.chatapp.constant.WsConstant;
 import com.opula.chatapp.model.GroupUser;
+import com.opula.chatapp.notifications.MyFirebaseMessaging;
 
 import java.util.Objects;
 
@@ -47,7 +49,7 @@ public class SplashActivity extends AppCompatActivity {
     FirebaseAuth auth;
     SharedPreference sharedPreference;
     PackageInfo pInfo;
-
+    MyFirebaseMessaging myFirebaseMessaging;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,6 +68,10 @@ public class SplashActivity extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         sharedPreference = new SharedPreference();
 
+//        myFirebaseMessaging.noti
+        NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+        assert notificationManager != null;
+        notificationManager.cancelAll();
         try {
             pInfo = SplashActivity.this.getPackageManager().getPackageInfo(getPackageName(), 0);
         } catch (PackageManager.NameNotFoundException e) {

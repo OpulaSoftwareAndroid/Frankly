@@ -196,13 +196,11 @@ public class MessageFragment extends Fragment {
         }
         catch (Exception e){
             e.printStackTrace();
-            strIsSecureChat="false";
-        }
+            strIsSecureChat="false"; }
 
         Log.d(TAG,"jigar the is secure intent have is clicked with status is "+strIsSecureChat);
 
         sharedPreference = new SharedPreference();
-
         apiService = Client.getClient("https://fcm.googleapis.com/").create(APIService.class);
         initViews(view);
 
@@ -923,6 +921,10 @@ public class MessageFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+//        if(messageAdapter!=null) {
+//            recyclerView.setAdapter(messageAdapter);
+//            messageAdapter.notifyDataSetChanged();
+//        }
         seenMessage(userid);
     }
 
@@ -976,12 +978,8 @@ public class MessageFragment extends Fragment {
         }
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Chats").push();
         randomString(9);
-        /*String encMessage = null;
-        try {
-            encMessage = encrypt(message,"Jenil");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
+
+
         Long tsLong = (System.currentTimeMillis() / 1000);
         String ts = tsLong.toString();
 
@@ -1305,4 +1303,7 @@ public class MessageFragment extends Fragment {
             }
         });
     }
+
+
+
 }

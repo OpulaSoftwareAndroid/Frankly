@@ -301,6 +301,13 @@
                     android:layout_weight="0">
 
                     <ImageView
+                        android:id="@+id/img_loading_tick"
+                        android:layout_width="12dp"
+                        android:layout_height="12dp"
+                        android:src="@drawable/ic_watch_tick"
+                        android:visibility="gone"
+                        />
+                    <ImageView
                         android:id="@+id/img_tick"
                         android:layout_width="12dp"
                         android:layout_height="12dp"

@@ -6,6 +6,8 @@ public class WsConstant {
     public static final String userId = "userId";
     public static final String userUsername = "userUsername";
     public static final String userImage = "userImage";
+    public static final String user_id_notification = "userid";
+
 
 
     public static final String groupUserId = "groupUserId";
@@ -19,6 +21,7 @@ public class WsConstant {
     public static String ismain = "ismain";
     public static String FRAGMENT_NAME = "fragment_name";
     public static String FRAGMENT_SEARCH = "fragment_search";
+    public static String FRAGMENT_CHAT = "fragment_chat";
 
 
     public static String IS_MESSAGE_SECURE= "issecure";
@@ -41,7 +44,7 @@ public class WsConstant {
     public static String STATUS_DOCUMENT_URI = "doc_uri";
     public static String STATUS_TABLE_ID = "table_id";
 
-//    hashMap.put("id", sb.toString());
+    //    hashMap.put("id", sb.toString());
 //            hashMap.put("sender", sender);
 //            hashMap.put("message", message);
 //            hashMap.put("issend", true);

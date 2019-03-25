@@ -19,6 +19,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -111,8 +112,22 @@ public class MainActivity extends AppCompatActivity {
             window.setStatusBarColor(getResources().getColor(android.R.color.transparent));
             window.setBackgroundDrawable(background);
         }
+
+
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        String strMenuFragment = getIntent().getStringExtra(WsConstant.FRAGMENT_NAME);
+        String strUserID = getIntent().getStringExtra(WsConstant.user_id_notification);
+
+        Log.d(TAG,"jigar the main activity intent have is "+strMenuFragment);
+        Log.d(TAG,"jigar the main activity user id in intent have is "+strUserID);
+
+
+//        FragmentManager fragmentManager = getSupportFragmentManager();
+//        fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new MyProfileFragment()).addToBackStack(null).commit();
+//        spaceNavigationView.setVisibility(View.GONE);
 
         sharedPreference = new SharedPreference();
         fuser = FirebaseAuth.getInstance().getCurrentUser();
@@ -139,10 +154,12 @@ public class MainActivity extends AppCompatActivity {
         spaceNavigationView.setVisibility(View.GONE);
         spaceNavigationView.initWithSaveInstanceState(savedInstanceState);
         spaceNavigationView.shouldShowFullBadgeText(true);
-//        spaceNavigationView.addSpaceItem(new SpaceItem("Status", R.drawable.ic_bottom_chat));
+
+        //        spaceNavigationView.addSpaceItem(new SpaceItem("Status", R.drawable.ic_bottom_chat));
 //        spaceNavigationView.addSpaceItem(new SpaceItem("Call", R.drawable.ic_bottom_call));
 //        spaceNavigationView.addSpaceItem(new SpaceItem("Chats", R.drawable.ic_bottom_chat));
 //        spaceNavigationView.addSpaceItem(new SpaceItem("Search", R.drawable.ic_bottom_chat));
+
         spaceNavigationView.addSpaceItem(new SpaceItem("", R.drawable.ic_action_status));
         spaceNavigationView.addSpaceItem(new SpaceItem("", R.drawable.ic_action_profile_grey));
         spaceNavigationView.addSpaceItem(new SpaceItem("", R.drawable.ic_action_chat));
@@ -286,7 +303,8 @@ public class MainActivity extends AppCompatActivity {
                 MessageAdapter.forwardMessage(MainActivity.this);
             }
         });
-
+        fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new ListChatFragment()).addToBackStack(null).commit();
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -299,9 +317,29 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new ListChatFragment()).addToBackStack(null).commit();
+        if(strMenuFragment!=null)
+        {
+            if(strMenuFragment.equals(WsConstant.FRAGMENT_CHAT)) {
 
+//                FragmentManager fragmentManager = getSupportFragmentManager();
+//                Bundle bundle = new Bundle();
+//                bundle.putString("userid", strUserID);
+//                bundle.putString(WsConstant.FRAGMENT_NAME, WsConstant.FRAGMENT_CHAT);
+//                fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new MessageFragment()).addToBackStack(null).commit();
+//                spaceNavigationView.setVisibility(View.GONE);
+
+                MessageFragment fragmentMessage=new MessageFragment();
+                Bundle args = new Bundle();
+                args.putString("userid", strUserID);
+                sharedPreference.save(this,strUserID, WsConstant.userId);
+                fragmentMessage.setArguments(args);
+                fragmentManager = getSupportFragmentManager();
+                fragmentManager.beginTransaction().replace(R.id.frame_mainactivity,fragmentMessage).addToBackStack(null).commit();
+
+
+            }
+
+        }
         txt_my_wallate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

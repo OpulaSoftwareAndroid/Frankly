@@ -330,8 +330,10 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> im
                                 String tiime = getDateCurrentTimeZone(Long.parseLong(chat.getTime()));
                                 time.setText(tiime);
                                 arrayListUserLastMessageTime.add(tiime);
-//                                Log.d(TAG,"jigar the user last message list have is "
+
+                                //                                Log.d(TAG,"jigar the user last message list have is "
 //                                        +arrayListUserLastMessageTime.toString()+"and user is "+userid);
+
                                 Log.d(TAG,"jigar the chat time is " +chat.getTime() +" and "+userid);
                                 //                                items.removeAt(currentPosition).also {
 //                                    items.add(currentPosition - 1, it)

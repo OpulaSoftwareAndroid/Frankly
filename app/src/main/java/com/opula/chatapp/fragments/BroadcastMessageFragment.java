@@ -118,6 +118,7 @@ public class BroadcastMessageFragment extends Fragment {
     DatabaseReference reference;
     RelativeLayout btn_send;
     BroadcastMessageAdapter messageAdapter;
+    static String TAG="BroadcastMessageFragment";
     List<Chat> mchat;
     RecyclerView recyclerView;
     public static String userid, broadcastid;
@@ -696,7 +697,7 @@ public class BroadcastMessageFragment extends Fragment {
         return secretKeySpec;
     }
 
-    public static void sendMessageFromBroadcast(final Context context, final String sender, String message, boolean isimage, String uri, String docUri, boolean iscontact, String con_name, String con_num){
+    public static void sendMessageFromBroadcast(final Context context, final String sender, final String message, boolean isimage, String uri, String docUri, boolean iscontact, String con_name, String con_num){
 
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Chats").push();
         randomString(9);
@@ -764,6 +765,8 @@ public class BroadcastMessageFragment extends Fragment {
                             chatRef.child("istyping").setValue(false);
                             chatRef.child("isnotification").setValue(true);
                         }
+                        sendNotifiaction(context, myList, user.getBroadcastName(), message);
+
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -845,6 +848,57 @@ public class BroadcastMessageFragment extends Fragment {
             }
         });
     }*/
+    private static void sendNotifiaction(final Context context, List<String> myListReceiver, final String username, final String message) {
+        DatabaseReference tokens = FirebaseDatabase.getInstance().getReference("Tokens");
+        Query query = null;
+        for(int i=0;i<myListReceiver.size();i++) {
+             query = tokens.orderByKey().equalTo(myListReceiver.get(i));
+        }
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                try {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        Token token = snapshot.getValue(Token.class);
+                        Data data = new Data(fuser.getUid()
+                                , R.mipmap.ic_launcher, username + ": " + message, "New Message",
+                                userid);
+
+                        Sender sender = new Sender(data, token.getToken());
+
+                        apiService.sendNotification(sender)
+                                .enqueue(new Callback<MyResponse>() {
+                                    @Override
+                                    public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
+                                        Log.d(TAG,"jigar the on notification response we have in notification is "+response.code());
+
+                                        if (response.code() == 200) {
+
+                                            if (response.body().success != 1) {
+
+                                            }
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<MyResponse> call, Throwable t) {
+                                        Log.d(TAG,"jigar the on notification failure  in notification is "+call.toString());
+
+                                    }
+                                });
+                    }
+                } catch (Exception e) {
+                    Log.d(TAG,"jigar the main exception in notification is "+e);
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d(TAG,"jigar the notification cancelled is "+databaseError.getMessage());
+            }
+        });
+    }
 
     private void readMesagges(final String groupid) {
         mchat = new ArrayList<>();

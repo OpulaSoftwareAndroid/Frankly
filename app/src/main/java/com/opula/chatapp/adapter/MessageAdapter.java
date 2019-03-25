@@ -253,16 +253,42 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             holder.img_tick.setVisibility(View.GONE);
             holder.img_dtick.setVisibility(View.GONE);
             holder.img_dstick.setVisibility(View.VISIBLE);
+            holder.img_loading_tick.setVisibility(View.GONE);
+
         } else {
             if (chat.isIssend()) {
                 holder.img_tick.setVisibility(View.GONE);
                 holder.img_dtick.setVisibility(View.VISIBLE);
                 holder.img_dstick.setVisibility(View.GONE);
+                holder.img_loading_tick.setVisibility(View.GONE);
             } else {
-                holder.img_tick.setVisibility(View.VISIBLE);
+                holder.img_loading_tick.setVisibility(View.VISIBLE);
+                //                if(AppGlobal.isNetwork(mContext)) {
+//                    holder.img_loading_tick.setVisibility(View.GONE);
+//                }
+//                else
+//                {
+//                    if(position==mChat.size()-1) {
+//                        holder.img_loading_tick.setVisibility(View.VISIBLE);
+//                    }else
+//                    {
+//
+//                        holder.img_loading_tick.setVisibility(View.GONE);
+//                    }
+//                }
                 holder.img_dtick.setVisibility(View.GONE);
                 holder.img_dstick.setVisibility(View.GONE);
+                //                if(AppGlobal.isNetwork(mContext))
+//                {
+//                    if(position==mChat.size()-1) {
+//                        holder.img_tick.setVisibility(View.GONE);
+//                        holder.img_dtick.setVisibility(View.VISIBLE);
+//                        holder.img_dstick.setVisibility(View.GONE);
+//                        holder.img_loading_tick.setVisibility(View.GONE);
+//                    }
+//                }
             }
+
         }
 
         String str = getDateCurrentTimeZone(Long.parseLong(chat.getTime()));
@@ -464,7 +490,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         public TextView show_message, txtContactName, txtContactNumber, txtAddContact;
-        public ImageView profile_image, img_receive, img_tick, img_dtick, img_dstick, img_download;
+        public ImageView profile_image, img_receive, img_tick, img_dtick, img_dstick, img_download,img_loading_tick;
         public TextView show_time;
         public ProgressBar progress_circular;
         RelativeLayout relative, txt_seen, img_blur, relative_contact, relativeLayoutAudioPlayer;
@@ -495,6 +521,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             img_tick = itemView.findViewById(R.id.img_tick);
             img_dtick = itemView.findViewById(R.id.img_dtick);
             img_dstick = itemView.findViewById(R.id.img_dstick);
+            img_loading_tick = itemView.findViewById(R.id.img_loading_tick);
             linear_chat = itemView.findViewById(R.id.linear_chat);
             linmain = itemView.findViewById(R.id.linmain);
             img_download = itemView.findViewById(R.id.img_download);
