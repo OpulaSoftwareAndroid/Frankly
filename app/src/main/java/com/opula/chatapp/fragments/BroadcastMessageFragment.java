@@ -355,20 +355,20 @@ public class BroadcastMessageFragment extends Fragment {
             }
         });
 
-        KeyboardVisibilityEvent.setEventListener(
-                getActivity(),
-                new KeyboardVisibilityEventListener() {
-                    @Override
-                    public void onVisibilityChanged(boolean isOpen) {
-                        if (isOpen) {
-                            recordButton.setVisibility(View.GONE);
-                            send_image.setVisibility(View.GONE);
-                        } else {
-                            recordButton.setVisibility(View.VISIBLE);
-                            send_image.setVisibility(View.VISIBLE);
-                        }
-                    }
-                });
+        //        KeyboardVisibilityEvent.setEventListener(
+//                getActivity(),
+//                new KeyboardVisibilityEventListener() {
+//                    @Override
+//                    public void onVisibilityChanged(boolean isOpen) {
+//                        if (isOpen) {
+//                            recordButton.setVisibility(View.GONE);
+//                            send_image.setVisibility(View.GONE);
+//                        } else {
+//                            recordButton.setVisibility(View.VISIBLE);
+//                            send_image.setVisibility(View.VISIBLE);
+//                        }
+//                    }
+//                });
 
 
         return view;

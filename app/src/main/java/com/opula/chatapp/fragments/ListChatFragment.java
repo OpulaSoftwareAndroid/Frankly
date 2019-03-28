@@ -65,6 +65,7 @@ public class ListChatFragment extends Fragment {
         MainActivity.showFloatingActionButton();
         WsConstant.ismain = "p";
         recyclerView = view.findViewById(R.id.recycler_view);
+
         recycler_view1 = view.findViewById(R.id.recycler_view1);
         searchViewChatList=view.findViewById(R.id.searchViewChatList);
         searchViewChatList.setVisibility(View.GONE);
@@ -119,10 +120,10 @@ public class ListChatFragment extends Fragment {
     }
     public static void setSearchViewVisibility(boolean boolStatus){
         if(boolStatus) {
-            searchViewChatList.setVisibility(View.VISIBLE);
+          //  searchViewChatList.setVisibility(View.VISIBLE);
         }else
         {
-            searchViewChatList.setVisibility(View.GONE);
+        //    searchViewChatList.setVisibility(View.GONE);
         }
     }
 
@@ -140,6 +141,7 @@ public class ListChatFragment extends Fragment {
                         if (!("group".equalsIgnoreCase(snapshot.getKey()) || ("broadcast".equalsIgnoreCase(snapshot.getKey())))) {
                         //    Log.d(TAG,"jigar the message snapshot have "+ snapshot.getValue() + "//" + chatlist);
                             usersList.add(chatlist);
+
                         }
                     }
                     chatList();
@@ -156,7 +158,8 @@ public class ListChatFragment extends Fragment {
     }
 
     public void getBroadcast() {
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Chatlist").child(fuser.getUid()).child("broadcast");
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Chatlist")
+                .child(fuser.getUid()).child("broadcast");
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

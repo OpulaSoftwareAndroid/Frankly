@@ -118,11 +118,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        String strMenuFragment = getIntent().getStringExtra(WsConstant.FRAGMENT_NAME);
-        String strUserID = getIntent().getStringExtra(WsConstant.user_id_notification);
 
-        Log.d(TAG,"jigar the main activity intent have is "+strMenuFragment);
-        Log.d(TAG,"jigar the main activity user id in intent have is "+strUserID);
 
 
 //        FragmentManager fragmentManager = getSupportFragmentManager();
@@ -303,8 +299,6 @@ public class MainActivity extends AppCompatActivity {
                 MessageAdapter.forwardMessage(MainActivity.this);
             }
         });
-        fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new ListChatFragment()).addToBackStack(null).commit();
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -316,12 +310,22 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                String strMenuFragment = getIntent().getStringExtra(WsConstant.FRAGMENT_NAME);
+                String strUserID = getIntent().getStringExtra(WsConstant.user_id_notification);
+                Log.d(TAG,"jigar the main activity intent have is "+strMenuFragment);
+                Log.d(TAG,"jigar the main activity user id in intent have is "+strUserID);
 
+                //Do something after 100ms
         if(strMenuFragment!=null)
         {
+
             if(strMenuFragment.equals(WsConstant.FRAGMENT_CHAT)) {
 
-//                FragmentManager fragmentManager = getSupportFragmentManager();
+                //                FragmentManager fragmentManager = getSupportFragmentManager();
 //                Bundle bundle = new Bundle();
 //                bundle.putString("userid", strUserID);
 //                bundle.putString(WsConstant.FRAGMENT_NAME, WsConstant.FRAGMENT_CHAT);
@@ -331,15 +335,23 @@ public class MainActivity extends AppCompatActivity {
                 MessageFragment fragmentMessage=new MessageFragment();
                 Bundle args = new Bundle();
                 args.putString("userid", strUserID);
-                sharedPreference.save(this,strUserID, WsConstant.userId);
+                sharedPreference.save(MainActivity.this,strUserID, WsConstant.userId);
                 fragmentMessage.setArguments(args);
                 fragmentManager = getSupportFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.frame_mainactivity,fragmentMessage).addToBackStack(null).commit();
 
 
+            }else
+            {
+                fragmentManager = getSupportFragmentManager();
+                fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new ListChatFragment()).addToBackStack(null).commit();
+
             }
 
         }
+            }
+        }, 1000);
+
         txt_my_wallate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

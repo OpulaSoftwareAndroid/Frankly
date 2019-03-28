@@ -46,7 +46,7 @@ public class UserSharedAdapter extends RecyclerView.Adapter<UserSharedAdapter.Vi
         if (chat.getImage().equals("default")) {
             holder.profile_image.setImageResource(R.drawable.image_boy);
         } else {
-            holder.p_bar.setVisibility(View.VISIBLE);
+            holder.p_bar.setVisibility(View.GONE);
             Glide.with(mContext).load(chat.getImage())
                     .listener(new RequestListener<String, GlideDrawable>() {
                         @Override

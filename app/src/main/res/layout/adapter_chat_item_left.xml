@@ -48,8 +48,8 @@
 
                 <RelativeLayout
                     android:id="@+id/relative"
-                    android:layout_width="300dp"
-                    android:layout_height="300dp"
+                    android:layout_width="200dp"
+                    android:layout_height="200dp"
                     android:layout_marginTop="4dp"
                     android:visibility="gone">
 
@@ -64,8 +64,8 @@
 
                     <ImageView
                         android:id="@+id/img_receive"
-                        android:layout_width="300dp"
-                        android:layout_height="300dp"
+                        android:layout_width="200dp"
+                        android:layout_height="200dp"
                         android:adjustViewBounds="true"
                         android:scaleType="centerCrop"
                         android:src="@drawable/ic_edit"
@@ -73,12 +73,12 @@
 
                     <RelativeLayout
                         android:id="@+id/img_blur"
-                        android:layout_width="300dp"
-                        android:layout_height="300dp">
+                        android:layout_width="200dp"
+                        android:layout_height="200dp">
 
                         <ImageView
-                            android:layout_width="300dp"
-                            android:layout_height="300dp"
+                            android:layout_width="200dp"
+                            android:layout_height="200dp"
                             android:adjustViewBounds="true"
                             android:alpha="0.9"
                             android:background="@drawable/gradient_bg"

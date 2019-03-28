@@ -115,6 +115,7 @@ public class BroadcastMessageAdapter extends RecyclerView.Adapter<BroadcastMessa
                 e.printStackTrace();
             }*/
 
+            holder.relativeLayoutAudioPlayer.setVisibility(View.GONE);
             holder.show_message.setText(chat.getMessage());
         }
 
@@ -198,10 +199,10 @@ public class BroadcastMessageAdapter extends RecyclerView.Adapter<BroadcastMessa
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         public TextView show_message;
-        public ImageView profile_image, img_receive, img_tick, img_dtick, img_dstick;
+        public ImageView profile_image, img_receive, img_tick, img_dtick, img_dstick,imageViewPlayAudio;
         public TextView show_time;
         public ProgressBar progress_circular;
-        public RelativeLayout relative, txt_seen;
+        public RelativeLayout relative, txt_seen,relativeLayoutAudioPlayer;;
         public LinearLayout linear_chat;
         public LinearLayout linmain;
 
@@ -220,6 +221,8 @@ public class BroadcastMessageAdapter extends RecyclerView.Adapter<BroadcastMessa
             img_dstick = itemView.findViewById(R.id.img_dstick);
             linear_chat = itemView.findViewById(R.id.linear_chat);
             linmain = itemView.findViewById(R.id.linmain);
+            relativeLayoutAudioPlayer = itemView.findViewById(R.id.relativeLayoutAudioPlayer);
+            imageViewPlayAudio=itemView.findViewById(R.id.imageViewPlayAudio);
         }
     }
 

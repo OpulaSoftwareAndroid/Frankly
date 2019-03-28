@@ -221,7 +221,12 @@ public class MessageFragment extends Fragment {
         });
 
         userid = sharedPreference.getValue(getActivity(), WsConstant.userId);
+
+        Log.d(TAG,"jigar the user id we have in fragment is "+userid);
+
         fuser = FirebaseAuth.getInstance().getCurrentUser();
+        Log.d(TAG,"jigar the user id current user we have in fragment is "+fuser.getUid());
+
 
         btn_send.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -334,18 +339,23 @@ public class MessageFragment extends Fragment {
                                     .placeholder(R.drawable.image_boy).error(R.drawable.image_boy)
                                     .into(imgUser);
                         } catch (Exception e) {
+                            Log.d(TAG,"jigar the error in image exception we have in reference users is "+e);
+
                             e.printStackTrace();
                         }
                     }
 
                     readMesagges(fuser.getUid(), userid, user.getImageURL());
                 } catch (Exception e) {
+                    Log.d(TAG,"jigar the error in exception we have in reference users is "+e);
                     e.printStackTrace();
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d(TAG,"jigar the error on cancelled database error we have in reference users is "+databaseError);
+
             }
         });
 
@@ -563,6 +573,8 @@ public class MessageFragment extends Fragment {
             Date currenTimeZone = (Date) calendar.getTime();
             return sdf.format(currenTimeZone);
         } catch (Exception e) {
+            Log.d(TAG,"jigar the error in exception we current time is "+e);
+
         }
         return "";
     }
@@ -899,6 +911,8 @@ public class MessageFragment extends Fragment {
                         }
                     }
                 } catch (Exception e) {
+                    Log.d(TAG,"jigar the error in exception we have in send message is "+e);
+
                     e.printStackTrace();
                 }
             }
@@ -928,24 +942,24 @@ public class MessageFragment extends Fragment {
         seenMessage(userid);
     }
 
-    private String encrypt(String Data, String Password) throws Exception {
-        SecretKeySpec key = genrateKey(Password);
-        Cipher cipher = Cipher.getInstance(AES);
-        cipher.init(Cipher.ENCRYPT_MODE, key);
-        byte[] encVal = cipher.doFinal(Data.getBytes());
-        String encyptedValue = Base64.encodeToString(encVal, Base64.DEFAULT);
-        return encyptedValue;
-    }
-
-    private String decrypt(String outputString, String Password) throws Exception {
-        SecretKeySpec key = genrateKey(Password);
-        Cipher cipher = Cipher.getInstance(AES);
-        cipher.init(Cipher.DECRYPT_MODE, key);
-        byte[] encyptedValue = Base64.decode(outputString, Base64.DEFAULT);
-        byte[] decValue = cipher.doFinal(encyptedValue);
-        String decyptedValue = new String(decValue);
-        return decyptedValue;
-    }
+//    private String encrypt(String Data, String Password) throws Exception {
+//        SecretKeySpec key = genrateKey(Password);
+//        Cipher cipher = Cipher.getInstance(AES);
+//        cipher.init(Cipher.ENCRYPT_MODE, key);
+//        byte[] encVal = cipher.doFinal(Data.getBytes());
+//        String encyptedValue = Base64.encodeToString(encVal, Base64.DEFAULT);
+//        return encyptedValue;
+//    }
+//
+//    private String decrypt(String outputString, String Password) throws Exception {
+//        SecretKeySpec key = genrateKey(Password);
+//        Cipher cipher = Cipher.getInstance(AES);
+//        cipher.init(Cipher.DECRYPT_MODE, key);
+//        byte[] encyptedValue = Base64.decode(outputString, Base64.DEFAULT);
+//        byte[] decValue = cipher.doFinal(encyptedValue);
+//        String decyptedValue = new String(decValue);
+//        return decyptedValue;
+//    }
 
     private SecretKeySpec genrateKey(String password) throws Exception {
         final MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -1047,6 +1061,8 @@ public class MessageFragment extends Fragment {
 
                     }
                 } catch (Exception e) {
+                    Log.d(TAG,"jigar the error in exception we have in personal message is "+e);
+
                     e.printStackTrace();
                 }
             }

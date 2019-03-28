@@ -64,11 +64,14 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> im
     private List<BroadcastUser> mBroadcast;
     private boolean ischat, is;
     SharedPreference sharedPreference;
-    private int intNotificationCount=0;
+//    private int intNotificationCount=0;
     String theLastMessage, thetime;
     ArrayList<String> arrayListUserName;
     String AES = "AES";
+    int intcount=0;
+
     static String TAG="UserAdapter";
+    int intNotificationCount=0;
     ArrayList <String> arrayListUserLastMessageTime;
 
     public UserAdapter(Context mContext, List<User> mUsers,List<Chatlist> mChatListDetails, List<BroadcastUser> mBroadcast, boolean ischat, boolean is) {
@@ -133,6 +136,8 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> im
 
             if (ischat) {
 
+
+                Log.d(TAG, "jigar the chat is not seen count before all is " + holder.textViewUnreadBadge.getText().toString());
 
                 lastMessage(mUsersFilteredList,position,user.getId(), holder.last_msg, holder.time,holder.textViewUnreadBadge);
             } else {
@@ -213,8 +218,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> im
                 }
             });
         }
-
-
     }
 
     @Override
@@ -298,19 +301,23 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> im
         thetime = "";
         final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Chats");
+         String strCurrentUserId = "";
+        final ArrayList <String> arrayListUnreadChatID=new ArrayList();
 
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    //intNotificationCount=0;
                     Chat chat = snapshot.getValue(Chat.class);
+                    intNotificationCount=0;
                     assert firebaseUser != null;
                     firebaseUser.getUid();
                     if (chat != null) {
                         if (chat.getTo().equalsIgnoreCase("personal")) {
-                            if (chat.getReceiver().equals(firebaseUser.getUid()) && chat.getSender().equals(userid) ||
-                                    chat.getReceiver().equals(userid) && chat.getSender().equals(firebaseUser.getUid())) {
 
+                                if (chat.getReceiver().equals(firebaseUser.getUid()) && chat.getSender().equals(userid) ||
+                                    chat.getReceiver().equals(userid) && chat.getSender().equals(firebaseUser.getUid())) {
                                 if(chat.getIssecure()) {
                                     String encrypted = chat.getMessage();
 
@@ -330,11 +337,8 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> im
                                 String tiime = getDateCurrentTimeZone(Long.parseLong(chat.getTime()));
                                 time.setText(tiime);
                                 arrayListUserLastMessageTime.add(tiime);
+                                    Log.d(TAG,"jigar the chat time is " +chat.getTime() +" and "+userid);
 
-                                //                                Log.d(TAG,"jigar the user last message list have is "
-//                                        +arrayListUserLastMessageTime.toString()+"and user is "+userid);
-
-                                Log.d(TAG,"jigar the chat time is " +chat.getTime() +" and "+userid);
                                 //                                items.removeAt(currentPosition).also {
 //                                    items.add(currentPosition - 1, it)
 //                                }
@@ -349,36 +353,30 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> im
 //                                }
 //
 
-
                                 if(!chat.isIsseen())
                                 {
-                                    intNotificationCount=intNotificationCount+1;
+                                    if(!arrayListUnreadChatID.contains(chat.getId()))
+                                    {
+                                        arrayListUnreadChatID.add(chat.getId());
+                                    }
+                                    intcount=(intcount+1)-intcount;
+                                    Log.d(TAG,"jigar the the unread arraylist  chat time is with "+arrayListUnreadChatID.size());
+
                                     if(!chat.getSender().equals(userid)) {
                                         textViewUnreadBadge.setVisibility(View.GONE);
-
                                     }else
                                     {
+                                        textViewUnreadBadge.setText(" "+arrayListUnreadChatID.size()+" ");
                                         textViewUnreadBadge.setVisibility(View.VISIBLE);
-
                                     }
-                                    textViewUnreadBadge.setText("     ");
                                     User user=mUsersFilteredList.get(position);
                                     mUsersFilteredList.remove(position);
                                     mUsersFilteredList.add(0,user);
                                     notifyItemMoved(position, 0);
-//                                    items.removeAt(currentPosition).also {
-//                                    items.add(currentPosition - 1, it)
-//                                }
-//                                notifyItemMoved(currentPosition, currentPosition - 1)
-
-//                                    spaceNavigationView.shouldShowFullBadgeText(true);
-//                                    spaceNavigationView.showBadgeAtIndex(2, intNotificationCount, Color.RED);
                                 }else
                                 {
-                           //         intNotificationCount=intNotificationCount-1;
                                     textViewUnreadBadge.setVisibility(View.GONE);
                                 }
-
 
                             }
                         } else if (chat.getTo().equalsIgnoreCase("broadcast")) {

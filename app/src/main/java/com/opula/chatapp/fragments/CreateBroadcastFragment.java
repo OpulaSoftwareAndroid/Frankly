@@ -184,7 +184,8 @@ public class CreateBroadcastFragment extends Fragment {
                                     });
                                 }
                             } else if (!dataSnapshot.exists()) {
-                                final DatabaseReference reference2 = FirebaseDatabase.getInstance().getReference("Chatlist").child(fuser.getUid()).child("broadcast");
+                                final DatabaseReference reference2 = FirebaseDatabase.getInstance()
+                                        .getReference("Chatlist").child(fuser.getUid()).child("broadcast");
                                 reference2.addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot1) {

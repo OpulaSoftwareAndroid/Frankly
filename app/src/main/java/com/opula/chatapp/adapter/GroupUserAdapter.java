@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,8 +28,10 @@ import com.opula.chatapp.fragments.GroupMessageFragment;
 import com.opula.chatapp.fragments.GroupProfileFragment;
 import com.opula.chatapp.model.Chat;
 import com.opula.chatapp.model.GroupUser;
+import com.opula.chatapp.model.User;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -41,6 +44,9 @@ public class GroupUserAdapter extends RecyclerView.Adapter<GroupUserAdapter.View
     private boolean ischat;
     SharedPreference sharedPreference;
     String theLastMessage, thetime;
+
+    int intcount=0;
+    String TAG="GroupUserAdapter";
 
     public GroupUserAdapter(Context mContext, List<GroupUser> mUsers, boolean ischat) {
         this.mUsers = mUsers;
@@ -70,7 +76,7 @@ public class GroupUserAdapter extends RecyclerView.Adapter<GroupUserAdapter.View
         }
 
         if (ischat){
-            lastMessage(user.getGroupId(), holder.last_msg, holder.time);
+            lastMessage(user.getGroupId(), holder.last_msg, holder.time,holder.textViewUnreadBadge);
         } else {
             holder.last_msg.setVisibility(View.GONE);
         }
@@ -82,6 +88,8 @@ public class GroupUserAdapter extends RecyclerView.Adapter<GroupUserAdapter.View
                 MainActivity.hideFloatingActionButton();
 //                MainActivity.checkChatTheme(mContext);
                 MainActivity.showpart1();
+                holder.textViewUnreadBadge.setVisibility(View.GONE);
+
                 FragmentManager fragmentManager = ((FragmentActivity) mContext).getSupportFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new GroupMessageFragment()).addToBackStack(null).commit();
 
@@ -94,6 +102,8 @@ public class GroupUserAdapter extends RecyclerView.Adapter<GroupUserAdapter.View
                 sharedPreference.save(mContext, user.getGroupId(), WsConstant.groupUserId);
                 sharedPreference.save(mContext, user.getGroupAdmin(), WsConstant.groupadminId);
                 MainActivity.showpart2();
+                holder.textViewUnreadBadge.setVisibility(View.GONE);
+
                 FragmentManager fragmentManager = ((FragmentActivity) mContext).getSupportFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new GroupProfileFragment()).addToBackStack(null).commit();
 
@@ -113,7 +123,7 @@ public class GroupUserAdapter extends RecyclerView.Adapter<GroupUserAdapter.View
         public ImageView profile_image;
         private ImageView img_on;
         private ImageView img_off;
-        private TextView last_msg,time;
+        private TextView last_msg,time,textViewUnreadBadge;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -124,15 +134,16 @@ public class GroupUserAdapter extends RecyclerView.Adapter<GroupUserAdapter.View
             img_off = itemView.findViewById(R.id.img_off);
             last_msg = itemView.findViewById(R.id.last_msg);
             time = itemView.findViewById(R.id.time);
+            textViewUnreadBadge=itemView.findViewById(R.id.textViewUnreadBadge);
         }
     }
 
     //check for last message
-    private void lastMessage(final String userid, final TextView last_msg, final TextView time) {
+    private void lastMessage(final String userid, final TextView last_msg, final TextView time, final TextView textViewUnreadBadge) {
         theLastMessage = "default";
         final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Chats");
-
+        final ArrayList<String> arrayListUnreadChatID=new ArrayList();
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -144,6 +155,29 @@ public class GroupUserAdapter extends RecyclerView.Adapter<GroupUserAdapter.View
                                 theLastMessage = chat.getMessage();
                                 String tiime = getDateCurrentTimeZone(Long.parseLong(chat.getTime()));
                                 time.setText(tiime);
+
+                                if(!chat.isIsseen())
+                                {
+                                    if(!arrayListUnreadChatID.contains(chat.getId()))
+                                    {
+                                        arrayListUnreadChatID.add(chat.getId());
+                                    }
+                                    intcount=(intcount+1)-intcount;
+                                    Log.d(TAG,"jigar the the unread arraylist  chat time is with "+arrayListUnreadChatID.size());
+
+                                    if(!chat.getSender().equals(userid)) {
+                                        textViewUnreadBadge.setVisibility(View.GONE);
+                                    }else
+                                    {
+                                        textViewUnreadBadge.setText(" "+arrayListUnreadChatID.size()+" ");
+                                        textViewUnreadBadge.setVisibility(View.VISIBLE);
+                                    }
+
+                                }else
+                                {
+                                    textViewUnreadBadge.setVisibility(View.GONE);
+                                }
+
                             }
                         }
                     }

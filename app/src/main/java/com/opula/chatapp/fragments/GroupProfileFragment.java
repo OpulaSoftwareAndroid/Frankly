@@ -158,18 +158,25 @@ public class GroupProfileFragment extends Fragment {
                 final EditText text = dialogView.findViewById(R.id.text);
                 final Button save = dialogView.findViewById(R.id.btn_yes);
                 final Button cancle = dialogView.findViewById(R.id.btn_no);
-
+                text.setText(txtGrpName.getText().toString());
                 final android.app.AlertDialog alertDialog = alertDialogBuilder.create();
 
                 save.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
 
-                        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Groups").child(groupUserId);
-                        ref.child("groupName").setValue(text.getText().toString());
+                        if(!text.getText().toString().equals("")) {
+                            DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Groups").child(groupUserId);
+                            ref.child("groupName").setValue(text.getText().toString());
 
-                        Toast.makeText(getActivity(), "Group Updated!", Toast.LENGTH_SHORT).show();
-                        alertDialog.dismiss();
+                            Toast.makeText(getActivity(), "Group Updated!", Toast.LENGTH_SHORT).show();
+                            alertDialog.dismiss();
+                        }else
+                        {
+
+
+                            Toast.makeText(getActivity(), "Please Enter Valid Group Name", Toast.LENGTH_SHORT).show();
+                        }
 
                     }
                 });
