@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Point;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
@@ -17,11 +19,13 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Base64;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
@@ -154,7 +158,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
                             holder.progress_circular.setVisibility(View.GONE);
                             return false;
                         }
-
                         @Override
                         public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
                             holder.progress_circular.setVisibility(View.GONE);
@@ -169,18 +172,19 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         if (chat.isIsaudio()) {
             holder.show_message.setVisibility(View.GONE);
             holder.relativeLayoutAudioPlayer.setVisibility(View.VISIBLE);
-
-
-
             strUrlPath =chat.getAudio_uri();
-            holder.audioSenseiPlayerView
-                    .setAudioTarget(strUrlPath);
+//            holder.audioSenseiPlayerView
+//                    .setAudioTarget(strUrlPath);
+//
+//
+//
+//            holder.audioSenseiPlayerView.commitClickEvents();
+//
+//            View playerRootView = holder.audioSenseiPlayerView.getPlayerRootView();
 
-
-
-            holder.audioSenseiPlayerView.commitClickEvents();
-            View playerRootView = holder.audioSenseiPlayerView.getPlayerRootView();
-
+//            MyAudio myAudio = audioArrayList.get(position);
+//            holder.audioSenseiPlayerView.setAudioTarget(strUrlPath);
+//            holder.audioTitle.setText("hello");
             //            holder.audioSenseiPlayerView.setAudioTarget(strUrlPath);
 
 
@@ -195,38 +199,14 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             holder.txtContactNumber.setText(chat.getContact_number() + "");
             holder.txtContactName.setText(chat.getContact_name());
         }
-        if (chat.getImage().equalsIgnoreCase("default") && chat.getDoc_uri().equalsIgnoreCase("default") && chat.isIscontact() == false) {
+        if (chat.getImage().equalsIgnoreCase("default")
+                && chat.getDoc_uri().equalsIgnoreCase("default") && chat.isIscontact() == false)
+        {
             holder.img_receive.setVisibility(View.GONE);
             holder.relative.setVisibility(View.GONE);
             holder.relative_contact.setVisibility(View.GONE);
             holder.show_message.setVisibility(View.VISIBLE);
 
-
-//            if(strIsSecureChat.equals("true"))
-//            {
-//                if (sharedPreference.getValue(mContext, WsConstant.IS_STORED_MESSAGE_SECURE).equals("true")) {
-//                    String encrypted = chat.getMessage();
-//
-//                    String decrypted = "";
-//                    try {
-//                        decrypted = AESUtils.decrypt(encrypted);
-//                        Log.d("TEST", "decrypted:" + decrypted);
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                    }
-//                    //  holder.show_message.setText(chat.getMessage());
-//                    holder.show_message.setText(decrypted);
-//                    if (holder.show_message.getText().equals("")) {
-//                        holder.show_message.setText(chat.getMessage());
-//                    }
-//                }else
-//                {
-//                    holder.show_message.setText(chat.getMessage());
-//                }
-//            }else
-//            {
-//                holder.show_message.setText(chat.getMessage());
-//            }
             if(chat.getIssecure())
             {
                 String encrypted = chat.getMessage();
@@ -263,30 +243,9 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
                 holder.img_loading_tick.setVisibility(View.GONE);
             } else {
                 holder.img_loading_tick.setVisibility(View.VISIBLE);
-                //                if(AppGlobal.isNetwork(mContext)) {
-//                    holder.img_loading_tick.setVisibility(View.GONE);
-//                }
-//                else
-//                {
-//                    if(position==mChat.size()-1) {
-//                        holder.img_loading_tick.setVisibility(View.VISIBLE);
-//                    }else
-//                    {
-//
-//                        holder.img_loading_tick.setVisibility(View.GONE);
-//                    }
-//                }
                 holder.img_dtick.setVisibility(View.GONE);
                 holder.img_dstick.setVisibility(View.GONE);
-                //                if(AppGlobal.isNetwork(mContext))
-//                {
-//                    if(position==mChat.size()-1) {
-//                        holder.img_tick.setVisibility(View.GONE);
-//                        holder.img_dtick.setVisibility(View.VISIBLE);
-//                        holder.img_dstick.setVisibility(View.GONE);
-//                        holder.img_loading_tick.setVisibility(View.GONE);
-//                    }
-//                }
+
             }
 
         }
@@ -491,7 +450,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
         public TextView show_message, txtContactName, txtContactNumber, txtAddContact;
         public ImageView profile_image, img_receive, img_tick, img_dtick, img_dstick, img_download,img_loading_tick;
-        public TextView show_time;
+        public TextView show_time,audioTitle;
         public ProgressBar progress_circular;
         RelativeLayout relative, txt_seen, img_blur, relative_contact, relativeLayoutAudioPlayer;
         LinearLayout linear_chat;
@@ -518,6 +477,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             progress_circular = itemView.findViewById(R.id.progress_circular);
             relative = itemView.findViewById(R.id.relative);
             audioSenseiPlayerView = itemView.findViewById(R.id.audio_player);
+            audioTitle=itemView.findViewById(R.id.audio_name);
             img_tick = itemView.findViewById(R.id.img_tick);
             img_dtick = itemView.findViewById(R.id.img_dtick);
             img_dstick = itemView.findViewById(R.id.img_dstick);
@@ -725,7 +685,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         reference.setValue(hashMap);
         Toast.makeText(context, "Message has been stared..!", Toast.LENGTH_SHORT).show();
     }
-
 
 
 }
