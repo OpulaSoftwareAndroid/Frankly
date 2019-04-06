@@ -13,8 +13,10 @@ import android.os.ParcelFileDescriptor;
 import android.os.Vibrator;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Base64;
@@ -49,14 +51,18 @@ import com.opula.chatapp.R;
 import com.opula.chatapp.constant.AppGlobal;
 import com.opula.chatapp.constant.SharedPreference;
 import com.opula.chatapp.constant.WsConstant;
+import com.opula.chatapp.fragments.MessageFragment;
 import com.opula.chatapp.model.AESUtils;
 import com.opula.chatapp.model.BroadcastUser;
 import com.opula.chatapp.model.Chat;
+import com.opula.chatapp.model.SeenList;
 import com.opula.chatapp.model.User;
 import com.rygelouv.audiosensei.player.AudioSenseiPlayerView;
 import com.rygelouv.audiosensei.player.OnPlayerViewClickListener;
 import com.shockwave.pdfium.PdfDocument;
 import com.shockwave.pdfium.PdfiumCore;
+
+import org.w3c.dom.Text;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -85,25 +91,32 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
     public static final int MSG_TYPE_LEFT = 0;
     public static final int MSG_TYPE_RIGHT = 1;
-    public Context mContext;
+    public Activity mContext;
     String TAG = "MessageAdapter";
     public static List<Chat> mChat;
-    private String imageurl;
+    private String imageurl,strLoginUserName;
     String AES = "AES";
     private String downloadAudioPath;
     String strIsSecureChat;
     SharedPreference sharedPreference;
     public static FirebaseUser fuser;
+    private BottomSheetDialog dialogMenu;
+    String strChatReceiverUserName;
+   private  int intOldSelectedPosition=-1;
+
     public static int i = 0;
     public static ForwardMessageAdapter newChatUserAdapter;
     public final static String FOLDER = Environment.getExternalStorageDirectory() + "/PDF";
     public    String strUriForAudio, strUrlPath;
-    public MessageAdapter(Context mContext, List<Chat> mChat, String imageurl,String strIsSecureChat)
+    public MessageAdapter(Activity mContext, List<Chat> mChat, String imageurl,String strIsSecureChat,String strChatReceiverUserName
+    ,String strLoginUserName)
     {
         this.mChat = mChat;
         this.mContext = mContext;
         this.imageurl = imageurl;
         this. strIsSecureChat=strIsSecureChat;
+        this.strChatReceiverUserName=strChatReceiverUserName;
+        this.strLoginUserName=strLoginUserName;
         sharedPreference=new SharedPreference();
     }
 
@@ -131,6 +144,20 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         } else {
             Glide.with(mContext).load(imageurl).into(holder.profile_image);
         }
+        if(chat.isIsrepliedmessage()) {
+            holder.textViewRepliedMessage.setVisibility(View.VISIBLE);
+            holder.textViewUserName.setVisibility(View.VISIBLE);
+            holder.linearLayoutRepliedMessage.setVisibility(View.VISIBLE);
+            holder.textViewRepliedMessage.setText(chat.isIsrepliedmessageid());
+            holder.textViewUserName.setText(chat.isIsrepliedmessageby());
+
+        }else
+        {
+            holder.textViewRepliedMessage.setVisibility(View.GONE);
+            holder.textViewUserName.setVisibility(View.GONE);
+            holder.linearLayoutRepliedMessage.setVisibility(View.GONE);
+
+        }
 
         if (!chat.getDoc_uri().equalsIgnoreCase("default")) {
             holder.show_message.setVisibility(View.GONE);
@@ -148,7 +175,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             holder.relative_contact.setVisibility(View.GONE);
             holder.show_message.setVisibility(View.GONE);
             holder.relative.setVisibility(View.VISIBLE);
-
             holder.progress_circular.setVisibility(View.VISIBLE);
 
             Glide.with(mContext).load(chat.getImage())
@@ -173,8 +199,8 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             holder.show_message.setVisibility(View.GONE);
             holder.relativeLayoutAudioPlayer.setVisibility(View.VISIBLE);
             strUrlPath =chat.getAudio_uri();
-//            holder.audioSenseiPlayerView
-//                    .setAudioTarget(strUrlPath);
+            holder.audioSenseiPlayerView
+                    .setAudioTarget(strUrlPath);
 //
 //
 //
@@ -224,7 +250,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             }else
             {
                 holder.show_message.setText(chat.getMessage());
-
             }
         }
 
@@ -264,7 +289,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             @Override
             public void onClick(View v) {
                 final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mContext);
-
                 LayoutInflater inflater = ((Activity) mContext).getLayoutInflater();
                 View dialogView = inflater.inflate(R.layout.dailog_show_image, null);
                 alertDialogBuilder.setView(dialogView);
@@ -310,6 +334,70 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             }
         });
 
+        holder.linear_chat.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+
+//                if(intOldSelectedPosition!=-1)
+//                {
+//                    holder.linmain.getChildAt(intOldSelectedPosition).setBackgroundResource(0);
+//                }
+
+                holder.linmain.setBackgroundColor(ContextCompat.getColor(mContext, R.color.color_selecchat));
+
+                i = holder.getAdapterPosition();
+                MainActivity.showpart3();
+                Vibrator vv = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
+                assert vv != null;
+                vv.vibrate(50); // 5000 miliseconds = 5 seconds
+                intOldSelectedPosition=position;
+                Boolean isSender;
+                Point point = new Point();
+                int[] location = new int[2];
+//                          point.x=140;
+//                        point.y=140;
+
+                holder.linear_chat.getLocationOnScreen(location);
+
+                point.x = location[0];
+                point.y = location[1] - 180;
+//                    Log.d(TAG, "jigar the location of profile pic x is " + point.x);
+//                    Log.d(TAG, "jigar the location of profile pic y is " + point.y);
+                // get first string
+                String strTempSeenBy=" , "+chat.getIsseenby();
+                String strArray[] =strTempSeenBy.split(" , ");
+
+                if (chat.getSender().equals(fuser.getUid())) {
+//                holder.linmain.setBackgroundColor(ContextCompat.getColor(mContext, R.color.color_selecchat));
+//                i = holder.getAdapterPosition();
+                    //      MainActivity.showpart3();
+
+                    String strChatDeliveredTime=chat.getTime();
+                    String strChatSeenTime=chat.getIsseentime();
+
+                    Log.d(TAG, "jigar the group message id converted to String array" + strChatSeenTime);
+
+                    //print elements of String array
+
+
+                    isSender=true;
+
+                    showInfoSeenPopup(mContext, point,strChatDeliveredTime,strChatSeenTime,isSender,holder.linearLayoutRepliedMessage,position);
+                    assert vv != null;
+                    vv.vibrate(50); // 5000 miliseconds = 5 seconds
+                    return false;
+                }else
+                {
+                    point.y = location[1] - 40;
+                    isSender=false;
+                    showInfoSeenPopup(mContext, point,"","",isSender,holder.linearLayoutRepliedMessage,position);
+                    assert vv != null;
+                    vv.vibrate(50); // 5000 miliseconds = 5 seconds
+                    return false;
+                }
+
+            }
+        });
         holder.linmain.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -349,6 +437,150 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         });
 
     }
+
+    private void showInfoSeenPopup(final Context context, Point p,
+                                   final String strChatDeliveredTimeMiliSec, final String strChatSeenTimeMiliSec
+            , final Boolean isSender, final LinearLayout linearLayoutRepliedMessage,final  int position) {
+
+        final PopupWindow changeStatusPopUp;
+        // Inflate the popup_layout.xml
+//            linearLayoutMainHome.setBackground(getResources().getDrawable(R.drawable.transparent_dark_rectangle));
+//            relativeLayoutViewPager.setBackground(getResources().getDrawable(R.drawable.transparent_dark_rectangle));
+
+        LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View layout = layoutInflater.inflate(R.layout.pop_up_info_chat_message, null);
+        // Creating the PopupWindow
+        LinearLayout linearLayoutInfo = (LinearLayout) layout.findViewById(R.id.linearLayoutInfo);
+
+
+        if(isSender) {
+
+            linearLayoutInfo.setVisibility(View.VISIBLE);
+        }else
+        {
+            linearLayoutInfo.setVisibility(View.GONE);
+        }
+
+        LinearLayout linearLayoutReply = (LinearLayout) layout.findViewById(R.id.linearLayoutReply);
+
+        changeStatusPopUp = new PopupWindow(context);
+        changeStatusPopUp.setContentView(layout);
+        changeStatusPopUp.setWidth(LinearLayout.LayoutParams.WRAP_CONTENT);
+        changeStatusPopUp.setHeight(LinearLayout.LayoutParams.WRAP_CONTENT);
+        changeStatusPopUp.setFocusable(true);
+
+        //   new DrawView(mContext);
+        Log.d(TAG,"jigar the height of linear layout is "+changeStatusPopUp.getHeight());
+
+        // Some offset to align the popup a bit to the left, and a bit down, relative to button's position.
+        int OFFSET_X = 20;
+//            int OFFSET_Y = -(changeStatusPopUp.getHeight()+10);
+        int OFFSET_Y =  changeStatusPopUp.getHeight()+100;
+        changeStatusPopUp.setBackgroundDrawable(new BitmapDrawable());
+        //Clear the default translucent background
+        //  changeStatusPopUp.setBackgroundDrawable(getResources().getDrawable(R.drawable.transparent_dark_roundcorner));
+//            if(changeStatusPopUp.getHeight()<p.y) {
+//                // Displaying the popup at the specified location, + offsets.
+//                changeStatusPopUp.showAtLocation(layout, Gravity.NO_GRAVITY, p.x + OFFSET_X, (p.y) + OFFSET_Y);
+//            }else
+        {
+            changeStatusPopUp.showAtLocation(layout, Gravity.NO_GRAVITY, p.x + OFFSET_X, p.y - OFFSET_Y);
+        }
+        changeStatusPopUp.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+//                    linearLayoutMainHome.setBackgroundResource(0);
+//                    relativeLayoutViewPager.setBackgroundResource(0);
+            }
+        });
+
+        linearLayoutReply.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+            boolean strMessageType=MessageFragment.showReplyMessageDialog();
+            if(strMessageType)
+            {
+                linearLayoutRepliedMessage.setVisibility(View.VISIBLE);
+                final Chat chat = mChat.get(position);
+                MessageFragment.textViewReplyMessage.setText(chat.getMessage());
+                Log.d(TAG,"jigar the message in chat is "+chat.getSender());
+                Log.d(TAG,"jigar the message user log in chat is "+fuser.getDisplayName());
+
+                if(chat.getSender().equals(fuser.getUid()))
+                {
+                    MessageFragment.textViewUserName.setText(strLoginUserName);
+                }else
+                {
+                    MessageFragment.textViewUserName.setText(strChatReceiverUserName);
+
+                }
+             //   textViewRepliedMessage.setText(chat.getMessage());
+            }else
+            {
+                linearLayoutRepliedMessage.setVisibility(View.GONE);
+            }
+                changeStatusPopUp.dismiss();
+            }
+        });
+        linearLayoutInfo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                view = mContext.getLayoutInflater().inflate(R.layout.bottom_sheet_private_seen_message, null);
+                dialogMenu = new BottomSheetDialog(context);
+                dialogMenu.setContentView(view);
+                dialogMenu.setCancelable(true);
+                dialogMenu.show();
+                TextView textViewSeenTime=view.findViewById(R.id.textViewSeenTime);
+                TextView textViewDeliveredTime=view.findViewById(R.id.textViewDeliveredTime);
+                ImageView imageViewSeenDot=view.findViewById(R.id.imageViewSeenDot);
+                ImageView imageViewDeliveredDot=view.findViewById(R.id.imageViewDeliveredDot);
+
+                if(strChatDeliveredTimeMiliSec.equals(""))
+                {
+                    imageViewDeliveredDot.setVisibility(View.VISIBLE);
+                    textViewDeliveredTime.setVisibility(View.GONE);
+                }else
+                {
+                    String strChatDeliveredTime= getDateCurrentTimeZone(Long.parseLong(strChatDeliveredTimeMiliSec));
+
+                    imageViewDeliveredDot.setVisibility(View.GONE);
+                    textViewDeliveredTime.setVisibility(View.VISIBLE);
+                    textViewDeliveredTime.setText(strChatDeliveredTime);
+
+                }
+
+                if(strChatSeenTimeMiliSec.equals(""))
+                {
+                    imageViewSeenDot.setVisibility(View.VISIBLE);
+                    textViewSeenTime.setVisibility(View.GONE);
+                }else
+                {
+                    imageViewSeenDot.setVisibility(View.GONE);
+                    textViewSeenTime.setVisibility(View.VISIBLE);
+                    String strChatSeenTime=getDateCurrentTimeZone(Long.parseLong(strChatSeenTimeMiliSec));
+                    textViewSeenTime.setText(strChatSeenTime);
+
+                }
+                changeStatusPopUp.dismiss();
+                //                recyclerViewMessageSeenList = (RecyclerView) view.findViewById(R.id.recyclerViewMessageSeenList);
+//                SeenMessageListAdapter seenMessageListAdapter=new SeenMessageListAdapter(seenMessageList,context);
+//                LinearLayoutManager mLayoutManager = new LinearLayoutManager(context.getApplicationContext());
+//                recyclerViewMessageSeenList.setLayoutManager(mLayoutManager);
+//                recyclerViewMessageSeenList.setItemAnimator(new DefaultItemAnimator());
+//                recyclerViewMessageSeenList.setAdapter(seenMessageListAdapter);
+//                groupMemberList(arrayUserID,seenMessageList,seenMessageListAdapter);
+
+                // getMemberFromGroup();
+//                seenMessageListAdapter.notifyDataSetChanged();
+
+//                    linearLayoutMainHome.setBackgroundResource(0);
+//                    relativeLayoutViewPager.setBackgroundResource(0);
+
+            }
+        });
+    }
+
+
     private String extractFilename(String urlDownloadLink){
         if(urlDownloadLink.equals("")){
             return "";
@@ -448,12 +680,12 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        public TextView show_message, txtContactName, txtContactNumber, txtAddContact;
+        public TextView show_message, txtContactName, txtContactNumber, txtAddContact,textViewRepliedMessage,textViewUserName;
         public ImageView profile_image, img_receive, img_tick, img_dtick, img_dstick, img_download,img_loading_tick;
         public TextView show_time,audioTitle;
         public ProgressBar progress_circular;
         RelativeLayout relative, txt_seen, img_blur, relative_contact, relativeLayoutAudioPlayer;
-        LinearLayout linear_chat;
+        LinearLayout linear_chat,linearLayoutRepliedMessage;
         AudioSenseiPlayerView audioSenseiPlayerView;
         LinearLayout linmain;
         PDFView pdfView;
@@ -469,7 +701,9 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             audioWife = new AudioWife();
             profile_image = itemView.findViewById(R.id.profile_image);
             relativeLayoutAudioPlayer = itemView.findViewById(R.id.relativeLayoutAudioPlayer);
-
+            textViewRepliedMessage=itemView.findViewById(R.id.textViewRepliedMessage);
+            textViewUserName=itemView.findViewById(R.id.textViewUserName);
+            linearLayoutRepliedMessage=itemView.findViewById(R.id.linearLayoutRepliedMessage);
             imageViewPlayAudio=itemView.findViewById(R.id.imageViewPlayAudio);
             img_receive = itemView.findViewById(R.id.img_receive);
             txt_seen = itemView.findViewById(R.id.txt_seen);
