@@ -6,16 +6,27 @@ public class Data {
     private String body;
     private String title;
     private String sented;
+    private String messageuniqueid;
 
-    public Data(String user, int icon, String body, String title, String sented) {
+
+    public Data(String user, int icon, String body, String title, String sented,String messageuniqueid) {
         this.user = user;
         this.icon = icon;
         this.body = body;
         this.title = title;
         this.sented = sented;
+        this.messageuniqueid =messageuniqueid;
     }
 
     public Data() {
+    }
+
+    public String getMessageuniqueid() {
+        return messageuniqueid;
+    }
+
+    public void setMessageuniqueid(String messageuniqueid) {
+        this.messageuniqueid = messageuniqueid;
     }
 
     public String getUser() {

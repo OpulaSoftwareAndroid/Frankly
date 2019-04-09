@@ -2,7 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     tools:context=".MainActivity">
 
@@ -72,32 +73,50 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_below="@id/vw"
+                android:weightSum="2"
                 android:layout_marginLeft="@dimen/_8sdp"
                 android:layout_marginRight="@dimen/_8sdp"
                 android:orientation="vertical">
 
-                <RelativeLayout
-                    android:layout_width="@dimen/_90sdp"
-                    android:layout_height="@dimen/_90sdp"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="@dimen/_6sdp">
+            <android.support.v7.widget.CardView
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                app:cardCornerRadius="10dp"
+                android:layout_margin="@dimen/_5sdp"
+                android:paddingBottom="@dimen/_5sdp"
+                android:paddingTop="@dimen/_5sdp"
+                app:cardBackgroundColor="@color/gray"
+                app:cardElevation="10dp">
 
-                    <de.hdodenhof.circleimageview.CircleImageView
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_margin="@dimen/_6sdp">
+
+                    <ImageView
                         android:id="@+id/profile_image"
-                        android:layout_width="@dimen/_90sdp"
-                        android:layout_height="@dimen/_80sdp"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
                         android:layout_centerHorizontal="true"
                         android:layout_gravity="center"
                         android:background="@android:color/transparent" />
 
+
+
                     <ImageView
                         android:id="@+id/img_edit_profile"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_margin="10dp"
                         android:layout_width="@dimen/_24sdp"
                         android:layout_height="@dimen/_24sdp"
-                        android:layout_alignParentBottom="true"
-                        android:layout_centerInParent="true"
                         android:src="@drawable/ic_edit" />
                 </RelativeLayout>
+            </android.support.v7.widget.CardView>
 
 
                 <TextView
@@ -128,6 +147,16 @@
                     android:layout_marginTop="16dp"
                     android:background="@color/gray" />
 
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_weight="1"
+                    android:layout_height="0dp"
+                    xmlns:android="http://schemas.android.com/apk/res/android" >
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="vertical"
+                    android:layout_height="wrap_content">
                 <LinearLayout
                     android:id="@+id/lin_sync"
                     android:layout_width="match_parent"
@@ -301,6 +330,8 @@
                         android:textSize="@dimen/_14sdp" />
                 </LinearLayout>
 
+                </LinearLayout>
+                </ScrollView>
             </LinearLayout>
         </RelativeLayout>
     </LinearLayout>

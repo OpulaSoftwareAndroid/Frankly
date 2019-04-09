@@ -20,6 +20,7 @@
 
         <LinearLayout
             android:layout_width="wrap_content"
+            android:id="@+id/linear_chat"
             android:layout_height="wrap_content"
             android:layout_below="@+id/profile_image"
             android:layout_alignParentEnd="true"
@@ -136,6 +137,20 @@
                 android:textSize="10sp"
                 android:textStyle="italic"
                 android:visibility="gone" />
+            <hani.momanii.supernova_emoji_library.Helper.EmojiconTextView
+                android:id="@+id/textViewRepliedMessage"
+                android:layout_width="match_parent"
+                android:background="@drawable/border_frame_replied_message_left_side"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/m_m"
+                android:gravity="start"
+                android:paddingLeft="10dp"
+                android:text="Hello we are demo "
+                android:textAlignment="gravity"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                android:visibility="gone"
+                emojicon:emojiconSize="22sp" />
 
             <hani.momanii.supernova_emoji_library.Helper.EmojiconTextView
                 android:id="@+id/show_message"
@@ -184,6 +199,13 @@
                         android:layout_width="12dp"
                         android:layout_height="12dp"
                         android:src="@drawable/ic_double_tick_indicator"
+                        android:visibility="gone" />
+                    <ImageView
+                        android:id="@+id/imageViewSeenAllTick"
+                        android:layout_width="12dp"
+                        android:layout_height="12dp"
+                        android:layout_centerInParent="true"
+                        android:src="@drawable/ic_double_tick_send_indicator"
                         android:visibility="gone" />
 
                 </RelativeLayout>

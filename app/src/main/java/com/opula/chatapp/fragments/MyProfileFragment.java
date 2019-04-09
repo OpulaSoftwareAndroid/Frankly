@@ -18,6 +18,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +29,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bogdwellers.pinchtozoom.ImageMatrixTouchHandler;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
@@ -55,6 +57,7 @@ import com.opula.chatapp.constant.AppGlobal;
 import com.opula.chatapp.model.StarMessage;
 import com.opula.chatapp.model.User;
 import com.opula.chatapp.notifications.Token;
+import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -74,7 +77,7 @@ public class MyProfileFragment extends Fragment {
     FirebaseUser firebaseUser;
     DatabaseReference reference;
     FirebaseAuth firebaseAuth;
-    CircleImageView image_profile;
+    ImageView image_profile;
     ImageView img_edit_profile;
     StorageReference storageReference;
     private StorageTask uploadTask;
@@ -82,7 +85,6 @@ public class MyProfileFragment extends Fragment {
     Uri mImageUri = null;
     int GALLERY = 1, CAMERA = 2;
     User user;
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -101,7 +103,9 @@ public class MyProfileFragment extends Fragment {
         img_edit_profile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 showPictureDialog();
+
             }
         });
 
@@ -169,6 +173,7 @@ public class MyProfileFragment extends Fragment {
             }
         });
 
+
         image_profile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -182,6 +187,7 @@ public class MyProfileFragment extends Fragment {
                 final ImageView image = (ImageView) dialogView.findViewById(R.id.image);
 
                 final android.app.AlertDialog alertDialog = alertDialogBuilder.create();
+                image.setOnTouchListener(new ImageMatrixTouchHandler(dialogView.getContext()));
 
                 String string = user.getImageURL();
 
@@ -229,7 +235,12 @@ public class MyProfileFragment extends Fragment {
                     if (user.getImageURL().equals("default")) {
                         image_profile.setImageResource(R.drawable.image_boy);
                     } else {
-                        Glide.with(getActivity()).load(user.getImageURL()).into(image_profile);
+//                        Glide.with(getActivity())
+//                                .load(user.getImageURL()).into(image_profile);
+                        Picasso.get().load(user.getImageURL())
+                                .fit()
+                          //      .placeholder(R.drawable.progress_animation)
+                                .into(image_profile);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -531,6 +542,7 @@ public class MyProfileFragment extends Fragment {
             if (data != null) {
                 mImageUri = data.getData();
                 image_profile.setImageURI(mImageUri);
+
                 if (uploadTask != null && uploadTask.isInProgress()) {
                     Toast.makeText(getContext(), "Upload in progress", Toast.LENGTH_SHORT).show();
                 } else {

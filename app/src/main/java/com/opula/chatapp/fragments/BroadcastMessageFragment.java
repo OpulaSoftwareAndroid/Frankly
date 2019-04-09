@@ -20,8 +20,6 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -64,35 +62,25 @@ import com.mlsdev.rximagepicker.Sources;
 import com.opula.chatapp.MainActivity;
 import com.opula.chatapp.R;
 import com.opula.chatapp.adapter.BroadcastMessageAdapter;
-import com.opula.chatapp.adapter.MessageAdapter;
 import com.opula.chatapp.api.APIService;
 import com.opula.chatapp.constant.AppGlobal;
 import com.opula.chatapp.constant.SharedPreference;
 import com.opula.chatapp.constant.WsConstant;
 import com.opula.chatapp.model.BroadcastUser;
 import com.opula.chatapp.model.Chat;
-import com.opula.chatapp.model.User;
 import com.opula.chatapp.notifications.Client;
 import com.opula.chatapp.notifications.Data;
 import com.opula.chatapp.notifications.MyResponse;
 import com.opula.chatapp.notifications.Sender;
 import com.opula.chatapp.notifications.Token;
-import com.squareup.picasso.Picasso;
-
-import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
-import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener;
 
 import java.io.File;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
-import java.util.TimeZone;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
@@ -751,6 +739,8 @@ public class BroadcastMessageFragment extends Fragment {
             hashMap.put("storage_uri", "default");
         }
         reference.setValue(hashMap);
+        final String messageUniqueID = reference.getKey();
+
 
         for (int i = 0; i < user.getReceiver().size(); i++) {
             // add user to chat fragment
@@ -765,7 +755,7 @@ public class BroadcastMessageFragment extends Fragment {
                             chatRef.child("istyping").setValue(false);
                             chatRef.child("isnotification").setValue(true);
                         }
-                        sendNotifiaction(context, myList, user.getBroadcastName(), message);
+                        sendNotification(context,messageUniqueID, myList, user.getBroadcastName(), message);
 
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -788,7 +778,7 @@ public class BroadcastMessageFragment extends Fragment {
                     try {
                         User user = dataSnapshot.getValue(User.class);
                         if (notify) {
-//                            sendNotifiaction(context,receiver, user.getUsername(), msg);
+//                            sendNotification(context,receiver, user.getUsername(), msg);
                         }
                         notify = false;
                     } catch (Exception e) {
@@ -806,7 +796,7 @@ public class BroadcastMessageFragment extends Fragment {
 
     }
 
-    /*private static void sendNotifiaction(final Context context,String receiver, final String username, final String message) {
+    /*private static void sendNotification(final Context context,String receiver, final String username, final String message) {
         DatabaseReference tokens = FirebaseDatabase.getInstance().getReference("Tokens");
         Query query = tokens.orderByKey().equalTo(receiver);
         query.addValueEventListener(new ValueEventListener() {
@@ -848,7 +838,7 @@ public class BroadcastMessageFragment extends Fragment {
             }
         });
     }*/
-    private static void sendNotifiaction(final Context context, List<String> myListReceiver, final String username, final String message) {
+    private static void sendNotification(final Context context, final String messageUniqueID, List<String> myListReceiver, final String username, final String message) {
         DatabaseReference tokens = FirebaseDatabase.getInstance().getReference("Tokens");
         Query query = null;
         for(int i=0;i<myListReceiver.size();i++) {
@@ -862,7 +852,7 @@ public class BroadcastMessageFragment extends Fragment {
                         Token token = snapshot.getValue(Token.class);
                         Data data = new Data(fuser.getUid()
                                 , R.mipmap.ic_launcher, username + ": " + message, "New Message",
-                                userid);
+                                userid,messageUniqueID);
 
                         Sender sender = new Sender(data, token.getToken());
 

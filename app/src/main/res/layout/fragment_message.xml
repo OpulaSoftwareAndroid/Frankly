@@ -8,11 +8,20 @@
     android:background="@drawable/border_white"
     android:orientation="vertical">
 
+    <View
+        android:id="@+id/vw"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_1sdp"
+        android:layout_weight="0"
+        android:background="@color/gray" />
+
     <LinearLayout
         android:id="@+id/toolbarLayout"
         android:layout_width="match_parent"
         android:layout_height="@dimen/_50sdp"
         android:layout_weight="0"
+        android:layout_gravity="center"
+        android:gravity="center"
         android:background="@drawable/border_white"
         android:clipToPadding="false"
         android:orientation="horizontal"
@@ -37,54 +46,56 @@
                 android:tint="@color/black" />
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:layout_marginStart="@dimen/_8sdp"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <hani.momanii.supernova_emoji_library.Helper.EmojiconTextView
-                android:id="@+id/txtUserName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:fontFamily="@font/m"
-                android:gravity="center"
-                android:textColor="@android:color/black"
-                android:textSize="@dimen/_15sdp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/txtCheckActive"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:fontFamily="@font/m"
-                android:gravity="center"
-                android:textColor="@color/grayone"
-                android:textSize="@dimen/_10sdp" />
-        </LinearLayout>
-
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/imgUser"
             android:layout_width="@dimen/_40sdp"
             android:layout_height="match_parent"
             android:layout_marginTop="@dimen/_8sdp"
-            android:layout_marginRight="8dp"
             android:layout_marginBottom="@dimen/_8sdp"
             android:layout_weight="0" />
 
-    </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:weightSum="1"
+            android:orientation="horizontal"
+            android:layout_height="wrap_content">
 
-    <View
-        android:id="@+id/vw"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/_1sdp"
-        android:layout_weight="0"
-        android:background="@color/gray" />
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="0.9"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="vertical">
+
+            <hani.momanii.supernova_emoji_library.Helper.EmojiconTextView
+                android:id="@+id/txtUserName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/m"
+                 android:textColor="@android:color/black"
+                android:textSize="@dimen/_15sdp"
+                android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/txtCheckActive"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/m"
+                    android:textColor="@color/grayone"
+                    android:textSize="@dimen/_10sdp" />
+
+        </LinearLayout>
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_weight="0.1"
+            android:layout_marginRight="10dp"
+            android:src="@drawable/ic_setting_icon"
+            android:id="@+id/imageViewIcon"
+            android:layout_height="match_parent" />
+
+        </LinearLayout>
+    </LinearLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -114,23 +125,84 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="0"
-        android:background="@color/messagescrren"
-        android:orientation="horizontal">
+        android:orientation="vertical"
+        android:layout_height="wrap_content">
 
-        <RelativeLayout
-            android:id="@+id/is_text"
-            android:layout_width="wrap_content"
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:id="@+id/linearLayoutReplyMessage"
+            android:padding="10dp"
+            android:weightSum="1"
+            android:background="@color/messagescrren"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="0.9"
+                android:background="@drawable/border_frame_left_side"
+                android:orientation="vertical"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:textSize="18dp"
+                    android:layout_marginLeft="20dp"
+                    android:id="@+id/textViewUserName"
+                    android:textColor="@color/colorPrimary"
+                    android:text="@string/app_name"
+                    android:layout_height="wrap_content" />
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_marginLeft="20dp"
+                    android:layout_height="wrap_content">
+
+                    <hani.momanii.supernova_emoji_library.Helper.EmojiconTextView
+                        android:id="@+id/textViewReplyMessage"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="14dp"
+                        android:text="Full Demo Here"
+                        android:fontFamily="@font/m"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_weight="0.1"
+                android:layout_gravity="center"
+                android:id="@+id/imageViewCloseChat"
+                android:src="@drawable/ic_action_close"
+                android:layout_height="25dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_marginLeft="4dp"
-            android:layout_marginTop="4dp"
-            android:layout_marginBottom="4dp"
-            android:layout_weight="1"
-            android:background="@drawable/background_chat"
-            android:padding="@dimen/_4sdp"
-            android:visibility="visible">
+            android:layout_weight="0"
+            android:background="@color/messagescrren"
+            android:orientation="horizontal">
+
+
+            <RelativeLayout
+                android:id="@+id/is_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_marginLeft="4dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp"
+                android:layout_weight="1"
+                android:background="@drawable/background_chat"
+                android:padding="@dimen/_4sdp"
+                android:visibility="visible">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -174,7 +246,7 @@
                 </LinearLayout>
 
                 <ImageView
-                    android:id="@+id/send_image"
+                    android:id="@+id/imageViewShareMediaDialog"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_gravity="center"
@@ -235,6 +307,7 @@
             android:scaleType="centerInside"
             app:mic_icon="@drawable/recv_ic_mic_white" />
 
+    </LinearLayout>
     </LinearLayout>
 
 </LinearLayout>

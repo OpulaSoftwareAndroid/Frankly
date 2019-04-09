@@ -12,9 +12,13 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.opula.chatapp.MainActivity;
@@ -24,7 +28,12 @@ import java.util.List;
 
 public class MyFirebaseMessaging extends FirebaseMessagingService {
 
-@Override
+    String TAG="MyFirebaseMessaging";
+    DatabaseReference reference;
+    ValueEventListener mSendEventListner;
+
+
+    @Override
 public void onMessageReceived(RemoteMessage remoteMessage)
 {
         super.onMessageReceived(remoteMessage);
@@ -37,44 +46,91 @@ public void onMessageReceived(RemoteMessage remoteMessage)
 
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        if (firebaseUser != null && sented.equals(firebaseUser.getUid())){
-            if (!currentUser.equals(user)) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    if (isForeground(getApplicationContext())) {
-                        //if in forground then your operation
-                        // if app is running them
-                    } else {
-                        //if in background then perform notification operation
-                        sendOreoNotification(remoteMessage);
-                    }
-                } else {
-                    if (isForeground(getApplicationContext())) {
-                        //if in forground then your operation
-                        // if app is running them
-                    } else {
-                        //if in background then perform notification operation
-                        sendNotification(remoteMessage);
-                    }
+        String strMessageUniqueID=remoteMessage.getData().get("messageuniqueid");
+        Log.d(TAG,"jigar the message unique id we have received is "+strMessageUniqueID);
+        setMessageReceivedYes(strMessageUniqueID);
+        if(sented!=null)
+        {
 
+            if (firebaseUser != null && sented.equals(firebaseUser.getUid())) {
+                if (!currentUser.equals(user)) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        if (isForeground(getApplicationContext())) {
+                        //if in forground then your operation
+                        // if app is running them
+                        } else {
+                        //if in background then perform notification operation
+                            sendOreoNotification(remoteMessage);
+                        }
+                    } else {
+                        if (isForeground(getApplicationContext())) {
+                        //if in forground then your operation
+                        // if app is running them
+                        } else {
+                        //if in background then perform notification operation
+                            sendNotification(remoteMessage);
+                        }
+                    }
                 }
             }
         }
 
 }
 
-    private static boolean isForeground(Context context) {
+    public void setMessageReceivedYes(final String messageID) {
+        try {
+            reference = FirebaseDatabase.getInstance().getReference("Chats");
+            reference.child(messageID).child("isreceived").setValue(true);
+        }catch (Exception ex)
+        {
+            Log.d(TAG,"jigar the exception in updating mesage received is  "+ex);
+
+        }
+//        ValueEventListener valueEventListener = new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                try {
+//                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+//                        Chat chat = snapshot.getValue(Chat.class);
+//                         {
+////                            if (chat.getId().equals(messageID))
+//                            {
+//                                HashMap<String, Object> hashMap = new HashMap<>();
+//                                hashMap.put("isreceived", true);
+//                                snapshot.getRef().updateChildren(hashMap);
+//                            }
+//                        }
+//                    }
+//                } catch (Exception e) {
+//                    Log.d(TAG,"jigar the exception we got is "+e);
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//                //
+//                Log.d(TAG,"jigar the exception database error we got is "+databaseError.getMessage());
+//
+//            }
+//        };
+//        reference.addValueEventListener(valueEventListener);
+//        mSendEventListner = valueEventListener;
+    }
+private static boolean isForeground(Context context) {
         ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         List<ActivityManager.RunningAppProcessInfo> tasks = am.getRunningAppProcesses();
         final String packageName = context.getPackageName();
         for (ActivityManager.RunningAppProcessInfo appProcess : tasks) {
-            if (ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND == appProcess.importance && packageName.equals(appProcess.processName)) {
+            if (ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND == appProcess.importance
+                    && packageName.equals(appProcess.processName)) {
                 return true;
             }
         }
         return false;
-    }
+}
 
-    private void sendOreoNotification(RemoteMessage remoteMessage){
+private void sendOreoNotification(RemoteMessage remoteMessage){
         String user = remoteMessage.getData().get("user");
         String icon = remoteMessage.getData().get("icon");
         String title = remoteMessage.getData().get("title");
@@ -123,7 +179,7 @@ public void onMessageReceived(RemoteMessage remoteMessage)
         PendingIntent pendingIntent = PendingIntent.getActivity(this, j, intent, PendingIntent.FLAG_ONE_SHOT);
 
         Uri defaultSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-//        try {
+        //        try {
 //            Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 //            Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
 //            r.play();
@@ -139,8 +195,6 @@ public void onMessageReceived(RemoteMessage remoteMessage)
                 .setContentIntent(pendingIntent);
 
         NotificationManager noti = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
-
-
         int i = 0;
         if (j > 0){
             i = j;

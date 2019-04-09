@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,19 +30,25 @@ public class ForwardMessageAdapter extends RecyclerView.Adapter<ForwardMessageAd
 
     private Context mContext;
     private List<User> mUsers;
-    private boolean ischat, isimage;
+    private boolean ischat, isimage,isAudio;
     SharedPreference sharedPreference;
     FirebaseUser fuser;
     String meg, url;
+    String TAG="ForwardMessageAdapter";
     AlertDialog alertDialog;
+    String strAudioUrl;
 
-    public ForwardMessageAdapter(Context mContext, List<User> mUsers, boolean isimage, boolean ischat, String meg, AlertDialog alertDialog, String url) {
+    public ForwardMessageAdapter(Context mContext, List<User> mUsers, boolean isimage
+            , boolean ischat, String meg, AlertDialog alertDialog, String url,boolean isAudio,String strAudioUrl) {
+
         this.mUsers = mUsers;
         this.mContext = mContext;
         this.ischat = ischat;
         this.isimage = isimage;
+        this.isAudio = isAudio;
         this.meg = meg;
         this.url = url;
+        this.strAudioUrl=strAudioUrl;
         this.alertDialog = alertDialog;
     }
 
@@ -75,10 +82,21 @@ public class ForwardMessageAdapter extends RecyclerView.Adapter<ForwardMessageAd
                 sharedPreference.save(mContext, user.getId(), WsConstant.userId);
 //                MainActivity.checkChatTheme(mContext);
                 MainActivity.showpart1();
-                MessageFragment.sendMessageToPersonal(mContext,"false", fuser.getUid(), user.getId(), meg, isimage, url, "", false, "default", "default");
+                Log.d(TAG,"jigar the forward message we have is "+meg);
+                if(isAudio)
+                {
+                    MessageFragment.sendAudioToPersonal(mContext, fuser.getUid(),  user.getId(), "Voice Message"
+                            , false,strAudioUrl, "default", true, "default"
+                            , "default");
+                }else {
+                    MessageFragment.sendMessageToPersonal(mContext, "false", fuser.getUid(), user.getId(), meg,
+                            false, "", "", isimage, url
+                            , "default", false, "default", "default");
+                }
                 alertDialog.dismiss();
                 FragmentManager fragmentManager = ((FragmentActivity) mContext).getSupportFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new MessageFragment()).commit();
+
             }
         });
     }

@@ -10,14 +10,24 @@ public class Chat {
     private String receiver;
     private ArrayList<String> broadcast_receiver;
     private String message;
+    private String isseenby;
+    private String isseentime;
+
     private boolean issend;
     private boolean isseen;
+    private boolean isreceived;
+    private boolean isrepliedmessage;
+
+
     private boolean isimage;
     private boolean iscontact;
     private boolean issecure;
 
     private boolean isaudio;
     private String image;
+    private String isrepliedmessageid;
+    private String isrepliedmessageby;
+
     private String time;
     private String sender_username;
     private String sender_image;
@@ -76,12 +86,36 @@ public class Chat {
         this.message = message;
     }
 
+    public String getIsseenby() {
+        return isseenby;
+    }
+
+    public void setIsseenby(String isseenby) {
+        this.isseenby = isseenby;
+    }
+
+    public String getIsseentime() {
+        return isseentime;
+    }
+
+    public void setIsseentime(String isseentime) {
+        this.isseentime = isseentime;
+    }
+
     public boolean isIssend() {
         return issend;
     }
 
     public void setIssend(boolean issend) {
         this.issend = issend;
+    }
+
+    public boolean isIsreceived() {
+        return isreceived;
+    }
+
+    public void setIsreceived(boolean isreceived) {
+        this.isreceived = isreceived;
     }
 
     public boolean isIsseen() {
@@ -91,6 +125,31 @@ public class Chat {
     public void setIsseen(boolean isseen) {
         this.isseen = isseen;
     }
+
+    public boolean isIsrepliedmessage() {
+        return isrepliedmessage;
+    }
+
+    public void setIsrepliedmessage(boolean isrepliedmessage) {
+        this.isrepliedmessage = isrepliedmessage;
+    }
+
+    public String isIsrepliedmessageid() {
+        return isrepliedmessageid;
+    }
+
+    public void setIsrepliedmessageid(String isrepliedmessageid) {
+        this.isrepliedmessageid = isrepliedmessageid;
+    }
+
+    public String isIsrepliedmessageby() {
+        return isrepliedmessageby;
+    }
+
+    public void setIsrepliedmessageby(String isrepliedmessageby) {
+        this.isrepliedmessageby = isrepliedmessageby;
+    }
+
 
     public boolean isIsimage() {
         return isimage;

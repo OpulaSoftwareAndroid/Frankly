@@ -27,6 +27,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="4dp"
+                android:id="@+id/linear_chat"
                 android:background="@drawable/background_left"
                 android:clickable="true"
                 android:focusable="true"
@@ -129,6 +130,21 @@
                         android:textSize="18sp"
                         android:visibility="visible" />
                 </RelativeLayout>
+                <hani.momanii.supernova_emoji_library.Helper.EmojiconTextView
+                    android:id="@+id/textViewRepliedMessage"
+                    android:layout_width="match_parent"
+                    android:background="@drawable/border_frame_replied_message_left_side"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/m_m"
+                    android:gravity="start"
+                    android:paddingLeft="10dp"
+                    android:text="Hello we are demo "
+                    android:textAlignment="gravity"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    android:visibility="gone"
+                    emojicon:emojiconSize="22sp" />
+
 
                 <hani.momanii.supernova_emoji_library.Helper.EmojiconTextView
                     android:id="@+id/show_sender"
@@ -186,6 +202,13 @@
                         android:layout_height="12dp"
                         android:src="@drawable/ic_double_tick_indicator" />
 
+                    <ImageView
+                        android:id="@+id/imageViewSeenAllTick"
+                        android:layout_width="12dp"
+                        android:layout_height="12dp"
+                        android:layout_centerInParent="true"
+                        android:src="@drawable/ic_double_tick_send_indicator"
+                        android:visibility="gone" />
                 </RelativeLayout>
             </LinearLayout>
         </LinearLayout>

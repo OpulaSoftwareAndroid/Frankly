@@ -277,6 +277,7 @@ public class ListStatusFragment extends Fragment {
             hashMap.put(WsConstant.STATUS_MESSAGE, message);
             hashMap.put(WsConstant.STATUS_IS_SEND, false);
             hashMap.put(WsConstant.STATUS_IS_STATUS_SEEN, false);
+//            hashMap.put(WsConstant.STATUS_IS_STATUS_SEEN_BY, f);
             hashMap.put(WsConstant.STATUS_IS_IMAGE, isimage);
             hashMap.put(WsConstant.STATUS_IMAGE_URL, uri);
             hashMap.put(WsConstant.STATUS_UPLOAD_TIME, ts);

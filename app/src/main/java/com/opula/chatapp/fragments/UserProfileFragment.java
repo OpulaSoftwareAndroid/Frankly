@@ -31,6 +31,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.luseen.spacenavigation.SpaceNavigationView;
+import com.naver.android.helloyako.imagecrop.view.ImageCropView;
 import com.opula.chatapp.MainActivity;
 import com.opula.chatapp.R;
 import com.opula.chatapp.adapter.UserSharedAdapter;
@@ -107,9 +108,16 @@ public class UserProfileFragment extends Fragment {
                         image_PersonalInfo_DP.setImageResource(R.drawable.image_boy);
                     } else {
 
-                        Picasso.get().load(image)
-                                .fit()
+                        Picasso
+                                .get()
+                                .load(image)
+                                .resize(600, 200)
+                                .centerInside()
                                 .into(image_PersonalInfo_DP);
+
+//                        Picasso.get().load(image)
+//                                .centerInside()
+//                                .into(image_PersonalInfo_DP);
 //                        Picasso.with(getContext())
 //                                .load(image)
 //                                .fitCenter()
@@ -136,6 +144,11 @@ public class UserProfileFragment extends Fragment {
         image_PersonalInfo_DP.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+//                FragmentManager fragmentManager = ((FragmentActivity) getContext()).getSupportFragmentManager();
+//                fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new AddProfileImageFragment()).addToBackStack(null).commit();
+
+
                 android.app.AlertDialog.Builder alertDialogBuilder = new android.app.AlertDialog.Builder(getActivity());
 
                 LayoutInflater inflater = ((Activity) getActivity()).getLayoutInflater();
@@ -144,14 +157,26 @@ public class UserProfileFragment extends Fragment {
                 alertDialogBuilder.setCancelable(true);
 
                 final ImageView image2 = (ImageView) dialogView.findViewById(R.id.image);
+                //         ImageCropView imageCropView;
+                //imageCropView = dialogView.findViewById(R.id.imageCropView);
 
+         //       imageCropView.setAspectRatio(1, 1);
                 final android.app.AlertDialog alertDialog = alertDialogBuilder.create();
 
                 if (image.equals("default")) {
                     Toast.makeText(getActivity(), "No Image Found..!", Toast.LENGTH_SHORT).show();
                 } else {
                     AppGlobal.showProgressDialog(getActivity());
-                    Glide.with(getActivity()).load(image)
+
+
+//                    Picasso.get()
+//                            .load(image)
+//                            .centerCrop()
+//                            .resize(100,100)
+//                            .into(image2);
+
+
+                    Glide.with(getActivity()).load(image).centerCrop()
                             .listener(new RequestListener<String, GlideDrawable>() {
                                 @Override
                                 public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {

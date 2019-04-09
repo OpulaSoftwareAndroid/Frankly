@@ -1,20 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:weightSum="1"
+    xmlns:android="http://schemas.android.com/apk/res/android" >
+
+
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:emojicon="http://schemas.android.com/apk/res-auto"
     android:id="@+id/linmain"
-    android:layout_width="match_parent"
+    android:layout_width="0dp"
+    android:layout_weight="0.8"
     android:layout_height="wrap_content"
     android:layout_gravity="start"
     android:gravity="start"
     android:orientation="horizontal">
 
     <RelativeLayout
-        android:layout_width="300dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="4dp">
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
@@ -42,13 +51,13 @@
 
                 <com.github.barteksc.pdfviewer.PDFView
                     android:id="@+id/pdfView"
-                    android:layout_width="300dp"
+                    android:layout_width="match_parent"
                     android:layout_height="100dp"
                     android:visibility="gone" />
 
                 <RelativeLayout
                     android:id="@+id/relative"
-                    android:layout_width="200dp"
+                    android:layout_width="match_parent"
                     android:layout_height="200dp"
                     android:layout_marginTop="4dp"
                     android:visibility="gone">
@@ -64,8 +73,8 @@
 
                     <ImageView
                         android:id="@+id/img_receive"
-                        android:layout_width="200dp"
-                        android:layout_height="200dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
                         android:adjustViewBounds="true"
                         android:scaleType="centerCrop"
                         android:src="@drawable/ic_edit"
@@ -73,11 +82,11 @@
 
                     <RelativeLayout
                         android:id="@+id/img_blur"
-                        android:layout_width="200dp"
+                        android:layout_width="match_parent"
                         android:layout_height="200dp">
 
                         <ImageView
-                            android:layout_width="200dp"
+                            android:layout_width="match_parent"
                             android:layout_height="200dp"
                             android:adjustViewBounds="true"
                             android:alpha="0.9"
@@ -100,7 +109,7 @@
 
                 <RelativeLayout
                     android:id="@+id/relative_contact"
-                    android:layout_width="300dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:visibility="gone">
@@ -163,14 +172,14 @@
 
                 <RelativeLayout
                     android:id="@+id/relativeLayoutAudioPlayer"
-                    android:layout_width="300dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:visibility="visible">
 
                     <com.rygelouv.audiosensei.player.AudioSenseiPlayerView
                         android:id="@+id/audio_player"
-                        android:layout_width="250dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"/>
 
 
@@ -276,10 +285,49 @@
 
                 </RelativeLayout>
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:id="@+id/linearLayoutRepliedMessage"
+                    android:background="@drawable/border_frame_replied_message_left_side"
+                    android:orientation="vertical"
+                    android:layout_height="wrap_content">
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:textSize="12dp"
+                        android:layout_marginLeft="10dp"
+                        android:id="@+id/textViewUserName"
+                        android:textColor="@color/colorPrimary"
+                        android:text="@string/app_name"
+                        android:layout_height="wrap_content" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:orientation="horizontal"
+                        android:layout_marginLeft="10dp"
+                        android:layout_height="wrap_content">
+
+                        <hani.momanii.supernova_emoji_library.Helper.EmojiconTextView
+                            android:id="@+id/textViewRepliedMessage"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/m_m"
+                            android:gravity="start"
+                            android:text="Hello we are demo "
+                            android:textAlignment="gravity"
+                            android:textColor="@color/black"
+                            android:textSize="18sp"
+                            android:visibility="visible"
+                            emojicon:emojiconSize="22sp" />
+
+
+
+                    </LinearLayout>
+
+                </LinearLayout>
                 <hani.momanii.supernova_emoji_library.Helper.EmojiconTextView
                     android:id="@+id/show_message"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/m_m"
                     android:gravity="start"
@@ -288,6 +336,11 @@
                     android:textSize="18sp"
                     android:visibility="gone"
                     emojicon:emojiconSize="22sp" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/show_time"
@@ -334,8 +387,16 @@
                         android:src="@drawable/ic_double_tick_send_indicator" />
 
                 </RelativeLayout>
+                </LinearLayout>
             </LinearLayout>
 
         </LinearLayout>
     </RelativeLayout>
+</LinearLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_weight="0.4"
+        android:layout_height="wrap_content"/>
+
 </LinearLayout>

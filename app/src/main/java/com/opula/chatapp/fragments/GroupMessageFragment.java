@@ -139,16 +139,20 @@ public class GroupMessageFragment extends Fragment {
     EmojIconActions emojIcon;
     List<Chat> mchat;
     GroupMessageAdapter messageAdapter;
+    ValueEventListener mSendEventListner;
     static FirebaseUser fuser;
     ValueEventListener seenListener;
     static String userusername;
     static String userimage;
     static APIService apiService;
     BottomSheetDialog dialogMenu;
+    static String messageUniqueID;
     int AUDIO_FROM_GALLERY = 2;
-    static String TAG="GroupMessageFragment";
+    static String TAG = "GroupMessageFragment";
     //pickimage
-    static ArrayList <String>arrayListGroupMemberList;
+    static ArrayList<String> arrayListGroupMemberList;
+    static ArrayList<String> arrayListCountGroupMemberList;
+
     StorageReference storageReference;
     private StorageTask uploadTask;
     Uri mImageUri = null;
@@ -157,6 +161,7 @@ public class GroupMessageFragment extends Fragment {
     static boolean notify = false;
     static final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     GroupUser user;
+    String strWhoViewedMessage;
     static SecureRandom rnd = new SecureRandom();
 
     static String userid;
@@ -188,7 +193,9 @@ public class GroupMessageFragment extends Fragment {
 
         sharedPreference = new SharedPreference();
 
-        arrayListGroupMemberList=new ArrayList<>();
+        arrayListGroupMemberList = new ArrayList<>();
+        arrayListCountGroupMemberList = new ArrayList<>();
+
         groupUserId = sharedPreference.getValue(getActivity(), WsConstant.groupUserId);
         userusername = sharedPreference.getValue(getActivity(), WsConstant.userUsername);
         userimage = sharedPreference.getValue(getActivity(), WsConstant.userImage);
@@ -236,6 +243,7 @@ public class GroupMessageFragment extends Fragment {
             }
         });
 
+        getCountMemberFromGroup();
 
         btn_send.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -586,6 +594,7 @@ public class GroupMessageFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 try {
                     mchat.clear();
+
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         final Chat chat = snapshot.getValue(Chat.class);
                         assert chat != null;
@@ -603,6 +612,9 @@ public class GroupMessageFragment extends Fragment {
                                                 if (u1.getId().equalsIgnoreCase(chat.getSender())) {
                                                     chat.setSender_image(u1.getImageURL());
                                                     chat.setSender_username(u1.getUsername());
+                                                    strWhoViewedMessage =chat.getIsseenby();
+                                                    Log.d(TAG,"jigar the group message have been seen by is"+strWhoViewedMessage);
+
                                                 }
                                             } catch (Exception e) {
                                                 e.printStackTrace();
@@ -619,14 +631,14 @@ public class GroupMessageFragment extends Fragment {
                             }
                         }
 
-                        messageAdapter = new GroupMessageAdapter(getActivity(), mchat, imageurl);
+                        Log.d(TAG, "jigar the member array list before going inside we have is " + arrayListCountGroupMemberList.size());
+                        messageAdapter = new GroupMessageAdapter(getActivity(), mchat, imageurl,groupid,arrayListCountGroupMemberList.size());
                         recyclerView.setAdapter(messageAdapter);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
@@ -882,7 +894,7 @@ public class GroupMessageFragment extends Fragment {
         }
     }
 
-    public  static void sendMessageToGrp(final Context context, final String sender, final String receiverGroupID,final String message, boolean isimage, String uri, String docUri, boolean iscontact, String con_name, String con_num) {
+    public static void sendMessageToGrp(final Context context, final String sender, final String receiverGroupID, final String message, boolean isimage, String uri, String docUri, boolean iscontact, String con_name, String con_num) {
 
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
         randomString(9);
@@ -899,6 +911,7 @@ public class GroupMessageFragment extends Fragment {
             hashMap.put("message", message);
             hashMap.put("issend", true);
             hashMap.put("isseen", false);
+            hashMap.put("isseenby", "");
             hashMap.put("isimage", isimage);
             hashMap.put("iscontact", iscontact);
             hashMap.put("contact_number", con_num);
@@ -919,6 +932,7 @@ public class GroupMessageFragment extends Fragment {
             hashMap.put("message", message);
             hashMap.put("issend", false);
             hashMap.put("isseen", false);
+            hashMap.put("isseenby", "");
             hashMap.put("isimage", isimage);
             hashMap.put("iscontact", iscontact);
             hashMap.put("contact_number", con_num);
@@ -937,6 +951,8 @@ public class GroupMessageFragment extends Fragment {
         reference.child("Chats").push().setValue(hashMap);
 //
 
+        String messageUniqueID = reference.getKey();
+
         getMemberFromGroup(context, message);
 
 //        String topic="groupchat";
@@ -948,9 +964,9 @@ public class GroupMessageFragment extends Fragment {
 //        groupMessageWithTopic(context);
 
     }
-//    context,strMemberID,message
-    public static void getUserInfoAndSendNotification(final Context context, final ArrayList<String> receiverMemberID,final String message)
-    {
+
+    //    context,strMemberID,message
+    public static void getUserInfoAndSendNotification(final Context context, final ArrayList<String> receiverMemberID, final String message) {
         DatabaseReference reference;
 
         reference = FirebaseDatabase.getInstance().getReference("Users").child(fuser.getUid());
@@ -965,16 +981,16 @@ public class GroupMessageFragment extends Fragment {
 
                     User user = dataSnapshot.getValue(User.class);
                     if (notify) {
-                        Log.d(TAG,"jigar the notification reciever member id is "+receiverMemberID.toString());
-                        for(int i=0;i<receiverMemberID.size();i++) {
-                            Log.d(TAG,"jigar the notification called with member id is "+receiverMemberID.get(i));
+                        Log.d(TAG, "jigar the notification reciever member id is " + receiverMemberID.toString());
+                        for (int i = 0; i < receiverMemberID.size(); i++) {
+                            Log.d(TAG, "jigar the notification called with member id is " + receiverMemberID.get(i));
 
-                            final  String strRecieverMemberID=receiverMemberID.get(i);
-                            final  String strRecieverMemberName=user.getUsername();
+                            final String strRecieverMemberID = receiverMemberID.get(i);
+                            final String strRecieverMemberName = user.getUsername();
 
-                                    //Do something after 100ms
+                            //Do something after 100ms
 
-                            sendNotifiaction(context,strRecieverMemberID,strRecieverMemberName, message);
+                            sendNotifiaction(context, messageUniqueID,strRecieverMemberID, strRecieverMemberName, message);
                         }
                     }
                     notify = false;
@@ -982,7 +998,7 @@ public class GroupMessageFragment extends Fragment {
 
 
                 } catch (Exception e) {
-                    Log.d(TAG,"jigar the exception error in notification is "+e);
+                    Log.d(TAG, "jigar the exception error in notification is " + e);
                     e.printStackTrace();
                 }
 
@@ -1009,17 +1025,15 @@ public class GroupMessageFragment extends Fragment {
                         GroupUser groupUser = d1.getValue(GroupUser.class);
                         for (int i = 0; i < groupUser.getMemberList().size(); i++) {
                             String member = groupUser.getMemberList().get(i);
-                   //         String strTempMemberID="";
+                            //         String strTempMemberID="";
                             if (!fuser.getUid().equals(member)) {
                                 String strMemberID = member;
                                 arrayListGroupMemberList.add(strMemberID);
 
-                          //      strTempMemberID=strMemberID;
+                                //      strTempMemberID=strMemberID;
 //                                sendNotifiaction(context,grp,userName,message);
 
                             }
-
-
 
 
 //                            if (groupUser.getMemberList().size() <= 1) {
@@ -1027,7 +1041,7 @@ public class GroupMessageFragment extends Fragment {
 //                                Log.d("GroupChat2", "//");
 //                            }
                         }
-                        Log.d(TAG,"jigar the member of group we have is "+arrayListGroupMemberList.toString());
+                        Log.d(TAG, "jigar the member of group we have is " + arrayListGroupMemberList.toString());
 
                         getUserInfoAndSendNotification(context, arrayListGroupMemberList, message);
 
@@ -1035,7 +1049,7 @@ public class GroupMessageFragment extends Fragment {
                         // ref.child("memberList").setValue(grpList);
                     }
                 } catch (Exception e) {
-                    Log.d(TAG,"jigar the exception member list error in notification is "+e);
+                    Log.d(TAG, "jigar the exception member list error in notification is " + e);
 
                     e.printStackTrace();
                 }
@@ -1048,9 +1062,55 @@ public class GroupMessageFragment extends Fragment {
         });
     }
 
-    private static void sendNotifiaction(final Context context, String receiver, final String username, final String message) {
-        Log.d(TAG,"jigar the we sending notification have receiver is "+receiver+" and user name is "+username
-        +" and  message is  "+message);
+    public  void getCountMemberFromGroup() {
+
+        final DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Groups").child(groupUserId);
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull final DataSnapshot d1) {
+                try {
+                    if (d1.exists()) {
+                        GroupUser groupUser = d1.getValue(GroupUser.class);
+                        for (int i = 0; i < groupUser.getMemberList().size(); i++) {
+                            String member = groupUser.getMemberList().get(i);
+                            //         String strTempMemberID="";
+                            //if (!fuser.getUid().equals(member))
+                            {
+                                String strMemberID = member;
+                                arrayListCountGroupMemberList.add(strMemberID);
+
+
+                            }
+
+
+
+                        }
+                        Log.d(TAG, "jigar the member of group we have is " + arrayListCountGroupMemberList.toString());
+
+
+
+                        // ref.child("memberList").setValue(grpList);
+                    }
+                } catch (Exception e) {
+                    Log.d(TAG, "jigar the member of exception member list error in notification is " + e);
+
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d(TAG, "jigar the member of error database error is " + databaseError);
+
+            }
+        });
+        Log.d(TAG, "jigar the member of size group member we have is " + arrayListCountGroupMemberList.size());
+
+    }
+
+    private static void sendNotifiaction(final Context context, final String messageUniqueID, String receiver, final String username, final String message) {
+        Log.d(TAG, "jigar the we sending notification have receiver is " + receiver + " and user name is " + username
+                + " and  message is  " + message);
 
         DatabaseReference tokens = FirebaseDatabase.getInstance().getReference("Tokens");
         Query query = tokens.orderByKey().equalTo(receiver);
@@ -1062,11 +1122,11 @@ public class GroupMessageFragment extends Fragment {
                         Token token = snapshot.getValue(Token.class);
                         Data data = new Data(fuser.getUid()
                                 , R.mipmap.ic_launcher, username + ": " + message, "New Message",
-                                userid);
-                        Log.d(TAG,"jigar the we response before notification for token is  "+snapshot.getChildren().toString());
-
+                                userid,messageUniqueID);
+                        Log.d(TAG, "jigar the we response before notification for token is  " + snapshot.getChildren().toString());
                         final Sender sender = new Sender(data, token.getToken());
-//                        final Handler handler = new Handler();
+
+                        //                        final Handler handler = new Handler();
 //                            handler.postDelayed(new Runnable() {
 //                                @Override
 //                                public void run() {
@@ -1075,8 +1135,8 @@ public class GroupMessageFragment extends Fragment {
                                 .enqueue(new Callback<MyResponse>() {
                                     @Override
                                     public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
-                                        Log.d(TAG,"jigar the on notification response we have in notification is "+response.code());
-                                        Log.d(TAG,"jigar the on notification request we done is "+call.request().body());
+                                        Log.d(TAG, "jigar the on notification response we have in notification is " + response.code());
+                                        Log.d(TAG, "jigar the on notification request we done is " + call.request().body());
 
                                         if (response.code() == 200) {
 
@@ -1088,7 +1148,7 @@ public class GroupMessageFragment extends Fragment {
 
                                     @Override
                                     public void onFailure(Call<MyResponse> call, Throwable t) {
-                                        Log.d(TAG,"jigar the on notification failure  in notification is "+call.toString());
+                                        Log.d(TAG, "jigar the on notification failure  in notification is " + call.toString());
 
                                     }
                                 });
@@ -1097,63 +1157,95 @@ public class GroupMessageFragment extends Fragment {
 
                     }
                 } catch (Exception e) {
-                    Log.d(TAG,"jigar the main exception in notification is "+e);
+                    Log.d(TAG, "jigar the main exception in notification is " + e);
                     e.printStackTrace();
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.d(TAG,"jigar the notification cancelled is "+databaseError.getMessage());
+                Log.d(TAG, "jigar the notification cancelled is " + databaseError.getMessage());
             }
         });
     }
 
+    public void seenMessage(final String userid) {
+        reference = FirebaseDatabase.getInstance().getReference("Chats");
+        Log.d(TAG, "jigar the seen message user id  we have is" + userid);
 
-//    private static void sendNotifiaction(String receiver, final String username, final String message) {
-//        DatabaseReference tokens = FirebaseDatabase.getInstance().getReference("Tokens");
-//        Query query = tokens.orderByKey().equalTo(receiver);
-//        query.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                try {
-//                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-//                        Token token = snapshot.getValue(Token.class);
-//                        Data data = new Data(fuser.getUid(), R.mipmap.ic_launcher, username + ": " + message, "New Message",
-//                                groupUserId);
-//
-//                        Sender sender = new Sender(data, token.getToken());
-//
-//                        apiService.sendNotification(sender)
-//                                .enqueue(new Callback<MyResponse>() {
-//                                    @Override
-//                                    public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
-//                                        if (response.code() == 200) {
-//                                            if (response.body().success != 1) {
-////                                                Toast.makeText(getActivity(), "Failed!", Toast.LENGTH_SHORT).show();
-//
-//                                                Log.d(TAG,"jigar the notificatin is send"+response.body());
-//                                            }
-//                                        }
-//                                    }
-//
-//                                    @Override
-//                                    public void onFailure(Call<MyResponse> call, Throwable t) {
-//
-//                                    }
-//                                });
-//                    }
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        });
-//    }
+        ValueEventListener valueEventListener = new ValueEventListener() {
+
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                try {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        Chat chat = snapshot.getValue(Chat.class);
+                        if (chat.getTo().equalsIgnoreCase("group")) {
+//                            if (chat.getReceiver().equals(groupUserId) && chat.getSender().equals(userid))
+                                if (chat.getReceiver().equals(groupUserId) )
+                                {
+                                    HashMap<String, Object> hashMap = new HashMap<>();
+                                    hashMap.put("isseen", true);
+                                    System.out.println("jigar is seen by user are "+strWhoViewedMessage);
+                                    if(strWhoViewedMessage==null)
+                                    {
+                                        hashMap.put("isseenby", userid);
+
+                                    }else
+
+                                    if (strWhoViewedMessage.contains(userid)) {
+
+                                    System.out.println("jigar is I found the user id "+userid);
+
+                                } else {
+                                        System.out.println("jigar is i dnt find  found the user id "+userid);
+
+                                        if(strWhoViewedMessage.equals(""))
+                                    {
+                                        hashMap.put("isseenby", userid);
+                                    }else {
+                                        hashMap.put("isseenby", strWhoViewedMessage + " , " + userid);
+                                    }
+
+                                }
+                                snapshot.getRef().updateChildren(hashMap);
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    Log.d(TAG, "jigar the exception we have is " + e);
+
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                //
+            }
+        };
+
+        reference.addValueEventListener(valueEventListener);
+        mSendEventListner = valueEventListener;
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+//        if(messageAdapter!=null) {
+//            recyclerView.setAdapter(messageAdapter);
+//            messageAdapter.notifyDataSetChanged();
+//        }
+        seenMessage(fuser.getUid());
+    }
 
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (mSendEventListner != null) {
+            reference.removeEventListener(mSendEventListner);
+        }
+    }
 }

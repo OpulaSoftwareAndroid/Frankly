@@ -113,13 +113,8 @@ public class MainActivity extends AppCompatActivity {
             window.setBackgroundDrawable(background);
         }
 
-
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-
-
 
 //        FragmentManager fragmentManager = getSupportFragmentManager();
 //        fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new MyProfileFragment()).addToBackStack(null).commit();
@@ -219,7 +214,7 @@ public class MainActivity extends AppCompatActivity {
                 //                spaceNavigationView.changeCenterButtonIcon( R.drawable.ic__bottom_camera);
                 //                spaceNavigationView.shouldShowFullBadgeText(true);
                 //                spaceNavigationView.showBadgeAtIndex(2, 3, Color.RED);
-                spaceNavigationView.setInActiveCentreButtonIconColor(ContextCompat.getColor(MainActivity.this, R.color.colorPrimaryone));
+                spaceNavigationView.setActiveCentreButtonBackgroundColor(ContextCompat.getColor(MainActivity.this, R.color.colorPrimaryone));
                 spaceNavigationView.changeCurrentItem(2);
             }
         }, 2000);

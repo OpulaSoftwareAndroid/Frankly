@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_marginTop="10dp"
+    android:background="@drawable/bottom_shape_sheet"
+    android:layout_margin="30dp"
+    android:padding="10dp"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:text="Message Info"
+        android:layout_gravity="center"
+        android:layout_height="wrap_content" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:weightSum="3"
+        android:layout_marginTop="30dp"
+        android:layout_marginLeft="5dp"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_weight="0.5"
+            android:src="@drawable/ic_double_tick_send_indicator"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="0.7"
+            android:id="@+id/textViewSeenBy"
+            android:layout_marginLeft="20dp"
+            android:text="Seen"
+            android:layout_height="wrap_content" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:orientation="horizontal"
+            android:background="@color/white_transparency"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.3">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:id="@+id/textViewSeenTime"
+                android:layout_marginLeft="20dp"
+                android:visibility="gone"
+                android:text="today 14.15"
+                android:layout_height="wrap_content" />
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_gravity="center"
+                android:id="@+id/imageViewSeenDot"
+                android:src="@drawable/ic_not_seen_image"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:weightSum="3"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="5dp"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_weight="0.5"
+            android:src="@drawable/ic_double_tick_indicator"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="0.7"
+            android:id="@+id/textViewDelivered"
+            android:layout_marginLeft="20dp"
+            android:text="Delivered"
+            android:layout_height="wrap_content" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:orientation="horizontal"
+            android:background="@color/white_transparency"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.3">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:id="@+id/textViewDeliveredTime"
+                android:layout_marginLeft="20dp"
+
+                android:visibility="gone"
+                android:text="today 14.15"
+                android:layout_height="wrap_content" />
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_gravity="center"
+                android:id="@+id/imageViewDeliveredDot"
+                android:src="@drawable/ic_not_seen_image"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</LinearLayout>
+<!--</android.support.v7.widget.CardView>-->

@@ -89,7 +89,12 @@ dependencies {
     implementation 'com.github.shts:StoriesProgressView:3.0.0'
     implementation 'com.devlomi:circularstatusview:1.0.0'
     implementation 'com.github.rygelouv:android-audio-sensei:0.1.2'
+    implementation 'com.naver.android.helloyako:imagecropview:1.2.2'
+
+    implementation 'com.bogdwellers:pinchtozoom:0.1'
+
 }
+
 
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.android.application'

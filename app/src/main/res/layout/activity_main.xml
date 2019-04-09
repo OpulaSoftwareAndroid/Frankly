@@ -276,6 +276,8 @@
                             android:src="@drawable/ic_forward"
                             android:tint="@color/white" />
                     </LinearLayout>
+
+
                 </LinearLayout>
 
 

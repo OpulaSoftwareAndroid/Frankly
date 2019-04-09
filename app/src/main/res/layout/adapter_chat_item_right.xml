@@ -1,15 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:weightSum="1"
+    xmlns:android="http://schemas.android.com/apk/res/android" >
+
+<LinearLayout
+    android:layout_width="0dp"
+    android:layout_weight="0.2"
+    android:layout_height="wrap_content"/>
+
+
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:emojicon="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/linmain"
-    android:layout_width="match_parent"
+    android:layout_width="0dp"
+    android:layout_weight="0.8"
     android:layout_height="wrap_content"
     android:layout_gravity="end"
     android:gravity="end"
     android:orientation="horizontal">
 
     <RelativeLayout
-        android:layout_width="300dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="4dp">
 
@@ -43,7 +60,7 @@
 
             <RelativeLayout
                 android:id="@+id/relative"
-                android:layout_width="200dp"
+                android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:layout_marginTop="4dp"
                 android:visibility="gone">
@@ -57,19 +74,19 @@
 
                 <ImageView
                     android:id="@+id/img_receive"
-                    android:layout_width="200dp"
-                    android:layout_height="200dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:adjustViewBounds="true"
                     android:scaleType="centerCrop" />
 
                 <RelativeLayout
                     android:id="@+id/img_blur"
-                    android:layout_width="200dp"
-                    android:layout_height="200dp">
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
 
                     <ImageView
-                        android:layout_width="200dp"
-                        android:layout_height="200dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
                         android:adjustViewBounds="true"
                         android:alpha="0.9"
                         android:background="@drawable/gradient_bg"
@@ -90,7 +107,7 @@
 
             <RelativeLayout
                 android:id="@+id/relative_contact"
-                android:layout_width="300dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:visibility="gone">
@@ -150,38 +167,56 @@
                     android:textSize="18sp"
                     android:visibility="visible" />
             </RelativeLayout>
+
             <RelativeLayout
                 android:id="@+id/relativeLayoutAudioPlayer"
-                android:layout_width="300dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:visibility="visible">
+                android:visibility="gone">
+                <TextView
+                    android:id="@+id/audio_name"
+                    android:layout_width="wrap_content"
+                    android:visibility="gone"
+                    android:layout_height="wrap_content"
+                    tools:text="Dadju - Ma fuzzy Style"
+                    android:padding="8dp"
+                    />
 
                 <com.rygelouv.audiosensei.player.AudioSenseiPlayerView
-                    android:id="@+id/audio_player"
-                    android:layout_width="250dp"
+                    android:layout_below="@+id/audio_name"
+                    android:visibility="gone"
+                    android:id="@+id/audio_player1"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
+
+<!--//-&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;                -->
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="80dp"
+                    android:layout_height="wrap_content"
                     android:background="@drawable/gray_border_wo_padding"
                     android:gravity="center_vertical"
                     android:orientation="vertical"
-                    android:visibility="gone"
                     android:paddingLeft="4dp" >
 
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-
                         android:gravity="center_vertical" >
+
+                        <com.rygelouv.audiosensei.player.AudioSenseiPlayerView
+                            android:id="@+id/audio_player"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:visibility="visible" />
 
                         <FrameLayout
                             android:id="@+id/play_pause_layout"
                             android:layout_width="50dp"
                             android:layout_height="match_parent"
                             android:layout_alignParentLeft="true"
+                            android:visibility="gone"
                             android:paddingBottom="5dp"
                             android:paddingRight="5dp"
                             android:paddingTop="5dp" >
@@ -206,6 +241,8 @@
                             android:id="@+id/seekbar_layout"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
+
+                            android:visibility="gone"
                             android:layout_toRightOf="@id/play_pause_layout"
                             android:paddingBottom="5dp"
                             android:paddingRight="5dp"
@@ -219,12 +256,13 @@
 
                             <LinearLayout
                                 android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                android:layout_height="10dp"
                                 android:layout_gravity="right|top"
                                 android:orientation="horizontal"
-                                android:paddingBottom="5dp"
+                                android:paddingTop="5dp"
                                 android:paddingRight="10dp"
-                                android:paddingTop="5dp" >
+                                android:paddingBottom="5dp"
+                                android:visibility="gone">
 
                                 <TextView
                                     android:id="@+id/run_time"
@@ -264,6 +302,46 @@
                 </LinearLayout>
 
             </RelativeLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:id="@+id/linearLayoutRepliedMessage"
+                android:background="@drawable/border_frame_replied_message_right_side"
+                android:orientation="vertical"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:textSize="12dp"
+                    android:layout_marginLeft="10dp"
+                    android:id="@+id/textViewUserName"
+                    android:textColor="@color/colorPrimary"
+                    android:text="@string/app_name"
+                    android:layout_height="wrap_content" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_marginLeft="10dp"
+                    android:layout_height="wrap_content">
+
+                    <hani.momanii.supernova_emoji_library.Helper.EmojiconTextView
+                        android:id="@+id/textViewRepliedMessage"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/m_m"
+                        android:gravity="start"
+                        android:text="Hello we are demo "
+                        android:textAlignment="gravity"
+                        android:textColor="@color/black"
+                        android:textSize="18sp"
+                        android:visibility="visible"
+                        emojicon:emojiconSize="22sp" />
+
+
+
+                </LinearLayout>
+
+            </LinearLayout>
 
             <hani.momanii.supernova_emoji_library.Helper.EmojiconTextView
                 android:id="@+id/show_message"
@@ -334,4 +412,5 @@
         </LinearLayout>
 
     </RelativeLayout>
+</LinearLayout>
 </LinearLayout>

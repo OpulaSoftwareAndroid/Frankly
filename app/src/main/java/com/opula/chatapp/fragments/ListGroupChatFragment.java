@@ -151,7 +151,7 @@ public class ListGroupChatFragment extends Fragment {
                             }
                         }
                     }
-                    userAdapter = new GroupUserAdapter(getContext(), mUsers, true);
+                    userAdapter = new GroupUserAdapter(getContext(),fuser.getUid(), mUsers, true);
                     WsConstant.check = "fragment";
 
                     if (userAdapter.getItemCount() > 0) {
@@ -167,8 +167,6 @@ public class ListGroupChatFragment extends Fragment {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
-
             }
 
             @Override

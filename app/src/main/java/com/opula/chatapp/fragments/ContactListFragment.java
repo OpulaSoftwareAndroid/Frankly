@@ -94,7 +94,8 @@ public class ContactListFragment extends Fragment {
                         fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new GroupMessageFragment()).commit();
                     } else if (type_of_fragment.equalsIgnoreCase("PersonalContact")) {
                         for (int i = 0; i < selectedUserList.size(); i++) {
-                            MessageFragment.sendMessageToPersonal(getContext(),"false", fuser.getUid(), userid, "contact", false, "default", "default", true, selectedUserList.get(i).getContactName(), selectedUserList.get(i).getContactNumber());
+                            MessageFragment.sendMessageToPersonal(getContext(),"false", fuser.getUid(), userid,
+                                    "contact", false,"","",false, "default", "default", true, selectedUserList.get(i).getContactName(), selectedUserList.get(i).getContactNumber());
                         }
                         FragmentManager fragmentManager = ((FragmentActivity) getContext()).getSupportFragmentManager();
                         fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new MessageFragment()).commit();

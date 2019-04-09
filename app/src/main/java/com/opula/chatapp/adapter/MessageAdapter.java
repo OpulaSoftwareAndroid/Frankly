@@ -34,10 +34,14 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bogdwellers.pinchtozoom.ImageMatrixTouchHandler;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.target.Target;
+
 import com.github.barteksc.pdfviewer.PDFView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -275,6 +279,14 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
         }
 
+        if(!chat.isIsreceived())
+        {
+            holder.img_tick.setVisibility(View.VISIBLE);
+            holder.img_dtick.setVisibility(View.GONE);
+            holder.img_dstick.setVisibility(View.GONE);
+            holder.img_loading_tick.setVisibility(View.GONE);
+        }
+
         String str = getDateCurrentTimeZone(Long.parseLong(chat.getTime()));
         holder.show_time.setText(str);
 
@@ -295,13 +307,13 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
                 alertDialogBuilder.setCancelable(true);
 
                 final ImageView image = dialogView.findViewById(R.id.image);
-
+                image.setOnTouchListener(new ImageMatrixTouchHandler(dialogView.getContext()));
                 AppGlobal.showProgressDialog(mContext);
                 final AlertDialog alertDialog = alertDialogBuilder.create();
 
                 String string = chat.getImage();
 
-                Glide.with(mContext).load(string)
+                                Glide.with(mContext).load(string)
                         .listener(new RequestListener<String, GlideDrawable>() {
                             @Override
                             public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
@@ -318,6 +330,15 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
                             }
                         })
                         .into(image);
+
+
+//
+//                Glide.with(image.getContext()).load(string).asBitmap().into(new SimpleTarget<Bitmap>() {
+//                    @Override
+//                    public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+//                        image.setImage(ImageSource.bitmap(resource));
+//                    }
+//                });
             }
         });
 
@@ -828,7 +849,21 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
                             mUsers.add(user);
                         }
                     }
-                    newChatUserAdapter = new ForwardMessageAdapter(context, mUsers, mChat.get(i).isIsimage(), false, mChat.get(i).getMessage(), alertDialog, mChat.get(i).getImage());
+//                    if(mChat.get(i).isIsaudio())
+//                  {
+
+                        newChatUserAdapter = new ForwardMessageAdapter(context, mUsers, mChat.get(i).isIsimage()
+                                , true, mChat.get(i).getMessage(), alertDialog, mChat.get(i).getImage(),mChat.get(i).isIsaudio(),mChat.get(i).getAudio_uri());
+
+//                        sendAudioToPersonal(getActivity(), fuser.getUid(), userid, "Voice Message"
+//                                , false,mUri, "default", true, "default"
+//                                , "default");
+   //                 }
+//                    else
+//                    {
+//                        newChatUserAdapter = new ForwardMessageAdapter(context, mUsers, mChat.get(i).isIsimage()
+//                                , true, mChat.get(i).getMessage(), alertDialog, mChat.get(i).getImage());
+//                    }
                     WsConstant.check = "activity";
                     recyclerView.setAdapter(newChatUserAdapter);
                 } catch (Exception e) {
