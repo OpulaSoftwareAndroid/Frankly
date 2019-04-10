@@ -1,8 +1,6 @@
 package com.opula.chatapp.fragments;
 
 import android.Manifest;
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.ClipData;
@@ -12,6 +10,7 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
@@ -36,8 +35,6 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.TranslateAnimation;
 import android.webkit.MimeTypeMap;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -86,6 +83,10 @@ import com.opula.chatapp.notifications.MyResponse;
 import com.opula.chatapp.notifications.Sender;
 import com.opula.chatapp.notifications.Token;
 import com.rygelouv.audiosensei.player.AudioSenseiListObserver;
+import com.shashank.sony.fancydialoglib.Animation;
+import com.shashank.sony.fancydialoglib.FancyAlertDialog;
+import com.shashank.sony.fancydialoglib.FancyAlertDialogListener;
+import com.shashank.sony.fancydialoglib.Icon;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -102,6 +103,7 @@ import java.util.Objects;
 import java.util.TimeZone;
 
 import javax.crypto.spec.SecretKeySpec;
+
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import hani.momanii.supernova_emoji_library.Actions.EmojIconActions;
@@ -176,7 +178,7 @@ public class MessageFragment extends Fragment {
     // Requesting permission to RECORD_AUDIO
     private boolean permissionToRecordAccepted = false;
     private String[] permissions = {Manifest.permission.RECORD_AUDIO};
-    ImageView imageViewIcon;
+    ImageView imageViewSettingPopUpIcon;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -259,6 +261,7 @@ public class MessageFragment extends Fragment {
         String username = sharedPreference.getValue(getActivity(), WsConstant.userUsername);
 //        getUserDetails();
 
+        getBlockUserListOfReceiver();
         Log.d(TAG,"jigar the user name  we have STRAT in fragment is "+username);
 
         fuser = FirebaseAuth.getInstance().getCurrentUser();
@@ -499,7 +502,7 @@ public class MessageFragment extends Fragment {
             }
         });
 
-//        KeyboardVisibilityEvent.setEventListener(Objects.requireNonNull(getActivity()),
+        //        KeyboardVisibilityEvent.setEventListener(Objects.requireNonNull(getActivity()),
 //                new KeyboardVisibilityEventListener() {
 //                    @Override
 //                    public void onVisibilityChanged(boolean isOpen) {
@@ -524,15 +527,72 @@ public class MessageFragment extends Fragment {
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()) {
-                    case R.id.menu_keyword:
-//                        Toast.makeText(getContext(), "Block", Toast.LENGTH_SHORT).show();
+                    case R.id.menu_item_block:
+                        new FancyAlertDialog.Builder(getActivity())
+                                .setTitle("Are you sure! you want Block "+txtUserName.getText() +"?")
+                                .setBackgroundColor(getResources().getColor(R.color.colorDarkRed))  //Don't pass R.color.colorvalue
+                                .setMessage("You won't be able to chat!")
+                                .setNegativeBtnText("Cancel")
+                                .setPositiveBtnBackground(getResources().getColor(R.color.colorDarkRed))  //Don't pass R.color.colorvalue
+                                .setPositiveBtnText("Yes, Block")
+                                .setNegativeBtnBackground(getResources().getColor(R.color.colorPrimary))  //Don't pass R.color.colorvalue
+                                .setIcon(R.drawable.ic_action_block_white, Icon.Visible)
+                                .setAnimation(Animation.POP)
+                                .isCancellable(true)
+                                .OnPositiveClicked(new FancyAlertDialogListener() {
+                                    @Override
+                                    public void OnClick() {
+                                        Log.d(TAG,"jigar the user name we are getting  is "+fuser.getUid());
+                                        Log.d(TAG,"jigar the receiver user name we are getting  is "+userid);
+                                        String strLoginUserId=fuser.getUid();
+                                        String strReceiverId=userid;
+                                        blockUser();
+                                    }
+                                })
+                                .OnNegativeClicked(new FancyAlertDialogListener() {
+                                    @Override
+                                    public void OnClick() {
+                                        //Toast.makeText(getContext(),"Cancel",Toast.LENGTH_SHORT).show();
+                                    }
+                                })
+                                .build();
                         return true;
-                    case R.id.menu_popularity:
+                    case R.id.menu_item_clear_chat:
 
+                        new FancyAlertDialog.Builder(getActivity())
+                                .setTitle("Are you sure! you want delete this chat?")
+                                .setBackgroundColor(getResources().getColor(R.color.colorPrimary))  //Don't pass R.color.colorvalue
+                                .setMessage("You won't be able to recover this chat!")
+                                .setNegativeBtnText("Cancel")
+                                .setPositiveBtnBackground(getResources().getColor(R.color.colorPrimary))  //Don't pass R.color.colorvalue
+                                .setPositiveBtnText("Delete")
+                                .setNegativeBtnBackground(getResources().getColor(R.color.colorPrimaryone))  //Don't pass R.color.colorvalue
+                                .setAnimation(Animation.SLIDE)
+                                .isCancellable(true)
+                                .setIcon(R.drawable.sym_keyboard_delete_holo_dark, Icon.Visible)
+                                .OnPositiveClicked(new FancyAlertDialogListener() {
+                                    @Override
+                                    public void OnClick() {
+                                        Log.d(TAG,"jigar the user name we are getting  is "+fuser.getUid());
+                                        Log.d(TAG,"jigar the receiver user name we are getting  is "+userid);
+                                        String strLoginUserId=fuser.getUid();
+                                        String strReceiverId=userid;
+                                        deleteMessageList(strLoginUserId,strReceiverId);
+//                                  //    Toast.makeText(getContext(),"Delete",Toast.LENGTH_SHORT).show();
+                                    }
+                                })
+                                .OnNegativeClicked(new FancyAlertDialogListener() {
+                                    @Override
+                                    public void OnClick() {
+                                        //Toast.makeText(getContext(),"Cancel",Toast.LENGTH_SHORT).show();
+                                    }
+                                })
+                                .build();
 //                        Toast.makeText(getContext(), "Clear Chat", Toast.LENGTH_SHORT).show();
                         return true;
 
                     case R.id.menu_view_profile:
+
                         FragmentManager fragmentManager = ((FragmentActivity) getContext()).getSupportFragmentManager();
                         fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new UserProfileFragment()).addToBackStack(null).commit();
 
@@ -549,6 +609,179 @@ public class MessageFragment extends Fragment {
         } else {
             stopRecording();
         }
+    }
+
+    public void getBlockUserListOfReceiver() {
+        reference = FirebaseDatabase.getInstance().getReference("Users");
+        ValueEventListener valueEventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                try {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        User user = snapshot.getValue(User.class);
+                        if (user.getId().equals(userid)) {
+                            Log.d(TAG, "jigar the blocked user list we have is " + user.getBlockedby());
+
+
+                           String strBlockedUserList= user.getBlockedby();
+
+
+                           if(strBlockedUserList.contains(userid))
+                           {
+                               Toast.makeText(getContext(),"You have been blocked by user ",Toast.LENGTH_LONG).show();
+                           }
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
+        reference.addValueEventListener(valueEventListener);
+        mSendEventListner = valueEventListener;
+    }
+
+
+    public void blockUser()
+    {
+        reference = FirebaseDatabase.getInstance().getReference("Users");
+        ValueEventListener valueEventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                try {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        User user = snapshot.getValue(User.class);
+                        Log.d(TAG, "jigar the username we have is " + user.getUsername());
+                        if(user.getId().equals(userid))
+                        {
+                           String strWhoBlockedUser =user.getBlockedby();
+
+                            HashMap<String, Object> hashMap = new HashMap<>();
+//                            hashMap.put("blockedby", true);
+//                            snapshot.getRef().updateChildren(hashMap);
+                               if(strWhoBlockedUser==null)
+                               {
+                                   hashMap.put("blockedby", fuser.getUid());
+                                   snapshot.getRef().updateChildren(hashMap);
+
+                               }
+                               else
+                               if (strWhoBlockedUser.contains(fuser.getUid())) {
+
+                                   System.out.println("jigar the already blocked user is "+strWhoBlockedUser);
+
+                               } else {
+
+                                   if(strWhoBlockedUser.equals(""))
+                                   {
+                                       System.out.println("jigar is new blocked user id "+strWhoBlockedUser);
+                                       hashMap.put("blockedby", fuser.getUid());
+                                       snapshot.getRef().updateChildren(hashMap);
+
+                                   }else {
+                                       System.out.println("jigar is already blocked user are : "+strWhoBlockedUser);
+                                       hashMap.put("blockedby", strWhoBlockedUser + " , " + fuser.getUid());
+                                       snapshot.getRef().updateChildren(hashMap);
+                                       System.out.println("jigar is already blocked user are : "+strWhoBlockedUser);
+                                   }
+                               }
+                               Log.d(TAG, "jigar the blocking username we have is " + user.getUsername());
+                        }
+//                            if (chat.getReceiver().equals(fuser.getUid()) && chat.getSender().equals(userid)
+//                                    && !chat.isIsseen()) {
+//                                HashMap<String, Object> hashMap = new HashMap<>();
+//                                Long tsLong = (System.currentTimeMillis() / 1000);
+//                                String ts = tsLong.toString();
+//                                hashMap.put("isseen", true);
+//                                hashMap.put("issend", true);
+//                                hashMap.put("isreceived", true);
+//                                hashMap.put("isseentime", ts);
+//                                snapshot.getRef().updateChildren(hashMap);
+//                            }
+//
+                    }
+                }catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        };
+        reference.addValueEventListener(valueEventListener);
+        mSendEventListner = valueEventListener;
+    }
+    public void deleteMessageList(final String strLoginUserId,final String strReceiverID) {
+        reference = FirebaseDatabase.getInstance().getReference("Chats");
+        ValueEventListener valueEventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                try {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        Chat chat = snapshot.getValue(Chat.class);
+                        if (chat.getTo().equalsIgnoreCase("personal"))
+                        {
+
+                            if ((chat.getSender().equals(strLoginUserId) || chat.getSender().equals(strReceiverID))
+                                    && (chat.getReceiver().equals(strLoginUserId) || chat.getReceiver().equals(strReceiverID)))
+                            {
+                                HashMap<String, Object> hashMap = new HashMap<>();
+
+                                if (chat.getReceiver().equals(strLoginUserId)) {
+                                    if(chat.getIsstatus().equals("0"))
+                                    {
+                                        hashMap.put("isstatus", "2");
+                                    }
+                                    else if(chat.getIsstatus().equals("1"))
+                                    {
+                                        hashMap.put("isstatus", "3");
+                                    }
+                                    Log.d(TAG, "jigar the login user is receiver and id is : " + strReceiverID + " and message is " + chat.getMessage());
+                                    snapshot.getRef().updateChildren(hashMap);
+                                    //                                    && chat.getSender().equals(userid)
+//                                    && !chat.isIsseen()) {
+//                                HashMap<String, Object> hashMap = new HashMap<>();
+//                                Long tsLong = (System.currentTimeMillis() / 1000);
+//                                String ts = tsLong.toString();
+
+//                                hashMap.put("isseen", true);
+//                                hashMap.put("issend", true);
+//                                hashMap.put("isreceived", true);
+//                                hashMap.put("isseentime", ts);
+//                                snapshot.getRef().updateChildren(hashMap);
+                                } else {
+                                    if(chat.getIsstatus().equals("0"))
+                                    {
+                                        hashMap.put("isstatus", "1");
+                                    }
+                                    else if(chat.getIsstatus().equals("2"))
+                                    {
+                                        hashMap.put("isstatus", "3");
+                                    }
+                                    Log.d(TAG, "jigar the login user is sender and id is : " + strLoginUserId + " and message is " + chat.getMessage());
+                                    snapshot.getRef().updateChildren(hashMap);
+                                }
+
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                //
+            }
+        };
+        reference.addValueEventListener(valueEventListener);
+        mSendEventListner = valueEventListener;
     }
 
     private void onPlay(boolean start) {
@@ -744,7 +977,7 @@ public class MessageFragment extends Fragment {
         rootView = view.findViewById(R.id.root_view);
         emojiButton = view.findViewById(R.id.emoji_btn);
         imageViewShareMediaDialog = view.findViewById(R.id.imageViewShareMediaDialog);
-        imageViewIcon = view.findViewById(R.id.imageViewIcon);
+        imageViewSettingPopUpIcon = view.findViewById(R.id.imageViewSettingPopUpIcon);
         imageViewCloseChat=view.findViewById(R.id.imageViewCloseChat);
         linearLayoutReplyMessage=view.findViewById(R.id.linearLayoutReplyMessage);
         linearLayoutReplyMessage.setVisibility(View.GONE);
@@ -767,7 +1000,7 @@ public class MessageFragment extends Fragment {
 //                slideDown(linearLayoutReplyMessage);
             }
         });
-        imageViewIcon.setOnClickListener(new View.OnClickListener() {
+        imageViewSettingPopUpIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 showFilterPopup(view);

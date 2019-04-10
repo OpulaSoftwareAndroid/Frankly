@@ -950,12 +950,10 @@ public class GroupMessageFragment extends Fragment {
 
         reference.child("Chats").push().setValue(hashMap);
 //
-
         String messageUniqueID = reference.getKey();
-
         getMemberFromGroup(context, message);
 
-//        String topic="groupchat";
+        //        String topic="groupchat";
 //
 //        FirebaseMessaging.getInstance().subscribeToTopic(topic);
 //
@@ -981,7 +979,7 @@ public class GroupMessageFragment extends Fragment {
 
                     User user = dataSnapshot.getValue(User.class);
                     if (notify) {
-                        Log.d(TAG, "jigar the notification reciever member id is " + receiverMemberID.toString());
+                        Log.d(TAG, "jigar the notification receiver member id is " + receiverMemberID.toString());
                         for (int i = 0; i < receiverMemberID.size(); i++) {
                             Log.d(TAG, "jigar the notification called with member id is " + receiverMemberID.get(i));
 

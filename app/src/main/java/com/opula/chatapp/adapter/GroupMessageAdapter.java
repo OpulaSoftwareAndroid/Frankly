@@ -85,8 +85,6 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<GroupMessageAdapte
         this.imageurl = imageurl;
         this.strGroupID = strGroupID;
         this.memberListSize = memberListSize;
-
-
     }
 
     @NonNull

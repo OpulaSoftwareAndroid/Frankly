@@ -14,6 +14,8 @@ public class Chat {
     private String isseentime;
 
     private boolean issend;
+    private String isstatus;
+
     private boolean isseen;
     private boolean isreceived;
     private boolean isrepliedmessage;
@@ -109,6 +111,18 @@ public class Chat {
     public void setIssend(boolean issend) {
         this.issend = issend;
     }
+
+
+
+    public String getIsstatus() {
+        return isstatus;
+    }
+
+    public void setIsstatus(String isstatus) {
+        this.isstatus = isstatus;
+    }
+
+
 
     public boolean isIsreceived() {
         return isreceived;

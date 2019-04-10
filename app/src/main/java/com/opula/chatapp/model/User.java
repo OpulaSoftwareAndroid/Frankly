@@ -4,6 +4,7 @@ public class User {
 
     private String id;
     private String username;
+    private String blockedby;
     private String imageURL;
     private String status;
     private String search;
@@ -17,6 +18,14 @@ public class User {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getBlockedby() {
+        return blockedby;
+    }
+
+    public void setBlockedby(String blockedby) {
+        this.blockedby = blockedby;
     }
 
     public String getUsername() {

@@ -91,7 +91,7 @@
             android:layout_weight="0.1"
             android:layout_marginRight="10dp"
             android:src="@drawable/ic_setting_icon"
-            android:id="@+id/imageViewIcon"
+            android:id="@+id/imageViewSettingPopUpIcon"
             android:layout_height="match_parent" />
 
         </LinearLayout>

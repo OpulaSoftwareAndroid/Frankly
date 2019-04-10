@@ -10,6 +10,7 @@
     <color name="colorAccent">#eb268e</color>
     <color name="colorAccentLight">#fdfdfe</color>
     <color name="colorRed">#D30202</color>
+    <color name="colorDarkRed">#88012F</color>
 
     <color name="chatright">#e4fdcb</color>
     <color name="colorChatLeftReplied">#DFDFDF</color>
