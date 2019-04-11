@@ -167,6 +167,7 @@ public class MessageFragment extends Fragment {
     private static String fileName = null;
     boolean mStartRecording = true;
 
+    boolean isBlockedUser=false;
     String strLoginUserName;
     int PICK_IMAGE_MULTIPLE = 1;
     String imageEncoded;
@@ -427,7 +428,7 @@ public class MessageFragment extends Fragment {
         recordButton = (RecordButton) rootView.findViewById(R.id.record_button);
         recordButton.setRecordView(recordView);
 
-//        recordButton.setOnTouchListener(new View.OnTouchListener() {
+        //        recordButton.setOnTouchListener(new View.OnTouchListener() {
 //            @Override
 //            public boolean onTouch(View view, MotionEvent motionEvent) {
 //                if(motionEvent.getAction()== MotionEvent.ACTION_DOWN)
@@ -438,6 +439,7 @@ public class MessageFragment extends Fragment {
 //                return false;
 //            }
 //        });
+
        recordView.setOnRecordListener(new OnRecordListener() {
 
 
@@ -519,13 +521,16 @@ public class MessageFragment extends Fragment {
         return view;
     }
     private void showFilterPopup(View v) {
-        PopupMenu popup = new PopupMenu(getContext(), v);
+        final PopupMenu popup = new PopupMenu(getContext(), v);
         // Inflate the menu from xml
         popup.inflate(R.menu.popup_filters);
         popup.show();
         // Setup menu item selection
+        popup.getMenu().getItem(1).setVisible(false);
+
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            public boolean onMenuItemClick(MenuItem item) {
+            public boolean onMenuItemClick(final MenuItem item) {
+
                 switch (item.getItemId()) {
                     case R.id.menu_item_block:
                         new FancyAlertDialog.Builder(getActivity())
@@ -546,7 +551,18 @@ public class MessageFragment extends Fragment {
                                         Log.d(TAG,"jigar the receiver user name we are getting  is "+userid);
                                         String strLoginUserId=fuser.getUid();
                                         String strReceiverId=userid;
+                                        popup.getMenu().getItem(0).setVisible(false);
+                                        popup.getMenu().getItem(1).setVisible(true);
+
+                                        popup.show();
+
+                                        //                                        MenuItem menuItem= popup.getMenu().findItem(R.id.menu_item_block);
+//                                        menuItem.setTitle("Unblock");
+//                                        popup.getMenu().getItem(0).setVisible(false);
+//                                        popup.getMenu().add("Unblock");
+
                                         blockUser();
+
                                     }
                                 })
                                 .OnNegativeClicked(new FancyAlertDialogListener() {
@@ -619,7 +635,7 @@ public class MessageFragment extends Fragment {
                 try {
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         User user = snapshot.getValue(User.class);
-                        if (user.getId().equals(userid)) {
+                        if (user.getId().equals(fuser.getUid())) {
                             Log.d(TAG, "jigar the blocked user list we have is " + user.getBlockedby());
 
 
@@ -628,7 +644,11 @@ public class MessageFragment extends Fragment {
 
                            if(strBlockedUserList.contains(userid))
                            {
+                               isBlockedUser=true;
                                Toast.makeText(getContext(),"You have been blocked by user ",Toast.LENGTH_LONG).show();
+                           }else
+                           {
+                               isBlockedUser=false;
                            }
                         }
                     }
@@ -645,6 +665,7 @@ public class MessageFragment extends Fragment {
         reference.addValueEventListener(valueEventListener);
         mSendEventListner = valueEventListener;
     }
+
 
 
     public void blockUser()
@@ -713,6 +734,63 @@ public class MessageFragment extends Fragment {
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
         };
+
+
+        reference.addValueEventListener(valueEventListener);
+        mSendEventListner = valueEventListener;
+    }
+
+    public void unBlockUser()
+    {
+        reference = FirebaseDatabase.getInstance().getReference("Users");
+        ValueEventListener valueEventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                try {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        User user = snapshot.getValue(User.class);
+                        Log.d(TAG, "jigar the username we have is " + user.getUsername());
+                        if(user.getId().equals(userid))
+                        {
+                            String strWhoBlockedUser =user.getBlockedby();
+
+                            HashMap<String, Object> hashMap = new HashMap<>();
+//                            hashMap.put("blockedby", true);
+//                            snapshot.getRef().updateChildren(hashMap);
+
+                            if (strWhoBlockedUser.contains(fuser.getUid())) {
+
+                                strWhoBlockedUser = strWhoBlockedUser.replace(fuser.getUid(),"");
+                                hashMap.put("blockedby", strWhoBlockedUser);
+                                snapshot.getRef().updateChildren(hashMap);
+                                System.out.println("jigar the already blocked user is "+strWhoBlockedUser);
+
+                            }
+                            Log.d(TAG, "jigar the blocking username we have is " + user.getUsername());
+                        }
+//                            if (chat.getReceiver().equals(fuser.getUid()) && chat.getSender().equals(userid)
+//                                    && !chat.isIsseen()) {
+//                                HashMap<String, Object> hashMap = new HashMap<>();
+//                                Long tsLong = (System.currentTimeMillis() / 1000);
+//                                String ts = tsLong.toString();
+//                                hashMap.put("isseen", true);
+//                                hashMap.put("issend", true);
+//                                hashMap.put("isreceived", true);
+//                                hashMap.put("isseentime", ts);
+//                                snapshot.getRef().updateChildren(hashMap);
+//                            }
+//
+                    }
+                }catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        };
+
+
         reference.addValueEventListener(valueEventListener);
         mSendEventListner = valueEventListener;
     }

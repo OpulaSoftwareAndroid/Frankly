@@ -94,7 +94,8 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> im
         this.is = is;
         arrayListUserLastMessageTime=new ArrayList<>();
     }
-//    public UserAdapter(Context mContext,SpaceNavigationView spaceNavigationView, List<User> mUsers, List<BroadcastUser> mBroadcast, boolean ischat, boolean is) {
+
+    //    public UserAdapter(Context mContext,SpaceNavigationView spaceNavigationView, List<User> mUsers, List<BroadcastUser> mBroadcast, boolean ischat, boolean is) {
 //        this.mUsers = mUsers;
 //        this.mUsersFilteredList = mUsers;
 //        this.mBroadcast = mBroadcast;
@@ -313,75 +314,77 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> im
                     intNotificationCount=0;
                     assert firebaseUser != null;
                     firebaseUser.getUid();
-                    if (chat != null) {
-                        if (chat.getTo().equalsIgnoreCase("personal")) {
+                   try {
+                       if (chat.getTo() != null)
+                       {
 
-                            if (chat.getReceiver().equals(firebaseUser.getUid()) && chat.getSender().equals(userid) ||
-                                    chat.getReceiver().equals(userid) && chat.getSender().equals(firebaseUser.getUid())) {
+                           if (chat.getTo().equalsIgnoreCase("personal")) {
 
-                                if(chat.getIsstatus().equals("0") ||
-                                        (chat.getSender().equals(firebaseUser.getUid()) && chat.getIsstatus().equals("2"))
-                                        || (chat.getReceiver().equals(firebaseUser.getUid()) && chat.getIsstatus().equals("1")))
-                                {
-                                if (chat.getIssecure()) {
+                               if (chat.getReceiver().equals(firebaseUser.getUid()) && chat.getSender().equals(userid) ||
+                                       chat.getReceiver().equals(userid) && chat.getSender().equals(firebaseUser.getUid())) {
 
-                                    String encrypted = chat.getMessage();
-                                    String decrypted = "";
-                                    try {
-                                        decrypted = AESUtils.decrypt(encrypted);
-                                        Log.d("TEST", "decrypted:" + decrypted);
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
-                                    theLastMessage = decrypted;
+                                   if (chat.getIsstatus().equals("0") ||
+                                           (chat.getSender().equals(firebaseUser.getUid()) && chat.getIsstatus().equals("2"))
+                                           || (chat.getReceiver().equals(firebaseUser.getUid()) && chat.getIsstatus().equals("1"))) {
+                                       if (chat.getIssecure()) {
 
-                                } else {
-                                    theLastMessage = chat.getMessage();
-                                }
-                                String tiime = getDateCurrentTimeZone(Long.parseLong(chat.getTime()));
-                                time.setText(tiime);
-                                arrayListUserLastMessageTime.add(tiime);
-                                Log.d(TAG, "jigar the chat time is " + chat.getTime() + " and " + userid);
+                                           String encrypted = chat.getMessage();
+                                           String decrypted = "";
+                                           try {
+                                               decrypted = AESUtils.decrypt(encrypted);
+                                               Log.d("TEST", "decrypted:" + decrypted);
+                                           } catch (Exception e) {
+                                               e.printStackTrace();
+                                           }
+                                           theLastMessage = decrypted;
 
-                                if (!chat.isIsseen()) {
-                                    if (!arrayListUnreadChatID.contains(chat.getId())) {
-                                        arrayListUnreadChatID.add(chat.getId());
-                                    }
-                                    intcount = (intcount + 1) - intcount;
-                                    Log.d(TAG, "jigar the the unread arraylist  chat time is with " + arrayListUnreadChatID.size());
+                                       } else {
+                                           theLastMessage = chat.getMessage();
+                                       }
+                                       String tiime = getDateCurrentTimeZone(Long.parseLong(chat.getTime()));
+                                       time.setText(tiime);
+                                       arrayListUserLastMessageTime.add(tiime);
+                                       Log.d(TAG, "jigar the chat time is " + chat.getTime() + " and " + userid);
 
-                                    if (!chat.getSender().equals(userid)) {
-                                        textViewUnreadBadge.setVisibility(View.GONE);
-                                    } else {
-                                        textViewUnreadBadge.setText(" " + arrayListUnreadChatID.size() + " ");
-                                        textViewUnreadBadge.setVisibility(View.VISIBLE);
-                                    }
-                                    User user = mUsersFilteredList.get(position);
-                                    mUsersFilteredList.remove(position);
-                                    mUsersFilteredList.add(0, user);
-                                    notifyItemMoved(position, 0);
-                                } else {
-                                    textViewUnreadBadge.setVisibility(View.GONE);
-                                }
-                            }else
-                                {
-                                   last_msg.setText("Message has been deleted");
-                                }
-                            }
-                        } else if (chat.getTo().equalsIgnoreCase("broadcast"))
-                        {
-                            for (int i = 0; i < chat.getBroadcast_receiver().size(); i++)
-                            {
-                                if (chat.getBroadcast_receiver().get(i).equalsIgnoreCase(userid))
-                                {
-                                    theLastMessage = chat.getMessage();
-                                    String tiime = getDateCurrentTimeZone(Long.parseLong(chat.getTime()));
-                                    time.setText(tiime);
-                                    arrayListUserLastMessageTime.add(tiime);
-                                }
-                            }
-                          //  Log.d(TAG,"jigar the user broadcast last message list have is "+arrayListUserLastMessageTime.toString());
-                        }
+                                       if (!chat.isIsseen()) {
+                                           if (!arrayListUnreadChatID.contains(chat.getId())) {
+                                               arrayListUnreadChatID.add(chat.getId());
+                                           }
+                                           intcount = (intcount + 1) - intcount;
+                                           Log.d(TAG, "jigar the the unread arraylist  chat time is with " + arrayListUnreadChatID.size());
+
+                                           if (!chat.getSender().equals(userid)) {
+                                               textViewUnreadBadge.setVisibility(View.GONE);
+                                           } else {
+                                               textViewUnreadBadge.setText(" " + arrayListUnreadChatID.size() + " ");
+                                               textViewUnreadBadge.setVisibility(View.VISIBLE);
+                                           }
+                                           User user = mUsersFilteredList.get(position);
+                                           mUsersFilteredList.remove(position);
+                                           mUsersFilteredList.add(0, user);
+                                           notifyItemMoved(position, 0);
+                                       } else {
+                                           textViewUnreadBadge.setVisibility(View.GONE);
+                                       }
+                                   } else {
+                                       last_msg.setText("Message has been deleted");
+                                   }
+                               }
+                           } else if (chat.getTo().equalsIgnoreCase("broadcast")) {
+                               for (int i = 0; i < chat.getBroadcast_receiver().size(); i++) {
+                                   if (chat.getBroadcast_receiver().get(i).equalsIgnoreCase(userid)) {
+                                       theLastMessage = chat.getMessage();
+                                       String tiime = getDateCurrentTimeZone(Long.parseLong(chat.getTime()));
+                                       time.setText(tiime);
+                                       arrayListUserLastMessageTime.add(tiime);
+                                   }
+                               }
+                               //  Log.d(TAG,"jigar the user broadcast last message list have is "+arrayListUserLastMessageTime.toString());
+                           }
+                   }
+                    }catch(Exception ex)
+                    {
+                          Log.d(TAG,"jigar the exception n chat last message "+ex);
                     }
                 }
 

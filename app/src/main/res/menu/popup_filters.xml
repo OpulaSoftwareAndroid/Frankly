@@ -2,6 +2,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/menu_item_block"
         android:title="Block" />
+    <item android:id="@+id/menu_item_un_block"
+        android:title="Unblock" />
     <item android:id="@+id/menu_item_clear_chat"
         android:title="Clear chat" />
     <item android:id="@+id/menu_view_profile"
