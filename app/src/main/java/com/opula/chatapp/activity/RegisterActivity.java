@@ -97,6 +97,10 @@ public class RegisterActivity extends AppCompatActivity {
 
                                 HashMap<String, String> hashMap = new HashMap<>();
                                 hashMap.put("id", userid);
+                                hashMap.put("blockedby", "");
+                                Long tsLong = (System.currentTimeMillis() / 1000);
+                                String ts = tsLong.toString();
+                                hashMap.put("timeofregister",ts);
                                 hashMap.put("username", username);
                                 hashMap.put("imageURL", "default");
                                 hashMap.put("status", "online");

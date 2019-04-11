@@ -13,6 +13,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -69,6 +70,7 @@ public class SplashActivity extends AppCompatActivity {
         sharedPreference = new SharedPreference();
 
 //        myFirebaseMessaging.noti
+
         NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
         assert notificationManager != null;
         notificationManager.cancelAll();
@@ -172,6 +174,42 @@ public class SplashActivity extends AppCompatActivity {
         });
     }
 
+        public void ValidateUserLogin()
+    {
+        String txt_email = firebaseUser.getEmail();
+        final String txt_password = sharedPreference.getValue(SplashActivity.this,WsConstant.password);
+
+        if (AppGlobal.isNetwork(SplashActivity.this)){
+            if (TextUtils.isEmpty(txt_email) || TextUtils.isEmpty(txt_password)){
+                Toast.makeText(SplashActivity.this, "All fileds are required", Toast.LENGTH_SHORT).show();
+            } else {
+                AppGlobal.showProgressDialog(SplashActivity.this);
+                auth.signInWithEmailAndPassword(txt_email, txt_password)
+                        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<AuthResult> task) {
+                                AppGlobal.hideProgressDialog(SplashActivity.this);
+                                if (task.isSuccessful()){
+                                    sharedPreference.save(SplashActivity.this,txt_password,WsConstant.password);
+                                    Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    startActivity(intent);
+                                    finish();
+                                } else {
+                                    Intent intent = new Intent(SplashActivity.this, LoginRegisterActivity.class);
+                                    startActivity(intent);
+                                    SplashActivity.this.finish();
+                                    Toast.makeText(SplashActivity.this, "Authentication failed!", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+            }
+        } else {
+            Toast.makeText(SplashActivity.this, "There is no internet connection!", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
     private void getPermission() {
         if (ActivityCompat.checkSelfPermission(SplashActivity.this, Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED ||
@@ -224,9 +262,10 @@ public class SplashActivity extends AppCompatActivity {
             @Override
             public void run() {
                 if (session.equalsIgnoreCase("1")) {
-                    Intent intent = new Intent(SplashActivity.this, MainActivity.class);
-                    startActivity(intent);
-                    finish();
+                    ValidateUserLogin();
+//                    Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+//                    startActivity(intent);
+//                    finish();
                 } else if (session.equalsIgnoreCase("0")){
                     Intent intent = new Intent(SplashActivity.this, LoginRegisterActivity.class);
                     startActivity(intent);

@@ -201,7 +201,8 @@ public class MessageFragment extends Fragment {
         String monthNumber  = (String) DateFormat.format("MM",   c); // 06
         String year         = (String) DateFormat.format("yyyy", c); // 2013
         String formattedDate = String.valueOf(c.getTime());
-//        String formattedDate = day+monthString+year;
+
+        //        String formattedDate = day+monthString+year;
 
 //        fileName = Environment.getExternalStorageDirectory().getAbsolutePath();
 //        fileName += "/franklyAudio"+formattedDate+"_"+strFileName+".3gp";
@@ -221,6 +222,7 @@ public class MessageFragment extends Fragment {
 //        fileName = getContext().getExternalCacheDir().getAbsolutePath();
 //        fileName += "/audiorecordtestagain4th.3gp";
    //     FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+
         ActivityCompat.requestPermissions(getActivity(), permissions, REQUEST_RECORD_AUDIO_PERMISSION);
 
         MainActivity.hideFloatingActionButton();
@@ -641,7 +643,6 @@ public class MessageFragment extends Fragment {
 
                            String strBlockedUserList= user.getBlockedby();
 
-
                            if(strBlockedUserList.contains(userid))
                            {
                                isBlockedUser=true;
@@ -671,79 +672,61 @@ public class MessageFragment extends Fragment {
     public void blockUser()
     {
         reference = FirebaseDatabase.getInstance().getReference("Users");
-        ValueEventListener valueEventListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                try {
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        User user = snapshot.getValue(User.class);
-                        Log.d(TAG, "jigar the username we have is " + user.getUsername());
-                        if(user.getId().equals(userid))
-                        {
-                           String strWhoBlockedUser =user.getBlockedby();
+        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+                                                     @Override
+                                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                         try {
+                                                             for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                                                 User user = snapshot.getValue(User.class);
+                                                                 Log.d(TAG, "jigar the username we have is " + user.getUsername());
+                                                                 if (user.getId().equals(userid)) {
+                                                                     String strWhoBlockedUser = user.getBlockedby();
 
-                            HashMap<String, Object> hashMap = new HashMap<>();
-//                            hashMap.put("blockedby", true);
-//                            snapshot.getRef().updateChildren(hashMap);
-                               if(strWhoBlockedUser==null)
-                               {
-                                   hashMap.put("blockedby", fuser.getUid());
-                                   snapshot.getRef().updateChildren(hashMap);
+                                                                     HashMap<String, Object> hashMap = new HashMap<>();
 
-                               }
-                               else
-                               if (strWhoBlockedUser.contains(fuser.getUid())) {
+                                                                     if (strWhoBlockedUser == null) {
+                                                                         hashMap.put("blockedby", fuser.getUid());
+                                                                         snapshot.getRef().updateChildren(hashMap);
 
-                                   System.out.println("jigar the already blocked user is "+strWhoBlockedUser);
+                                                                     } else if (strWhoBlockedUser.contains(fuser.getUid())) {
 
-                               } else {
+                                                                         System.out.println("jigar the already blocked user is " + strWhoBlockedUser);
 
-                                   if(strWhoBlockedUser.equals(""))
-                                   {
-                                       System.out.println("jigar is new blocked user id "+strWhoBlockedUser);
-                                       hashMap.put("blockedby", fuser.getUid());
-                                       snapshot.getRef().updateChildren(hashMap);
+                                                                     } else {
 
-                                   }else {
-                                       System.out.println("jigar is already blocked user are : "+strWhoBlockedUser);
-                                       hashMap.put("blockedby", strWhoBlockedUser + " , " + fuser.getUid());
-                                       snapshot.getRef().updateChildren(hashMap);
-                                       System.out.println("jigar is already blocked user are : "+strWhoBlockedUser);
-                                   }
-                               }
-                               Log.d(TAG, "jigar the blocking username we have is " + user.getUsername());
-                        }
-//                            if (chat.getReceiver().equals(fuser.getUid()) && chat.getSender().equals(userid)
-//                                    && !chat.isIsseen()) {
-//                                HashMap<String, Object> hashMap = new HashMap<>();
-//                                Long tsLong = (System.currentTimeMillis() / 1000);
-//                                String ts = tsLong.toString();
-//                                hashMap.put("isseen", true);
-//                                hashMap.put("issend", true);
-//                                hashMap.put("isreceived", true);
-//                                hashMap.put("isseentime", ts);
-//                                snapshot.getRef().updateChildren(hashMap);
-//                            }
-//
-                    }
-                }catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-        };
+                                                                         if (strWhoBlockedUser.equals("")) {
+                                                                             System.out.println("jigar is new blocked user id " + strWhoBlockedUser);
+                                                                             hashMap.put("blockedby", fuser.getUid());
+                                                                             snapshot.getRef().updateChildren(hashMap);
 
+                                                                         } else {
+                                                                             System.out.println("jigar is already blocked user are : " + strWhoBlockedUser);
+                                                                             hashMap.put("blockedby", strWhoBlockedUser + " , " + fuser.getUid());
+                                                                             snapshot.getRef().updateChildren(hashMap);
+                                                                             System.out.println("jigar is already blocked user are : " + strWhoBlockedUser);
+                                                                         }
+                                                                     }
+                                                                     Log.d(TAG, "jigar the blocking username we have is " + user.getUsername());
+                                                                 }
 
-        reference.addValueEventListener(valueEventListener);
-        mSendEventListner = valueEventListener;
+                                                             }
+                                                         } catch (Exception e) {
+                                                             e.printStackTrace();
+                                                         }
+                                                     }
+
+                                                     @Override
+                                                     public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                     }
+        }
+        );
     }
 
     public void unBlockUser()
     {
         reference = FirebaseDatabase.getInstance().getReference("Users");
-        ValueEventListener valueEventListener = new ValueEventListener() {
+        reference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 try {
@@ -785,18 +768,18 @@ public class MessageFragment extends Fragment {
                     e.printStackTrace();
                 }
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
+
             }
-        };
+        });
 
-
-        reference.addValueEventListener(valueEventListener);
-        mSendEventListner = valueEventListener;
     }
+
     public void deleteMessageList(final String strLoginUserId,final String strReceiverID) {
         reference = FirebaseDatabase.getInstance().getReference("Chats");
-        ValueEventListener valueEventListener = new ValueEventListener() {
+        reference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 try {
@@ -855,11 +838,22 @@ public class MessageFragment extends Fragment {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                //
+
             }
-        };
-        reference.addValueEventListener(valueEventListener);
-        mSendEventListner = valueEventListener;
+        });
+////        ValueEventListener valueEventListener = new ValueEventListener() {
+////            @Override
+////            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+////
+////            }
+////
+////            @Override
+////            public void onCancelled(@NonNull DatabaseError databaseError) {
+////                //
+////            }
+////        };
+//        reference.addValueEventListener(valueEventListener);
+//        mSendEventListner = valueEventListener;
     }
 
     private void onPlay(boolean start) {
@@ -935,13 +929,17 @@ public class MessageFragment extends Fragment {
     }
 
     private void stopRecording() {
-        Uri audioFileUri=Uri.fromFile(new File(fileName));
-        mStartRecording=false;
-        recorder.stop();
-        recorder.release();
-        recorder = null;
-        uploadAudio(audioFileUri,"3gp");
+        try {
+            Uri audioFileUri = Uri.fromFile(new File(fileName));
+            mStartRecording = false;
+            recorder.stop();
+            recorder.release();
+            recorder = null;
+            uploadAudio(audioFileUri, "3gp");
+        }catch (IllegalStateException ex)
+        {
 
+        }
     }
 
     @Override
