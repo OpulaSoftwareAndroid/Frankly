@@ -6,28 +6,29 @@
     android:layout_width="match_parent"
     android:layout_height="70dp"
     android:orientation="horizontal"
+    android:weightSum="1"
     android:padding="10dp">
 
-    <android.support.constraint.ConstraintLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="0">
-
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:layout_weight="0.2"
+        android:layout_height="wrap_content">
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/profile_image"
             android:layout_width="48dp"
+            android:src="@drawable/avatar"
             android:layout_height="48dp" />
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/img_on"
             android:layout_width="15dp"
+            android:visibility="invisible"
             android:layout_height="15dp"
             android:layout_marginEnd="0dp"
             android:layout_marginBottom="0dp"
             android:src="@color/green"
-            android:visibility="invisible"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            android:layout_alignBottom="@id/profile_image"
+            android:layout_alignEnd="@id/profile_image" />
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/img_off"
@@ -37,31 +38,32 @@
             android:layout_marginBottom="0dp"
             android:src="@color/grayone"
             android:visibility="invisible"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_alignBottom="@id/profile_image"
+            android:layout_alignEnd="@id/profile_image"
             tools:ignore="MissingConstraints" />
 
-    </android.support.constraint.ConstraintLayout>
-
+    </RelativeLayout>
 
     <LinearLayout
         android:id="@+id/click_layout"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_marginLeft="@dimen/_8sdp"
-        android:layout_weight="1"
+        android:layout_weight="0.8"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical">
 
             <hani.momanii.supernova_emoji_library.Helper.EmojiconTextView
                 android:id="@+id/username"
                 android:textStyle="bold"
+                android:ellipsize="end"
+                android:singleLine="true"
                 android:textColor="@color/mainscreen_black"
                 android:fontFamily="@font/m"
                 emojicon:emojiconSize="22sp"
@@ -77,6 +79,7 @@
                 <!--<ImageView-->
                     <!--android:layout_width="25dp"-->
                     <!--android:layout_height="" />-->
+
                 <hani.momanii.supernova_emoji_library.Helper.EmojiconTextView
                     android:id="@+id/last_msg"
                     android:fontFamily="@font/m"

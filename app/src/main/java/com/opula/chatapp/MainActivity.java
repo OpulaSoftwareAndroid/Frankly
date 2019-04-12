@@ -160,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onCentreButtonClick() {
                 Log.d("onCentreButtonClick ", "onCentreButtonClick");
-                takePhotoFromCamera();
+             //   takePhotoFromCamera();
 
             }
             @Override
@@ -184,19 +184,19 @@ public class MainActivity extends AppCompatActivity {
                 if(itemIndex==1)
                 {
                     FragmentManager fragmentManager = getSupportFragmentManager();
-                    fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new MyProfileFragment()).addToBackStack(null).commit();
+                    fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new MyProfileFragment()).addToBackStack(null).commitAllowingStateLoss();
                     spaceNavigationView.setVisibility(View.GONE);
                 }
                 if(itemIndex==0)
                 {
-                    FragmentManager fragmentManager = getSupportFragmentManager();
-                    fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new ListStatusFragment()).addToBackStack(null).commit();
-                    spaceNavigationView.setVisibility(View.GONE);
+//                    FragmentManager fragmentManager = getSupportFragmentManager();
+//                    fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new ListStatusFragment()).addToBackStack(null).commitAllowingStateLoss();
+//                    spaceNavigationView.setVisibility(View.GONE);
                 }
                 if(itemIndex==2)
                 {
                     FragmentManager fragmentManager = getSupportFragmentManager();
-                    fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new ListChatFragment()).addToBackStack(null).commit();
+                    fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new ListChatFragment()).addToBackStack(null).commitAllowingStateLoss();
                     spaceNavigationView.setVisibility(View.GONE);
                 }
             }
@@ -301,7 +301,7 @@ public class MainActivity extends AppCompatActivity {
                 hideFloatingActionButton();
                 showpart2();
                 FragmentManager fragmentManager = getSupportFragmentManager();
-                fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new ListUserFragment()).addToBackStack(null).commit();
+                fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new ListUserFragment()).addToBackStack(null).commitAllowingStateLoss();
             }
         });
 
@@ -333,13 +333,13 @@ public class MainActivity extends AppCompatActivity {
                 sharedPreference.save(MainActivity.this,strUserID, WsConstant.userId);
                 fragmentMessage.setArguments(args);
                 fragmentManager = getSupportFragmentManager();
-                fragmentManager.beginTransaction().replace(R.id.frame_mainactivity,fragmentMessage).addToBackStack(null).commit();
+                fragmentManager.beginTransaction().replace(R.id.frame_mainactivity,fragmentMessage).addToBackStack(null).commitAllowingStateLoss();
 
 
             }else
             {
                 fragmentManager = getSupportFragmentManager();
-                fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new ListChatFragment()).addToBackStack(null).commit();
+                fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new ListChatFragment()).addToBackStack(null).commitAllowingStateLoss();
 
             }
 
@@ -368,7 +368,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 showpart2();
                 FragmentManager fragmentManager = getSupportFragmentManager();
-                fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new MyProfileFragment()).addToBackStack(null).commit();
+                fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new MyProfileFragment()).addToBackStack(null).commitAllowingStateLoss();
                 spaceNavigationView.setVisibility(View.GONE);
 
             }
@@ -377,20 +377,20 @@ public class MainActivity extends AppCompatActivity {
         img_chat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                checkListTheme(MainActivity.this);
-                String ismain = WsConstant.ismain;
-                if (ismain.equalsIgnoreCase("p")) {
-                    img_chat.setImageDrawable(getResources().getDrawable(R.drawable.personal));
-                    showpart1();
-                    FragmentManager fragmentGroup = getSupportFragmentManager();
-                    fragmentGroup.beginTransaction().replace(R.id.frame_mainactivity, new ListGroupChatFragment()).addToBackStack(null).commit();
-                } else if (ismain.equalsIgnoreCase("g")) {
-                    img_chat.setImageDrawable(getResources().getDrawable(R.drawable.groupchat));
-                    showpart1();
-                    FragmentManager fragmentPersonal = getSupportFragmentManager();
-                    spaceNavigationView.setVisibility(View.GONE);
-                    fragmentPersonal.beginTransaction().replace(R.id.frame_mainactivity, new ListChatFragment()).addToBackStack(null).commit();
-                }
+////                checkListTheme(MainActivity.this);
+//                String ismain = WsConstant.ismain;
+//                if (ismain.equalsIgnoreCase("p")) {
+//                    img_chat.setImageDrawable(getResources().getDrawable(R.drawable.personal));
+//                    showpart1();
+//                    FragmentManager fragmentGroup = getSupportFragmentManager();
+//                    fragmentGroup.beginTransaction().replace(R.id.frame_mainactivity, new ListGroupChatFragment()).addToBackStack(null).commitAllowingStateLoss();
+//                } else if (ismain.equalsIgnoreCase("g")) {
+//                    img_chat.setImageDrawable(getResources().getDrawable(R.drawable.groupchat));
+//                    showpart1();
+//                    FragmentManager fragmentPersonal = getSupportFragmentManager();
+//                    spaceNavigationView.setVisibility(View.GONE);
+//                    fragmentPersonal.beginTransaction().replace(R.id.frame_mainactivity, new ListChatFragment()).addToBackStack(null).commitAllowingStateLoss();
+//                }
             }
         });
     }
@@ -626,7 +626,7 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == 1001) {
             if (resultCode == RESULT_OK) {
                 FragmentManager fragmentManager = getSupportFragmentManager();
-                fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new MessageFragment()).addToBackStack(null).commit();
+                fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new MessageFragment()).addToBackStack(null).commitAllowingStateLoss();
                 spaceNavigationView.setVisibility(View.GONE);
 
             }

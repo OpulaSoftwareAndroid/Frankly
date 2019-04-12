@@ -73,18 +73,18 @@ public class ListUserFragment extends Fragment {
         createNewGrpLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MainActivity.hideFloatingActionButton();
-                FragmentManager fragmentManager = Objects.requireNonNull(getActivity()).getSupportFragmentManager();
-                fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new CreateGrpFragment()).addToBackStack(null).commit();
+//                MainActivity.hideFloatingActionButton();
+//                FragmentManager fragmentManager = Objects.requireNonNull(getActivity()).getSupportFragmentManager();
+//                fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new CreateGrpFragment()).addToBackStack(null).commit();
             }
         });
 
         createNewBroadcast.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MainActivity.hideFloatingActionButton();
-                FragmentManager fragmentManager = Objects.requireNonNull(getActivity()).getSupportFragmentManager();
-                fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new CreateBroadcastFragment()).addToBackStack(null).commit();
+//                MainActivity.hideFloatingActionButton();
+//                FragmentManager fragmentManager = Objects.requireNonNull(getActivity()).getSupportFragmentManager();
+//                fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new CreateBroadcastFragment()).addToBackStack(null).commit();
             }
         });
 

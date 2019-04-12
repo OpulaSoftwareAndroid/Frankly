@@ -119,105 +119,107 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> im
         sharedPreference = new SharedPreference();
 
         if (is) {
-            final User user = mUsersFilteredList.get(position);
-            final Chatlist chatlist = mChatListDetails.get(position);
+            if (mUsersFilteredList.size() > 0 && mChatListDetails.size() > 0) {
+                final User user = mUsersFilteredList.get(position);
+                final Chatlist chatlist = mChatListDetails.get(position);
 
-            String strUserName=user.getUsername();
-            strUserName = strUserName.substring(0,1).toUpperCase() + strUserName.substring(1);
+                String strUserName = user.getUsername();
+                strUserName = strUserName.substring(0, 1).toUpperCase() + strUserName.substring(1);
 //            holder.username.setText(user.getUsername());
-            holder.username.setText(strUserName);
-            final Boolean aBooleanIsSecure= mChatListDetails.get(position).issecure;
+                holder.username.setText(strUserName);
+                final Boolean aBooleanIsSecure = mChatListDetails.get(position).issecure;
 
 
-            if (user.getImageURL().equals("default")) {
-                holder.profile_image.setImageResource(R.drawable.image_boy);
-            } else {
-                Glide.with(mContext).load(user.getImageURL()).into(holder.profile_image);
-            }
+                if (user.getImageURL().equals("default")) {
+                    holder.profile_image.setImageResource(R.drawable.image_boy);
+                } else {
+                    Glide.with(mContext).load(user.getImageURL()).into(holder.profile_image);
+                }
 
-            if (ischat) {
+                if (ischat) {
 
 
-                Log.d(TAG, "jigar the chat is not seen count before all is " + holder.textViewUnreadBadge.getText().toString());
+                    Log.d(TAG, "jigar the chat is not seen count before all is " + holder.textViewUnreadBadge.getText().toString());
 
-                lastMessage(mUsersFilteredList,position,user.getId(), holder.last_msg, holder.time,holder.textViewUnreadBadge);
-            } else {
-                holder.last_msg.setVisibility(View.GONE);
-            }
+                    lastMessage(mUsersFilteredList, position, user.getId(), holder.last_msg, holder.time, holder.textViewUnreadBadge);
+                } else {
+                    holder.last_msg.setVisibility(View.GONE);
+                }
 
 //            Log.d(TAG,"jigar the last time message is "+holder.time.getText().toString());
 
-            if (ischat) {
-                if (user.getStatus().equals("online")) {
-                    holder.img_on.setVisibility(View.VISIBLE);
-                    holder.img_off.setVisibility(View.GONE);
+                if (ischat) {
+                    if (user.getStatus().equals("online")) {
+                        holder.img_on.setVisibility(View.VISIBLE);
+                        holder.img_off.setVisibility(View.GONE);
+                    } else {
+                        holder.img_on.setVisibility(View.GONE);
+                        holder.img_off.setVisibility(View.VISIBLE);
+                    }
                 } else {
                     holder.img_on.setVisibility(View.GONE);
-                    holder.img_off.setVisibility(View.VISIBLE);
+                    holder.img_off.setVisibility(View.GONE);
                 }
+
+                holder.click_layout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        MainActivity.hideFloatingActionButton();
+                        sharedPreference.save(mContext, user.getId(), WsConstant.userId);
+                        //                    MainActivity.checkChatTheme(mContext);
+                        //    String strName=String.valueOf(aBooleanIsSecure);
+                        MainActivity.showpart1();
+                        holder.textViewUnreadBadge.setVisibility(View.GONE);
+
+                        MessageFragment fragmentMessage = new MessageFragment();
+                        Bundle args = new Bundle();
+                        args.putString(WsConstant.IS_MESSAGE_SECURE, String.valueOf(chatlist.getIssecure()));
+                        fragmentMessage.setArguments(args);
+                        FragmentManager fragmentManager = ((FragmentActivity) mContext).getSupportFragmentManager();
+                        fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, fragmentMessage).addToBackStack(null).commit();
+
+                    }
+                });
+
+                holder.profile_image.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        sharedPreference.save(mContext, user.getId(), WsConstant.userId);
+                        MainActivity.showpart2();
+                        FragmentManager fragmentManager = ((FragmentActivity) mContext).getSupportFragmentManager();
+                        fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new UserProfileFragment()).addToBackStack(null).commit();
+
+                    }
+                });
+
             } else {
-                holder.img_on.setVisibility(View.GONE);
-                holder.img_off.setVisibility(View.GONE);
-            }
 
-            holder.click_layout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    MainActivity.hideFloatingActionButton();
-                    sharedPreference.save(mContext, user.getId(), WsConstant.userId);
- //                    MainActivity.checkChatTheme(mContext);
-                //    String strName=String.valueOf(aBooleanIsSecure);
-                    MainActivity.showpart1();
-                    holder.textViewUnreadBadge.setVisibility(View.GONE);
+                final BroadcastUser user = mBroadcast.get(position);
+                holder.username.setText(user.getBroadcastName());
 
-                    MessageFragment fragmentMessage=new MessageFragment();
-                    Bundle args = new Bundle();
-                    args.putString(WsConstant.IS_MESSAGE_SECURE, String.valueOf(chatlist.getIssecure()));
-                    fragmentMessage.setArguments(args);
-                    FragmentManager fragmentManager = ((FragmentActivity) mContext).getSupportFragmentManager();
-                    fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, fragmentMessage).addToBackStack(null).commit();
+                holder.profile_image.setImageResource(R.drawable.broadcast);
 
+                if (ischat) {
+                    Log.d(TAG, "jigar the broadcast is called  " + user.getBroadcastId());
+
+                    lastMessageBroadcast(user.getBroadcastId(), holder.last_msg, holder.time);
+                } else {
+                    holder.last_msg.setVisibility(View.GONE);
                 }
-            });
 
-            holder.profile_image.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    sharedPreference.save(mContext, user.getId(), WsConstant.userId);
-                    MainActivity.showpart2();
-                    FragmentManager fragmentManager = ((FragmentActivity) mContext).getSupportFragmentManager();
-                    fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new UserProfileFragment()).addToBackStack(null).commit();
-
-                }
-            });
-
-        } else {
-
-            final BroadcastUser user = mBroadcast.get(position);
-            holder.username.setText(user.getBroadcastName());
-
-            holder.profile_image.setImageResource(R.drawable.broadcast);
-
-            if (ischat) {
-                Log.d(TAG,"jigar the broadcast is called  "+user.getBroadcastId());
-
-                lastMessageBroadcast(user.getBroadcastId(), holder.last_msg, holder.time);
-            } else {
-                holder.last_msg.setVisibility(View.GONE);
-            }
-
-            holder.click_layout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    MainActivity.hideFloatingActionButton();
-                    sharedPreference.save(mContext, user.getBroadcastId(), WsConstant.broadcastId);
-                    holder.textViewUnreadBadge.setVisibility(View.GONE);
+                holder.click_layout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        MainActivity.hideFloatingActionButton();
+                        sharedPreference.save(mContext, user.getBroadcastId(), WsConstant.broadcastId);
+                        holder.textViewUnreadBadge.setVisibility(View.GONE);
 //                    MainActivity.checkChatTheme(mContext);
-                    MainActivity.showpart1();
-                    FragmentManager fragmentManager = ((FragmentActivity) mContext).getSupportFragmentManager();
-                    fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new BroadcastMessageFragment()).addToBackStack(null).commit();
-                }
-            });
+                        MainActivity.showpart1();
+                        FragmentManager fragmentManager = ((FragmentActivity) mContext).getSupportFragmentManager();
+                        fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new BroadcastMessageFragment()).addToBackStack(null).commit();
+                    }
+                });
+            }
         }
     }
 

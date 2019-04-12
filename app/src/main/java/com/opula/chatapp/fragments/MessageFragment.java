@@ -72,6 +72,7 @@ import com.opula.chatapp.R;
 import com.opula.chatapp.adapter.MessageAdapter;
 import com.opula.chatapp.api.APIService;
 import com.opula.chatapp.constant.AppGlobal;
+import com.opula.chatapp.constant.LocationTrack;
 import com.opula.chatapp.constant.SharedPreference;
 import com.opula.chatapp.constant.WsConstant;
 import com.opula.chatapp.model.AESUtils;
@@ -164,6 +165,9 @@ public class MessageFragment extends Fragment {
     String strIsSecureChat;
     private static final String LOG_TAG = "AudioRecordTest";
     private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
+    private static final int MY_PERMISSIONS_REQUEST_READ_LOCATION = 201;
+
+
     private static String fileName = null;
     boolean mStartRecording = true;
 
@@ -319,6 +323,53 @@ public class MessageFragment extends Fragment {
                 LinearLayout lin_audio = dialogMenu.findViewById(R.id.lin_audio);
                 LinearLayout lin_location = dialogMenu.findViewById(R.id.lin_location);
                 LinearLayout lin_contact = dialogMenu.findViewById(R.id.lin_contact);
+                lin_location.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+
+//                        if (ContextCompat.checkSelfPermission(getActivity(),
+//                                Manifest.permission.ACCESS_FINE_LOCATION)
+//                                != PackageManager.PERMISSION_GRANTED) {
+//
+//                            // Permission is not granted
+//                            // Should we show an explanation?
+//                            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+//                                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+//                                getCurrentLocation();
+//                                // Show an explanation to the user *asynchronously* -- don't block
+//                                // this thread waiting for the user's response! After the user
+//                                // sees the explanation, try again to request the permission.
+//                            } else {
+//                                // No explanation needed; request the permission
+//
+//                                ActivityCompat.requestPermissions(getActivity(),
+//                                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+//                                        MY_PERMISSIONS_REQUEST_READ_LOCATION);
+//                                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+//                                // app-defined int constant. The callback method gets the
+//                                // result of the request.
+//                            }
+//                        } else {
+//                            // Permission has already been granted
+//                            getCurrentLocation();
+//
+//                        }
+
+                        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
+                                != PackageManager.PERMISSION_GRANTED) {
+                            ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.ACCESS_FINE_LOCATION
+                            }, MY_PERMISSIONS_REQUEST_READ_LOCATION);
+
+                            dialogMenu.dismiss();
+
+                        }else {
+                            getCurrentLocation();
+                            dialogMenu.dismiss();
+
+                        }
+                    }
+                });
                 lin_camera.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -382,6 +433,8 @@ public class MessageFragment extends Fragment {
                 try {
                     User user = dataSnapshot.getValue(User.class);
                     assert user != null;
+                    if(Objects.requireNonNull(user).getId()!=null) {
+
                     String str1 = user.getUsername();
                     String strUsername = str1.substring(0, 1).toUpperCase() + str1.substring(1);
                     txtUserName.setText(strUsername);
@@ -403,13 +456,14 @@ public class MessageFragment extends Fragment {
                                     .placeholder(R.drawable.image_boy).error(R.drawable.image_boy)
                                     .into(imgUser);
                         } catch (Exception e) {
-                            Log.d(TAG,"jigar the error in image exception we have in reference users is "+e);
+                            Log.d(TAG, "jigar the error in image exception we have in reference users is " + e);
 
                             e.printStackTrace();
                         }
                     }
 
                     readMesagges(fuser.getUid(), userid, user.getImageURL());
+                }
                 } catch (Exception e) {
                     Log.d(TAG,"jigar the error in exception we have in reference users is "+e);
                     e.printStackTrace();
@@ -522,6 +576,36 @@ public class MessageFragment extends Fragment {
 
         return view;
     }
+
+
+public void getCurrentLocation () {
+    LocationTrack locationTrack = new LocationTrack(getContext());
+
+
+    if (locationTrack.canGetLocation()) {
+
+
+        double longitude = locationTrack.getLongitude();
+        double latitude = locationTrack.getLatitude();
+
+        if(longitude!=0.0 && latitude!=0.0)
+        {
+            String strLocationMessage="https://www.google.com/maps/search/?api=1&query="+latitude+","+longitude;
+
+            sendMessageToPersonal(getActivity(), strIsSecureChat, fuser.getUid(), userid, strLocationMessage
+                    , false, "", "", false, "default"
+                    , "default", false, "default", "default");
+
+
+
+        }
+//        Toast.makeText(getContext(), "Longitude:" + Double.toString(longitude) + "\nLatitude:" + Double.toString(latitude), Toast.LENGTH_SHORT).show();
+    } else {
+
+        locationTrack.showSettingsAlert();
+
+    }
+}
     private void showFilterPopup(View v) {
         final PopupMenu popup = new PopupMenu(getContext(), v);
         // Inflate the menu from xml
@@ -637,20 +721,21 @@ public class MessageFragment extends Fragment {
                 try {
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         User user = snapshot.getValue(User.class);
-                        if (user.getId().equals(fuser.getUid())) {
-                            Log.d(TAG, "jigar the blocked user list we have is " + user.getBlockedby());
+                        if (Objects.requireNonNull(user).getId() != null) {
+
+                            if (user.getId().equals(fuser.getUid())) {
+                                Log.d(TAG, "jigar the blocked user list we have is " + user.getBlockedby());
 
 
-                           String strBlockedUserList= user.getBlockedby();
+                                String strBlockedUserList = user.getBlockedby();
 
-                           if(strBlockedUserList.contains(userid))
-                           {
-                               isBlockedUser=true;
-                               Toast.makeText(getContext(),"You have been blocked by user ",Toast.LENGTH_LONG).show();
-                           }else
-                           {
-                               isBlockedUser=false;
-                           }
+                                if (strBlockedUserList.contains(userid)) {
+                                    isBlockedUser = true;
+                                    Toast.makeText(getContext(), "You have been blocked by user ", Toast.LENGTH_LONG).show();
+                                } else {
+                                    isBlockedUser = false;
+                                }
+                            }
                         }
                     }
                 } catch (Exception e) {
@@ -678,37 +763,40 @@ public class MessageFragment extends Fragment {
                                                          try {
                                                              for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                                                                  User user = snapshot.getValue(User.class);
-                                                                 Log.d(TAG, "jigar the username we have is " + user.getUsername());
-                                                                 if (user.getId().equals(userid)) {
-                                                                     String strWhoBlockedUser = user.getBlockedby();
+                                                                 if (Objects.requireNonNull(user).getId() != null) {
 
-                                                                     HashMap<String, Object> hashMap = new HashMap<>();
+                                                                     Log.d(TAG, "jigar the username we have is " + user.getUsername());
+                                                                     if (user.getId().equals(userid)) {
+                                                                         String strWhoBlockedUser = user.getBlockedby();
 
-                                                                     if (strWhoBlockedUser == null) {
-                                                                         hashMap.put("blockedby", fuser.getUid());
-                                                                         snapshot.getRef().updateChildren(hashMap);
+                                                                         HashMap<String, Object> hashMap = new HashMap<>();
 
-                                                                     } else if (strWhoBlockedUser.contains(fuser.getUid())) {
-
-                                                                         System.out.println("jigar the already blocked user is " + strWhoBlockedUser);
-
-                                                                     } else {
-
-                                                                         if (strWhoBlockedUser.equals("")) {
-                                                                             System.out.println("jigar is new blocked user id " + strWhoBlockedUser);
+                                                                         if (strWhoBlockedUser == null) {
                                                                              hashMap.put("blockedby", fuser.getUid());
                                                                              snapshot.getRef().updateChildren(hashMap);
 
-                                                                         } else {
-                                                                             System.out.println("jigar is already blocked user are : " + strWhoBlockedUser);
-                                                                             hashMap.put("blockedby", strWhoBlockedUser + " , " + fuser.getUid());
-                                                                             snapshot.getRef().updateChildren(hashMap);
-                                                                             System.out.println("jigar is already blocked user are : " + strWhoBlockedUser);
-                                                                         }
-                                                                     }
-                                                                     Log.d(TAG, "jigar the blocking username we have is " + user.getUsername());
-                                                                 }
+                                                                         } else if (strWhoBlockedUser.contains(fuser.getUid())) {
 
+                                                                             System.out.println("jigar the already blocked user is " + strWhoBlockedUser);
+
+                                                                         } else {
+
+                                                                             if (strWhoBlockedUser.equals("")) {
+                                                                                 System.out.println("jigar is new blocked user id " + strWhoBlockedUser);
+                                                                                 hashMap.put("blockedby", fuser.getUid());
+                                                                                 snapshot.getRef().updateChildren(hashMap);
+
+                                                                             } else {
+                                                                                 System.out.println("jigar is already blocked user are : " + strWhoBlockedUser);
+                                                                                 hashMap.put("blockedby", strWhoBlockedUser + " , " + fuser.getUid());
+                                                                                 snapshot.getRef().updateChildren(hashMap);
+                                                                                 System.out.println("jigar is already blocked user are : " + strWhoBlockedUser);
+                                                                             }
+                                                                         }
+                                                                         Log.d(TAG, "jigar the blocking username we have is " + user.getUsername());
+                                                                     }
+
+                                                                 }
                                                              }
                                                          } catch (Exception e) {
                                                              e.printStackTrace();
@@ -732,25 +820,26 @@ public class MessageFragment extends Fragment {
                 try {
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         User user = snapshot.getValue(User.class);
-                        Log.d(TAG, "jigar the username we have is " + user.getUsername());
-                        if(user.getId().equals(userid))
-                        {
-                            String strWhoBlockedUser =user.getBlockedby();
+                        if (Objects.requireNonNull(user).getId() != null) {
 
-                            HashMap<String, Object> hashMap = new HashMap<>();
+                            Log.d(TAG, "jigar the username we have is " + user.getUsername());
+                            if (user.getId().equals(userid)) {
+                                String strWhoBlockedUser = user.getBlockedby();
+
+                                HashMap<String, Object> hashMap = new HashMap<>();
 //                            hashMap.put("blockedby", true);
 //                            snapshot.getRef().updateChildren(hashMap);
 
-                            if (strWhoBlockedUser.contains(fuser.getUid())) {
+                                if (strWhoBlockedUser.contains(fuser.getUid())) {
 
-                                strWhoBlockedUser = strWhoBlockedUser.replace(fuser.getUid(),"");
-                                hashMap.put("blockedby", strWhoBlockedUser);
-                                snapshot.getRef().updateChildren(hashMap);
-                                System.out.println("jigar the already blocked user is "+strWhoBlockedUser);
+                                    strWhoBlockedUser = strWhoBlockedUser.replace(fuser.getUid(), "");
+                                    hashMap.put("blockedby", strWhoBlockedUser);
+                                    snapshot.getRef().updateChildren(hashMap);
+                                    System.out.println("jigar the already blocked user is " + strWhoBlockedUser);
 
+                                }
+                                Log.d(TAG, "jigar the blocking username we have is " + user.getUsername());
                             }
-                            Log.d(TAG, "jigar the blocking username we have is " + user.getUsername());
-                        }
 //                            if (chat.getReceiver().equals(fuser.getUid()) && chat.getSender().equals(userid)
 //                                    && !chat.isIsseen()) {
 //                                HashMap<String, Object> hashMap = new HashMap<>();
@@ -763,6 +852,7 @@ public class MessageFragment extends Fragment {
 //                                snapshot.getRef().updateChildren(hashMap);
 //                            }
 //
+                        }
                     }
                 }catch (Exception e) {
                     e.printStackTrace();
@@ -785,26 +875,23 @@ public class MessageFragment extends Fragment {
                 try {
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         Chat chat = snapshot.getValue(Chat.class);
-                        if (chat.getTo().equalsIgnoreCase("personal"))
-                        {
+                        if(Objects.requireNonNull(chat).getId()!=null) {
 
-                            if ((chat.getSender().equals(strLoginUserId) || chat.getSender().equals(strReceiverID))
-                                    && (chat.getReceiver().equals(strLoginUserId) || chat.getReceiver().equals(strReceiverID)))
-                            {
-                                HashMap<String, Object> hashMap = new HashMap<>();
+                            if (chat.getTo().equalsIgnoreCase("personal")) {
 
-                                if (chat.getReceiver().equals(strLoginUserId)) {
-                                    if(chat.getIsstatus().equals("0"))
-                                    {
-                                        hashMap.put("isstatus", "2");
-                                    }
-                                    else if(chat.getIsstatus().equals("1"))
-                                    {
-                                        hashMap.put("isstatus", "3");
-                                    }
-                                    Log.d(TAG, "jigar the login user is receiver and id is : " + strReceiverID + " and message is " + chat.getMessage());
-                                    snapshot.getRef().updateChildren(hashMap);
-                                    //                                    && chat.getSender().equals(userid)
+                                if ((chat.getSender().equals(strLoginUserId) || chat.getSender().equals(strReceiverID))
+                                        && (chat.getReceiver().equals(strLoginUserId) || chat.getReceiver().equals(strReceiverID))) {
+                                    HashMap<String, Object> hashMap = new HashMap<>();
+
+                                    if (chat.getReceiver().equals(strLoginUserId)) {
+                                        if (chat.getIsstatus().equals("0")) {
+                                            hashMap.put("isstatus", "2");
+                                        } else if (chat.getIsstatus().equals("1")) {
+                                            hashMap.put("isstatus", "3");
+                                        }
+                                        Log.d(TAG, "jigar the login user is receiver and id is : " + strReceiverID + " and message is " + chat.getMessage());
+                                        snapshot.getRef().updateChildren(hashMap);
+                                        //                                    && chat.getSender().equals(userid)
 //                                    && !chat.isIsseen()) {
 //                                HashMap<String, Object> hashMap = new HashMap<>();
 //                                Long tsLong = (System.currentTimeMillis() / 1000);
@@ -815,19 +902,17 @@ public class MessageFragment extends Fragment {
 //                                hashMap.put("isreceived", true);
 //                                hashMap.put("isseentime", ts);
 //                                snapshot.getRef().updateChildren(hashMap);
-                                } else {
-                                    if(chat.getIsstatus().equals("0"))
-                                    {
-                                        hashMap.put("isstatus", "1");
+                                    } else {
+                                        if (chat.getIsstatus().equals("0")) {
+                                            hashMap.put("isstatus", "1");
+                                        } else if (chat.getIsstatus().equals("2")) {
+                                            hashMap.put("isstatus", "3");
+                                        }
+                                        Log.d(TAG, "jigar the login user is sender and id is : " + strLoginUserId + " and message is " + chat.getMessage());
+                                        snapshot.getRef().updateChildren(hashMap);
                                     }
-                                    else if(chat.getIsstatus().equals("2"))
-                                    {
-                                        hashMap.put("isstatus", "3");
-                                    }
-                                    Log.d(TAG, "jigar the login user is sender and id is : " + strLoginUserId + " and message is " + chat.getMessage());
-                                    snapshot.getRef().updateChildren(hashMap);
-                                }
 
+                                }
                             }
                         }
                     }
@@ -963,7 +1048,25 @@ public class MessageFragment extends Fragment {
             case REQUEST_RECORD_AUDIO_PERMISSION:
                 permissionToRecordAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
                 break;
+            case MY_PERMISSIONS_REQUEST_READ_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    getCurrentLocation();
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+                } else {
+                    getCurrentLocation();
+
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+
+
+                return;
+            }
         }
+
         if (!permissionToRecordAccepted) getActivity().finish();
 
     }
@@ -1134,7 +1237,7 @@ public class MessageFragment extends Fragment {
                 if (uploadTask != null && uploadTask.isInProgress()) {
                     Toast.makeText(getContext(), "Upload in progress", Toast.LENGTH_SHORT).show();
                 } else {
-                    Log.d("image_upload", mImageUri + "//");
+                    Log.d(TAG,"jigar the gallery selected file we  have is  "+ mImageUri + "and path we have is "+mImageUri.getPath());
                     uploadImage();
                 }
             }
@@ -1223,6 +1326,7 @@ public class MessageFragment extends Fragment {
             try {
                 Uri audioFileUri = data.getData();
                 String path1 = audioFileUri.getPath();
+                Log.d(TAG,"jigar the audio path we have is "+audioFileUri.getPath());
                 Log.d("Audio_path", path1 + "/");
              //   fileName=fileName+"1";
                 uploadAudio(audioFileUri, "3gp");
@@ -1618,17 +1722,20 @@ private void uploadAudio(Uri data, String ext) {
                 try {
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         Chat chat = snapshot.getValue(Chat.class);
-                        if (chat.getTo().equalsIgnoreCase("personal")) {
-                            if (chat.getReceiver().equals(fuser.getUid()) && chat.getSender().equals(userid)
-                            && !chat.isIsseen()) {
-                                HashMap<String, Object> hashMap = new HashMap<>();
-                                Long tsLong = (System.currentTimeMillis() / 1000);
-                                String ts = tsLong.toString();
-                                hashMap.put("isseen", true);
-                                hashMap.put("issend", true);
-                                hashMap.put("isreceived", true);
-                                hashMap.put("isseentime", ts);
-                                snapshot.getRef().updateChildren(hashMap);
+                        if(Objects.requireNonNull(chat).getId()!=null) {
+
+                            if (chat.getTo().equalsIgnoreCase("personal")) {
+                                if (chat.getReceiver().equals(fuser.getUid()) && chat.getSender().equals(userid)
+                                        && !chat.isIsseen()) {
+                                    HashMap<String, Object> hashMap = new HashMap<>();
+                                    Long tsLong = (System.currentTimeMillis() / 1000);
+                                    String ts = tsLong.toString();
+                                    hashMap.put("isseen", true);
+                                    hashMap.put("issend", true);
+                                    hashMap.put("isreceived", true);
+                                    hashMap.put("isseentime", ts);
+                                    snapshot.getRef().updateChildren(hashMap);
+                                }
                             }
                         }
                     }
@@ -1654,10 +1761,19 @@ private void uploadAudio(Uri data, String ext) {
                 try {
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         Chat chat = snapshot.getValue(Chat.class);
-                        if (chat.getReceiver().equals(fuser.getUid()) && chat.getSender().equals(userid)) {
-                            HashMap<String, Object> hashMap = new HashMap<>();
-                            hashMap.put("issend", true);
-                            snapshot.getRef().updateChildren(hashMap);
+                        if(Objects.requireNonNull(chat).getId()!=null) {
+                            Log.d(TAG, "jigar the user in firebase have is " + fuser.getUid());
+                            Log.d(TAG, "jigar the user in sender we have is  " + userid);
+                            Log.d(TAG, "jigar the user in get reciever we have is  " + chat.getReceiver());
+                            Log.d(TAG, "jigar the user in get sender we have is  " + chat.getSender());
+                            Log.d(TAG, "jigar the user in database chat id we have is  " + chat.getId());
+                            Log.d(TAG, "jigar the user in database table id we have is  " + chat.getTable_id());
+
+                            if (chat.getReceiver().equals(fuser.getUid()) && chat.getSender().equals(userid)) {
+                                HashMap<String, Object> hashMap = new HashMap<>();
+                                hashMap.put("issend", true);
+                                snapshot.getRef().updateChildren(hashMap);
+                            }
                         }
                     }
                 } catch (Exception e) {
@@ -1853,10 +1969,14 @@ private void uploadAudio(Uri data, String ext) {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 try {
                     User user = dataSnapshot.getValue(User.class);
-                    if (notify) {
-                        sendNotifiaction(context,messageUniqueID, receiver, user.getUsername(), msg);
+                    assert user != null;
+                    if(Objects.requireNonNull(user.getUsername())!=null) {
+
+                        if (notify) {
+                            sendNotifiaction(context, messageUniqueID, receiver, user.getUsername(), msg);
+                        }
+                        notify = false;
                     }
-                    notify = false;
                 } catch (Exception e) {
                     Log.d(TAG,"jigar the exception is main reference in "+e);
                     e.printStackTrace();
@@ -1986,11 +2106,14 @@ private void uploadAudio(Uri data, String ext) {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 try {
                     User user = dataSnapshot.getValue(User.class);
-                    notify=true;
-                    if (notify) {
-                        sendNotifiaction(context, messageUniqueID,receiver, user.getUsername(), msg);
+                    if(Objects.requireNonNull(user).getUsername()!=null) {
+
+                        notify = true;
+                        if (notify) {
+                            sendNotifiaction(context, messageUniqueID, receiver, user.getUsername(), msg);
+                        }
+                        notify = false;
                     }
-                    notify = false;
                 } catch (Exception e) {
                     Log.d(TAG,"jigar the exception is main reference in "+e);
                     e.printStackTrace();
@@ -2018,26 +2141,30 @@ private void uploadAudio(Uri data, String ext) {
                         Data data = new Data(fuser.getUid()
                                 , R.mipmap.ic_launcher,username + ": " + message, "New Message", userid,strMessageUniqueID);
 
-                        Sender sender = new Sender(data, token.getToken());
+                        if(Objects.requireNonNull(token).getToken()!=null) {
 
-                        apiService.sendNotification(sender)
-                                .enqueue(new Callback<MyResponse>() {
-                                    @Override
-                                    public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
-                                        Log.d(TAG,"jigar the on notification response we have in notification is "+response.code());
+                            Sender sender = new Sender(data, token.getToken());
 
-                                        if (response.code() == 200) {
+                            apiService.sendNotification(sender)
+                                    .enqueue(new Callback<MyResponse>() {
+                                        @Override
+                                        public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
+                                            Log.d(TAG, "jigar the on notification response we have in notification is " + response.code());
 
-                                            if (response.body().success != 1) {
+                                            if (response.code() == 200) {
 
+                                                if (response.body().success != 1) {
+
+                                                }
                                             }
                                         }
-                                    }
-                                    @Override
-                                    public void onFailure(Call<MyResponse> call, Throwable t) {
-                                        Log.d(TAG,"jigar the on notification failure  in notification is "+call.toString());
-                                    }
-                                });
+
+                                        @Override
+                                        public void onFailure(Call<MyResponse> call, Throwable t) {
+                                            Log.d(TAG, "jigar the on notification failure  in notification is " + call.toString());
+                                        }
+                                    });
+                        }
                     }
                 } catch (Exception e) {
                     Log.d(TAG,"jigar the main exception in notification is "+e);
@@ -2064,15 +2191,18 @@ private void uploadAudio(Uri data, String ext) {
                         Chat chat = snapshot.getValue(Chat.class);
                         Log.d("DATAA33", snapshot.getKey() + "//" + snapshot.getValue());
                         assert chat != null;
-                        if (chat.getTo().equalsIgnoreCase("personal")) {
-                            if (chat.getReceiver().equals(myid) && chat.getSender().equals(userid) ||
-                                    chat.getReceiver().equals(userid) && chat.getSender().equals(myid)) {
-                                mchat.add(chat);
-                            }
-                        } else if (chat.getTo().equalsIgnoreCase("broadcast")) {
-                            for (int i = 0; i < chat.getBroadcast_receiver().size(); i++) {
-                                if (chat.getBroadcast_receiver().get(i).equalsIgnoreCase(userid)) {
+                        if(Objects.requireNonNull(chat).getId()!=null) {
+
+                            if (chat.getTo().equalsIgnoreCase("personal")) {
+                                if (chat.getReceiver().equals(myid) && chat.getSender().equals(userid) ||
+                                        chat.getReceiver().equals(userid) && chat.getSender().equals(myid)) {
                                     mchat.add(chat);
+                                }
+                            } else if (chat.getTo().equalsIgnoreCase("broadcast")) {
+                                for (int i = 0; i < chat.getBroadcast_receiver().size(); i++) {
+                                    if (chat.getBroadcast_receiver().get(i).equalsIgnoreCase(userid)) {
+                                        mchat.add(chat);
+                                    }
                                 }
                             }
                         }

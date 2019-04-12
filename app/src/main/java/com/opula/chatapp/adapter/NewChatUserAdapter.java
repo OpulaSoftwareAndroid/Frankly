@@ -22,6 +22,7 @@ import com.opula.chatapp.fragments.UserProfileFragment;
 import com.opula.chatapp.model.User;
 
 import java.util.List;
+import java.util.Objects;
 
 public class NewChatUserAdapter extends RecyclerView.Adapter<NewChatUserAdapter.ViewHolder> {
 
@@ -48,39 +49,45 @@ public class NewChatUserAdapter extends RecyclerView.Adapter<NewChatUserAdapter.
 
         sharedPreference = new SharedPreference();
 
-        final User user = mUsers.get(position);
-        String strUsername = user.getUsername().substring(0, 1).toUpperCase() + user.getUsername().substring(1);
-        holder.username.setText(strUsername);
-        holder.last_msg.setText(user.getEmail());
-        if (user.getImageURL().equals("default")) {
-            holder.profile_image.setImageResource(R.drawable.image_boy);
-        } else {
-            Glide.with(mContext).load(user.getImageURL()).into(holder.profile_image);
-        }
+        if (Objects.requireNonNull(mUsers.get(position)).getId() != null)
+            {
 
-        holder.click_layout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                MainActivity.hideFloatingActionButton();
-                sharedPreference.save(mContext, user.getId(), WsConstant.userId);
+//        if (Objects.requireNonNull(user).getId() != null) {
+            final User user = mUsers.get(position);
+
+            String strUsername = user.getUsername().substring(0, 1).toUpperCase() + user.getUsername().substring(1);
+            holder.username.setText(strUsername);
+            holder.last_msg.setText(user.getEmail());
+            if (user.getImageURL().equals("default")) {
+                holder.profile_image.setImageResource(R.drawable.image_boy);
+            } else {
+                Glide.with(mContext).load(user.getImageURL()).into(holder.profile_image);
+            }
+
+            holder.click_layout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    MainActivity.hideFloatingActionButton();
+                    sharedPreference.save(mContext, user.getId(), WsConstant.userId);
 //                MainActivity.checkChatTheme(mContext);
-                MainActivity.showpart1();
-                FragmentManager fragmentManager = ((FragmentActivity) mContext).getSupportFragmentManager();
-                fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new MessageFragment()).commit();
+                    MainActivity.showpart1();
+                    FragmentManager fragmentManager = ((FragmentActivity) mContext).getSupportFragmentManager();
+                    fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new MessageFragment()).commit();
 
-            }
-        });
+                }
+            });
 
-        holder.profile_image.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                sharedPreference.save(mContext, user.getId(), WsConstant.userId);
-                MainActivity.showpart2();
-                FragmentManager fragmentManager = ((FragmentActivity) mContext).getSupportFragmentManager();
-                fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new UserProfileFragment()).addToBackStack(null).commit();
+            holder.profile_image.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    sharedPreference.save(mContext, user.getId(), WsConstant.userId);
+                    MainActivity.showpart2();
+                    FragmentManager fragmentManager = ((FragmentActivity) mContext).getSupportFragmentManager();
+                    fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new UserProfileFragment()).addToBackStack(null).commit();
 
-            }
-        });
+                }
+            });
+        }
     }
 
     @Override

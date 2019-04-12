@@ -124,9 +124,8 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
 
-
         final Chat chat = mChat.get(position);
-        Log.d("Chat_Data", chat.getContact_number() + "/" + chat.getContact_number());
+        Log.d(TAG,"jigar the Chat_Data we getting is "+ chat.getSender());
 
         if(chat.getIsstatus().equals("0") ||
                 (chat.getSender().equals(fuser.getUid()) && chat.getIsstatus().equals("2"))
