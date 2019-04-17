@@ -74,6 +74,7 @@ public class ForwardMessageAdapter extends RecyclerView.Adapter<ForwardMessageAd
         } else {
             Glide.with(mContext).load(user.getImageURL()).into(holder.profile_image);
         }
+        Log.d(TAG,"jigar the forward message we have is "+meg);
 
         holder.click_layout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -82,7 +83,6 @@ public class ForwardMessageAdapter extends RecyclerView.Adapter<ForwardMessageAd
                 sharedPreference.save(mContext, user.getId(), WsConstant.userId);
 //                MainActivity.checkChatTheme(mContext);
                 MainActivity.showpart1();
-                Log.d(TAG,"jigar the forward message we have is "+meg);
                 if(isAudio)
                 {
                     MessageFragment.sendAudioToPersonal(mContext, fuser.getUid(),  user.getId(), "Voice Message"
@@ -90,7 +90,7 @@ public class ForwardMessageAdapter extends RecyclerView.Adapter<ForwardMessageAd
                             , "default");
                 }else {
                     MessageFragment.sendMessageToPersonal(mContext, "false", fuser.getUid(), user.getId(), meg,
-                            false, "", "", isimage, url
+                            false, "","", "", isimage, url
                             , "default", false, "default", "default");
                 }
                 alertDialog.dismiss();

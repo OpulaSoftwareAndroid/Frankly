@@ -2,6 +2,7 @@ package com.opula.chatapp.fragments;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ClipData;
 import android.content.ContentResolver;
@@ -10,7 +11,6 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
@@ -47,6 +47,8 @@ import com.devlomi.record_view.OnBasketAnimationEnd;
 import com.devlomi.record_view.OnRecordListener;
 import com.devlomi.record_view.RecordButton;
 import com.devlomi.record_view.RecordView;
+import com.esafirm.imagepicker.features.ImagePicker;
+import com.esafirm.imagepicker.model.Image;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -137,6 +139,11 @@ public class MessageFragment extends Fragment {
     ImageView emojiButton, imageViewShareMediaDialog;
     public  static ImageView imageViewCloseChat;
     View rootView;
+    private static final int INTENT_REQUEST_GET_IMAGES = 13;
+    private static final int REQUEST_CODE_PICKER = 11;
+    private ArrayList<Image> images = new ArrayList<>();
+
+
     final static String TAG="MessageFragment";
     EmojIconActions emojIcon;
     //pickimae
@@ -157,6 +164,7 @@ public class MessageFragment extends Fragment {
     public static LinearLayout linearLayoutReplyMessage;
     //new library
     public static TextView textViewUserName;
+    public static String strRepliedMessageID ="";
     public static  EmojiconTextView textViewReplyMessage;
     RecordView recordView;
     RecordButton recordButton;
@@ -184,6 +192,7 @@ public class MessageFragment extends Fragment {
     private boolean permissionToRecordAccepted = false;
     private String[] permissions = {Manifest.permission.RECORD_AUDIO};
     ImageView imageViewSettingPopUpIcon;
+    LinearLayoutManager linearLayoutManager;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -254,9 +263,17 @@ public class MessageFragment extends Fragment {
         emojIcon.setIconsIds(R.drawable.ic_keyboard_black_24dp, R.drawable.ic_sentiment_satisfied_black_24dp);
         AudioSenseiListObserver.getInstance().registerLifecycle(getLifecycle());
         recyclerView.setHasFixedSize(true);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(Objects.requireNonNull(getActivity()).getApplicationContext());
+        linearLayoutManager = new LinearLayoutManager(Objects.requireNonNull(getActivity()).getApplicationContext());
         linearLayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(linearLayoutManager);
+   //     messageAdapter=new MessageAdapter(linearLayoutManager);
+        //        recyclerView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                linearLayoutManager.scrollToPositionWithOffset(2, 20);
+//            }
+//        });
+
         imgBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -287,16 +304,19 @@ public class MessageFragment extends Fragment {
                     {
                         //   Toast.makeText(getContext(),"message is: "+textViewReplyMessage.getText().toString()+" and "+textViewUserName.getText().toString(),Toast.LENGTH_LONG).show();
                         sendMessageToPersonal(getActivity(), strIsSecureChat,fuser.getUid(), userid, msg
-                                , true,textViewReplyMessage.getText().toString()
+                                , true, strRepliedMessageID,textViewReplyMessage.getText().toString()
                                 ,textViewUserName.getText().toString(),
-                                false, "default", "default", false, "default", "default");
+                                false, "default", "default"
+                                , false, "default", "default");
                         linearLayoutReplyMessage.setVisibility(View.GONE);
                     }else
                     {
 
                        // if(AppGlobal.isNetworkAvailable(getContext())) {
                             sendMessageToPersonal(getActivity(), strIsSecureChat, fuser.getUid(), userid, msg
-                                    , false, "", "", false, "default", "default", false, "default", "default");
+                                    , false, "", "", ""
+                                    ,false, "default", "default", false, "default"
+                                    , "default");
                        // }else
 //                        {
                          //   Toast.makeText(getContext(),"Offline Mode",Toast.LENGTH_LONG).show();
@@ -560,6 +580,7 @@ public class MessageFragment extends Fragment {
             }
         });
 
+
         //        KeyboardVisibilityEvent.setEventListener(Objects.requireNonNull(getActivity()),
 //                new KeyboardVisibilityEventListener() {
 //                    @Override
@@ -573,6 +594,7 @@ public class MessageFragment extends Fragment {
 //                        }
 //                    }
 //                });
+
 
         return view;
     }
@@ -593,7 +615,7 @@ public void getCurrentLocation () {
             String strLocationMessage="https://www.google.com/maps/search/?api=1&query="+latitude+","+longitude;
 
             sendMessageToPersonal(getActivity(), strIsSecureChat, fuser.getUid(), userid, strLocationMessage
-                    , false, "", "", false, "default"
+                    , false, "", "","", false, "default"
                     , "default", false, "default", "default");
 
 
@@ -1165,7 +1187,7 @@ public void getCurrentLocation () {
         imageViewCloseChat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                linearLayoutReplyMessage.animate()
+                //                linearLayoutReplyMessage.animate()
 //                        .translationY(0)
 //                        .alpha(0.0f)
 //                        .setListener(new AnimatorListenerAdapter() {
@@ -1185,6 +1207,7 @@ public void getCurrentLocation () {
                 showFilterPopup(view);
             }
         });
+
         is_text = view.findViewById(R.id.is_text);
         SpaceNavigationView spaceNavigationView=getActivity().findViewById(R.id.space);
         spaceNavigationView.setVisibility(View.GONE);
@@ -1193,10 +1216,27 @@ public void getCurrentLocation () {
 
 
     public void choosePhotoFromGallary() {
-        Intent galleryIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        galleryIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-        galleryIntent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(galleryIntent, GALLERY);
+//        Intent galleryIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+//        galleryIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+//        galleryIntent.setAction(Intent.ACTION_GET_CONTENT);
+//        startActivityForResult(galleryIntent, GALLERY);
+
+//        ImagePicker.create(this) // Activity or Fragment
+//                .start(REQUEST_CODE_PICKER);
+        ImagePicker.create(this)
+                .returnAfterFirst(true) // set whether pick or camera action should return immediate result or not. For pick image only work on single mode
+                .folderMode(false) // folder mode (false by default)
+               // .folderTitle("Folder") // folder selection title
+                .imageTitle("Tap to select") // image selection title
+                .single() // single mode
+                .multi() // multi mode (default mode)
+                .limit(70) // max images can be selected (99 by default)
+                .showCamera(true) // show camera or not (true by default)
+                .imageDirectory("Camera") // directory name for captured image ("Camera" folder by default)
+                .origin(images) // original selected images, used in multi mode
+           //     .useExternalPickers(true) // show external image pickers in the toolbar (Google photos... )
+                .start(REQUEST_CODE_PICKER); // start image picker activity with request code
+
     }
 
     public void chooseAudioFromGallary() {
@@ -1226,9 +1266,61 @@ public void getCurrentLocation () {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CODE_PICKER && resultCode == RESULT_OK && data != null) {
+
+            ArrayList<Image> images = (ArrayList<Image>) ImagePicker.getImages(data);
+
+            Log.d(TAG,"jigar the selected image uri we have is "+images.toString());
+            //        if (requestCode == PICK_IMAGE_MULTIPLE && resultCode == RESULT_OK
+//                && null != data) {
+            // Get the Image from data
+
+            String[] filePathColumn = { MediaStore.Images.Media.DATA };
+            imagesEncodedList = new ArrayList<String>();
+
+                if (images.size() != 0)
+                {
+                   // ClipData mClipData = data.getClipData();
+                    ArrayList<Uri> mArrayUri = new ArrayList<Uri>();
+                    for (int i = 0; i < images.size(); i++) {
+
+
+                //        Log.d(TAG,"jigar the uri we have is "+images.get(i).getPath());
+//                        Uri uri = Uri.parse(images.get(i).getPath());
+                        Uri uri =Uri.fromFile(new File((images.get(i).getPath())));
+                     //   Log.d(TAG,"jigar the uri after we have is "+uri.getPath());
+                        mArrayUri.add(uri);
+                        // Get the cursor
+//                        Cursor cursor = getContext().getContentResolver().query(uri, filePathColumn, null, null, null);
+//                        // Move to first row
+//                        cursor.moveToFirst();
+//
+//                        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+//                        imageEncoded  = cursor.getString(columnIndex);
+//                        imagesEncodedList.add(imageEncoded);
+//                        cursor.close();
+
+                    }
+                    for(int i=0;i<mArrayUri.size();i++)
+                    {
+                        uploadMultipleImage(mArrayUri.get(i));
+
+                    }
+              //      Log.v(TAG, "jigar the multiple  Selected size Images are " + mArrayUri.size());
+               //     Log.v(TAG, "jigar the multiple  Selected Images are " + mArrayUri.toString());
+
+                }
+
+        }
+
+
+
+
         if (resultCode == RESULT_CANCELED) {
             return;
         }
+
         if (requestCode == GALLERY && resultCode == RESULT_OK
                 && data != null && data.getData() != null) {
             if (data != null) {
@@ -1243,59 +1335,60 @@ public void getCurrentLocation () {
             }
 
         }
-        if (requestCode == PICK_IMAGE_MULTIPLE && resultCode == RESULT_OK
-                && null != data) {
-            // Get the Image from data
 
-            String[] filePathColumn = { MediaStore.Images.Media.DATA };
-            imagesEncodedList = new ArrayList<String>();
-            if(data.getData()!=null){
-
-                Uri mImageUri=data.getData();
-
-                // Get the cursor
-                Cursor cursor = getContext().getContentResolver().query(mImageUri,
-                        filePathColumn, null, null, null);
-                // Move to first row
-                cursor.moveToFirst();
-
-                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                imageEncoded  = cursor.getString(columnIndex);
-                cursor.close();
-
-            } else {
-                if (data.getClipData() != null) {
-                    ClipData mClipData = data.getClipData();
-                    ArrayList<Uri> mArrayUri = new ArrayList<Uri>();
-                    for (int i = 0; i < mClipData.getItemCount(); i++) {
-
-                        ClipData.Item item = mClipData.getItemAt(i);
-                        Uri uri = item.getUri();
-                        mArrayUri.add(uri);
-                        // Get the cursor
-                        Cursor cursor = getContext().getContentResolver().query(uri, filePathColumn, null, null, null);
-                        // Move to first row
-                        cursor.moveToFirst();
-
-                        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                        imageEncoded  = cursor.getString(columnIndex);
-                        imagesEncodedList.add(imageEncoded);
-                        cursor.close();
-
-                    }
-                    for(int i=0;i<mArrayUri.size();i++)
-                    {
-                        uploadMultipleImage(mArrayUri.get(i));
-
-                    }
-                    Log.v(TAG, "jigar the multiple  Selected size Images are " + mArrayUri.size());
-                    Log.v(TAG, "jigar the multiple  Selected Images are " + mArrayUri.toString());
-
-                }
-            }
-        } else {
-        //    Toast.makeText(getContext(), "You haven't picked Image", Toast.LENGTH_LONG).show();
-        }
+        //        if (requestCode == PICK_IMAGE_MULTIPLE && resultCode == RESULT_OK
+//                && null != data) {
+//            // Get the Image from data
+//
+//            String[] filePathColumn = { MediaStore.Images.Media.DATA };
+//            imagesEncodedList = new ArrayList<String>();
+//            if(data.getData()!=null){
+//
+//                Uri mImageUri=data.getData();
+//
+//                // Get the cursor
+//                Cursor cursor = getContext().getContentResolver().query(mImageUri,
+//                        filePathColumn, null, null, null);
+//                // Move to first row
+//                cursor.moveToFirst();
+//
+//                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+//                imageEncoded  = cursor.getString(columnIndex);
+//                cursor.close();
+//
+//            } else {
+//                if (data.getClipData() != null) {
+//                    ClipData mClipData = data.getClipData();
+//                    ArrayList<Uri> mArrayUri = new ArrayList<Uri>();
+//                    for (int i = 0; i < mClipData.getItemCount(); i++) {
+//
+//                        ClipData.Item item = mClipData.getItemAt(i);
+//                        Uri uri = item.getUri();
+//                        mArrayUri.add(uri);
+//                        // Get the cursor
+//                        Cursor cursor = getContext().getContentResolver().query(uri, filePathColumn, null, null, null);
+//                        // Move to first row
+//                        cursor.moveToFirst();
+//
+//                        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+//                        imageEncoded  = cursor.getString(columnIndex);
+//                        imagesEncodedList.add(imageEncoded);
+//                        cursor.close();
+//
+//                    }
+//                    for(int i=0;i<mArrayUri.size();i++)
+//                    {
+//                        uploadMultipleImage(mArrayUri.get(i));
+//
+//                    }
+//                    Log.v(TAG, "jigar the multiple  Selected size Images are " + mArrayUri.size());
+//                    Log.v(TAG, "jigar the multiple  Selected Images are " + mArrayUri.toString());
+//
+//                }
+//            }
+//        } else {
+//        //    Toast.makeText(getContext(), "You haven't picked Image", Toast.LENGTH_LONG).show();
+//        }
 
 
         if (requestCode == PICK_PDF_CODE && resultCode == RESULT_OK && data != null && data.getData() != null) {
@@ -1328,7 +1421,9 @@ public void getCurrentLocation () {
                 String path1 = audioFileUri.getPath();
                 Log.d(TAG,"jigar the audio path we have is "+audioFileUri.getPath());
                 Log.d("Audio_path", path1 + "/");
+
              //   fileName=fileName+"1";
+
                 uploadAudio(audioFileUri, "3gp");
                 //uploadmp3formatdemo(audioFileUri, "mp3");
 
@@ -1588,7 +1683,7 @@ private void uploadAudio(Uri data, String ext) {
                         String mUri = downloadUri.toString();
                         Log.d("UploadFile", mUri);
                         sendMessageToPersonal(getActivity(),strIsSecureChat, fuser.getUid(), userid, "Document",
-                                false,"","",false, "default", mUri, false, "default", "default");
+                                false,"","","",false, "default", mUri, false, "default", "default");
 
                         pd.dismiss();
                     } else {
@@ -1643,8 +1738,10 @@ private void uploadAudio(Uri data, String ext) {
                         Uri downloadUri = task.getResult();
                         String mUri = downloadUri.toString();
 
-                        sendMessageToPersonal(getActivity(),strIsSecureChat, fuser.getUid(), userid, "Image", false,
-                                "","",true, mUri, "default", false, "default", "default");
+                        sendMessageToPersonal(getActivity(),strIsSecureChat, fuser.getUid(), userid, "Image"
+                                , false,
+                                "","","",true
+                                , mUri, "default", false, "default", "default");
 
                         pd.dismiss();
                     } else {
@@ -1665,7 +1762,8 @@ private void uploadAudio(Uri data, String ext) {
     }
 
     private void uploadMultipleImage(Uri strImageUri) {
-  //      final ProgressDialog pd = new ProgressDialog(getContext());
+
+     //      final ProgressDialog pd = new ProgressDialog(getContext());
 //        pd.setMessage("Uploading...");
 //        pd.show();
 //        pd.setCancelable(false);
@@ -1694,7 +1792,7 @@ private void uploadAudio(Uri data, String ext) {
                         String mUri = downloadUri.toString();
 
                         sendMessageToPersonal(getActivity(),strIsSecureChat, fuser.getUid(), userid, "Image",
-                                false,"","",true, mUri, "default", false, "default", "default");
+                                false,"","","",true, mUri, "default", false, "default", "default");
 
            //             pd.dismiss();
                     } else {
@@ -1838,7 +1936,7 @@ private void uploadAudio(Uri data, String ext) {
 
     public static void sendMessageToPersonal(final Context context, final String strIsSecureChat
             , final String sender, final String receiver
-            , String message,boolean isRepliedMessage,String strRepliedMessage
+            , String message,boolean isRepliedMessage,String strRepliedMessageID,String strRepliedMessage
             ,String strRepliedUserName, boolean isimage, String uri, String docUri
             , boolean iscontact, String con_name, String con_num) {
 
@@ -1878,7 +1976,8 @@ private void uploadAudio(Uri data, String ext) {
             hashMap.put("isseentime", "");
             hashMap.put("isreceived", false);
             hashMap.put("isrepliedmessage", isRepliedMessage);
-            hashMap.put("isrepliedmessageid", strRepliedMessage);
+            hashMap.put("isrepliedmessageid", strRepliedMessageID);
+            hashMap.put("repliedmessage", strRepliedMessage);
             hashMap.put("isrepliedmessageby", strRepliedUserName);
             hashMap.put("isimage", isimage);
             hashMap.put("iscontact", iscontact);
@@ -1904,7 +2003,8 @@ private void uploadAudio(Uri data, String ext) {
             hashMap.put("isseentime", "");
             hashMap.put("isreceived", false);
             hashMap.put("isrepliedmessage", isRepliedMessage);
-            hashMap.put("isrepliedmessageid", strRepliedMessage);
+            hashMap.put("isrepliedmessageid", strRepliedMessageID);
+            hashMap.put("repliedmessage", strRepliedMessage);
             hashMap.put("isrepliedmessageby", strRepliedUserName);
             hashMap.put("isimage", isimage);
             hashMap.put("iscontact", iscontact);
@@ -2019,6 +2119,7 @@ private void uploadAudio(Uri data, String ext) {
             hashMap.put("isreceived", false);
             hashMap.put("isrepliedmessage", false);
             hashMap.put("isrepliedmessageid", "");
+            hashMap.put("repliedmessage", "");
             hashMap.put("isseentime", "");
             hashMap.put("isimage", isimage);
             hashMap.put("iscontact", false);
@@ -2044,6 +2145,7 @@ private void uploadAudio(Uri data, String ext) {
             hashMap.put("isseen", false);
             hashMap.put("isrepliedmessage",false);
             hashMap.put("isrepliedmessageid","");
+            hashMap.put("repliedmessage", "");
             hashMap.put("isseentime", "");
             hashMap.put("isimage", isimage);
             hashMap.put("iscontact", false);
@@ -2210,7 +2312,7 @@ private void uploadAudio(Uri data, String ext) {
                     strLoginUserName = sharedPreference.getValue(getActivity(), WsConstant.userUsername);
 
                     messageAdapter = new MessageAdapter(getActivity(), mchat, imageurl,strIsSecureChat
-                            ,txtUserName.getText().toString(),strLoginUserName);
+                            ,txtUserName.getText().toString(),strLoginUserName,linearLayoutManager);
 
                     Log.d(TAG,"jigar the user login has name is the "+fuser.getDisplayName());
 

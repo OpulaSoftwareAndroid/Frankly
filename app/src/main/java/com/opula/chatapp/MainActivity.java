@@ -275,7 +275,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 showpart1();
-                MessageAdapter.deletemessage(MainActivity.this);
+           //     MessageAdapter.deletemessage(MainActivity.this);
+                MessageAdapter.deleteMessageList(MainActivity.this);
             }
         });
 
@@ -291,7 +292,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 showpart1();
-                MessageAdapter.forwardMessage(MainActivity.this);
+                MessageAdapter.forwardMessage1(MainActivity.this);
             }
         });
 

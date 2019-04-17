@@ -70,6 +70,13 @@
             android:paddingLeft="8dp"
             android:paddingRight="8dp">
 
+            <SearchView
+                android:id="@+id/searchViewNewChatList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:queryHint="Search Here..."
+                android:iconifiedByDefault="false" />
+
             <LinearLayout
                 android:id="@+id/createNewGrpLayout"
                 android:layout_width="match_parent"

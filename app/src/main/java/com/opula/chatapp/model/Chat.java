@@ -28,6 +28,7 @@ public class Chat {
     private boolean isaudio;
     private String image;
     private String isrepliedmessageid;
+    private String repliedmessage;
     private String isrepliedmessageby;
 
     private String time;
@@ -36,6 +37,8 @@ public class Chat {
     private String table_id;
     private String doc_uri;
     private String audio_uri;
+    private String storage_uri;
+
 
     private String contact_name;
     private String contact_number;
@@ -156,6 +159,16 @@ public class Chat {
         this.isrepliedmessageid = isrepliedmessageid;
     }
 
+
+    public String getRepliedmessage() {
+        return repliedmessage;
+    }
+
+    public void setRepliedmessage(String repliedmessage) {
+        this.repliedmessage = repliedmessage;
+    }
+
+
     public String isIsrepliedmessageby() {
         return isrepliedmessageby;
     }
@@ -251,6 +264,14 @@ public class Chat {
 
     public void setAudio_uri(String audio_uri) {
         this.audio_uri = audio_uri;
+    }
+
+    public String getStorage_uri() {
+        return storage_uri;
+    }
+
+    public void setStorage_uri(String storage_uri) {
+        this.storage_uri = storage_uri;
     }
 
     public String getContact_number() {

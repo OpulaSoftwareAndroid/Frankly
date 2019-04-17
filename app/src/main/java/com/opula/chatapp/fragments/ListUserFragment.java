@@ -6,10 +6,12 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.SearchView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -37,8 +39,9 @@ public class ListUserFragment extends Fragment {
     private RecyclerView recyclerView;
     private NewChatUserAdapter newChatUserAdapter;
     private List<User> mUsers;
+    String TAG="ListUserFragment";
     LinearLayout createNewGrpLayout, imgBack, createNewBroadcast;
-
+    SearchView searchViewChatList;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -51,6 +54,7 @@ public class ListUserFragment extends Fragment {
 
         createNewGrpLayout = view.findViewById(R.id.createNewGrpLayout);
         createNewBroadcast = view.findViewById(R.id.createNewBroadcast);
+        searchViewChatList=view.findViewById(R.id.searchViewNewChatList);
         imgBack = view.findViewById(R.id.imgBack);
         SpaceNavigationView spaceNavigationView = (SpaceNavigationView) getActivity().findViewById(R.id.space);
         spaceNavigationView.setVisibility(View.GONE);
@@ -105,45 +109,48 @@ public class ListUserFragment extends Fragment {
 //            }
 //        });
 
+
+
+
         return view;
     }
 
-    private void searchUsers(String s) {
-
-        final FirebaseUser fuser = FirebaseAuth.getInstance().getCurrentUser();
-        Query query = FirebaseDatabase.getInstance().getReference("Users").orderByChild("search")
-                .startAt(s)
-                .endAt(s + "\uf8ff");
-
-        query.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                try {
-                    mUsers.clear();
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        User user = snapshot.getValue(User.class);
-
-                        assert user != null;
-                        assert fuser != null;
-                        if (!user.getId().equals(fuser.getUid())) {
-                            mUsers.add(user);
-                        }
-                    }
-
-                    newChatUserAdapter = new NewChatUserAdapter(getActivity(), mUsers, false);
-                    recyclerView.setAdapter(newChatUserAdapter);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-    }
+//    private void searchUsers(String s) {
+//
+//        final FirebaseUser fuser = FirebaseAuth.getInstance().getCurrentUser();
+//        Query query = FirebaseDatabase.getInstance().getReference("Users").orderByChild("search")
+//                .startAt(s)
+//                .endAt(s + "\uf8ff");
+//
+//        query.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                try {
+//                    mUsers.clear();
+//                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+//                        User user = snapshot.getValue(User.class);
+//
+//                        assert user != null;
+//                        assert fuser != null;
+//                        if (!user.getId().equals(fuser.getUid())) {
+//                            mUsers.add(user);
+//                        }
+//                    }
+//
+//                    newChatUserAdapter = new NewChatUserAdapter(getActivity(), mUsers, false);
+//                    recyclerView.setAdapter(newChatUserAdapter);
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
+//
+//    }
 
     private void readUsers() {
         final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -165,7 +172,23 @@ public class ListUserFragment extends Fragment {
                     newChatUserAdapter = new NewChatUserAdapter(getActivity(), mUsers, false);
                     WsConstant.check = "activity";
                     recyclerView.setAdapter(newChatUserAdapter);
+
+                    //                    searchViewChatList.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+//                        @Override
+//                        public boolean onQueryTextSubmit(String s) {
+//                            newChatUserAdapter.getFilter().filter(s);
+//                            return false;
+//                        }
+//
+//                        @Override
+//                        public boolean onQueryTextChange(String s) {
+//                            newChatUserAdapter.getFilter().filter(s);
+//                            return false;
+//                        }
+//                    });
+
                 } catch (Exception e) {
+                    Log.d(TAG,"jigar the exception");
                     e.printStackTrace();
                 }
             }

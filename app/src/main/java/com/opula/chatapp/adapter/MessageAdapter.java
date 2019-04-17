@@ -4,14 +4,20 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.Point;
+import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
+import android.os.Handler;
 import android.os.ParcelFileDescriptor;
 import android.os.Vibrator;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -23,6 +29,10 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -69,7 +79,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.TimeZone;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
@@ -81,7 +94,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     public static final int MSG_TYPE_LEFT = 0;
     public static final int MSG_TYPE_RIGHT = 1;
     public Activity mContext;
-    String TAG = "MessageAdapter";
+    static String TAG = "MessageAdapter";
     public static List<Chat> mChat;
     private String imageurl,strLoginUserName;
     String AES = "AES";
@@ -97,8 +110,10 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     public static ForwardMessageAdapter newChatUserAdapter;
     public final static String FOLDER = Environment.getExternalStorageDirectory() + "/PDF";
     public    String strUriForAudio, strUrlPath;
+    private LinearLayoutManager manager;
+
     public MessageAdapter(Activity mContext, List<Chat> mChat, String imageurl,String strIsSecureChat,String strChatReceiverUserName
-    ,String strLoginUserName)
+    ,String strLoginUserName,LinearLayoutManager manager)
     {
         this.mChat = mChat;
         this.mContext = mContext;
@@ -106,9 +121,14 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         this. strIsSecureChat=strIsSecureChat;
         this.strChatReceiverUserName=strChatReceiverUserName;
         this.strLoginUserName=strLoginUserName;
+        this.manager=manager;
         sharedPreference=new SharedPreference();
     }
 
+//    public MessageAdapter(LinearLayoutManager manager)
+//    {
+//        this.manager=manager;
+//    }
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -141,8 +161,10 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
                 holder.textViewRepliedMessage.setVisibility(View.VISIBLE);
                 holder.textViewUserName.setVisibility(View.VISIBLE);
                 holder.linearLayoutRepliedMessage.setVisibility(View.VISIBLE);
-                holder.textViewRepliedMessage.setText(chat.isIsrepliedmessageid());
+                holder.textViewRepliedMessage.setText(chat.getRepliedmessage());
                 holder.textViewUserName.setText(chat.isIsrepliedmessageby());
+
+
 
             } else {
                 holder.textViewRepliedMessage.setVisibility(View.GONE);
@@ -327,6 +349,70 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
                 }
             });
 
+            holder.linear_chat.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+//                    Log.d(TAG,"jigar the position in message adapter we have is "+chat.getRepliedmessage());
+
+                    for(int i=0;i<mChat.size();i++)
+                    {
+                        if(mChat.get(i).getId().equals(chat.isIsrepliedmessageid()))
+                        {
+                            manager.scrollToPosition(i);
+                            final Animation anim = new AlphaAnimation(0.0f, 1.0f);
+                            anim.setDuration(50); //You can manage the blinking time with this parameter
+                            anim.setStartOffset(20);
+                            anim.setRepeatMode(Animation.REVERSE);
+                            anim.setRepeatCount(Animation.INFINITE);
+
+//                            manager.findViewByPosition(i).performClick();
+                            Log.d(TAG,"jigar the position on top we have is "+manager.findFirstVisibleItemPosition());
+                            final int finalI = i;
+                            final int[] intCount = {0};
+                            view.getViewTreeObserver().addOnDrawListener(new ViewTreeObserver.OnDrawListener() {
+                                @RequiresApi(api = Build.VERSION_CODES.M)
+                                @Override
+                                public void onDraw() {
+                                    // TODO Auto-generated method stub
+
+                                    if(intCount[0] ==0) {
+
+                                        intCount[0] = intCount[0] +1;
+
+
+                                        manager.findViewByPosition(finalI).setBackgroundColor(ContextCompat.getColor(mContext, R.color.color_selecchat));
+
+                                        Timer timer_interact=new Timer();
+                                        timer_interact.schedule(new TimerTask() {
+                                            @Override
+                                            public void run() {
+                                                mContext.runOnUiThread(new Runnable() {
+
+                                                    @Override
+                                                    public void run() {
+
+                                                        manager.findViewByPosition(finalI). setBackgroundColor(0);
+                                                    }
+                                                });
+                                            }
+                                        }, 100);
+                                        //creating runnable
+                                    }
+                                }
+                            });
+
+
+//                            Toast.makeText(mContext,"jigar the item position we have is "+i ,Toast.LENGTH_LONG).show();
+
+                        }
+
+
+                    }
+
+//                    manager.scrollToPosition();
+                }
+            });
+
             holder.linear_chat.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
@@ -339,6 +425,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
                     return false;
                 }
             });
+
 
             holder.linear_chat.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
@@ -445,6 +532,9 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             holder.linear_chat.setVisibility(View.GONE);
         }
     }
+//    ViewTreeObserver.OnGlobalLayoutListener
+
+
 
     private void showInfoSeenPopup(final Context context, Point p,
                                    final String strChatDeliveredTimeMiliSec, final String strChatSeenTimeMiliSec
@@ -462,7 +552,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
 
         if(isSender) {
-
             linearLayoutInfo.setVisibility(View.VISIBLE);
         }else
         {
@@ -512,14 +601,18 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
                 final Chat chat = mChat.get(position);
                 MessageFragment.textViewReplyMessage.setText(chat.getMessage());
                 Log.d(TAG,"jigar the message in chat is "+chat.getSender());
+                Log.d(TAG,"jigar the message ID for chat is "+chat.getId());
                 Log.d(TAG,"jigar the message user log in chat is "+fuser.getDisplayName());
 
                 if(chat.getSender().equals(fuser.getUid()))
                 {
                     MessageFragment.textViewUserName.setText(strLoginUserName);
+                    MessageFragment.strRepliedMessageID =chat.getId();
+
                 }else
                 {
                     MessageFragment.textViewUserName.setText(strChatReceiverUserName);
+                    MessageFragment.strRepliedMessageID =chat.getId();
 
                 }
              //   textViewRepliedMessage.setText(chat.getMessage());
@@ -792,8 +885,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     public static void back(Context context) {
 
     }
-
-    public static void forwardMessage(final Context context) {
+    public static void forwardMessage1(final Context context) {
         final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
         LayoutInflater inflater = ((MainActivity) context).getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.dailog_forward_message, null);
@@ -825,23 +917,30 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users");
 
-        reference.addValueEventListener(new ValueEventListener() {
+        reference.addListenerForSingleValueEvent(new ValueEventListener()
+        {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 try {
                     mUsers.clear();
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         User user = snapshot.getValue(User.class);
+                        assert user != null;
+                        assert firebaseUser != null;
+                        Log.d(TAG,"jigar the chat to be forwarded is "+user.getId());
                         if (!user.getId().equals(firebaseUser.getUid())) {
                             mUsers.add(user);
                         }
                     }
-                        newChatUserAdapter = new ForwardMessageAdapter(context, mUsers, mChat.get(i).isIsimage()
-                                , true, mChat.get(i).getMessage(), alertDialog, mChat.get(i).getImage(),mChat.get(i).isIsaudio(),mChat.get(i).getAudio_uri());
+                    newChatUserAdapter = new ForwardMessageAdapter(context, mUsers, mChat.get(i).isIsimage()
+                            , true, mChat.get(i).getMessage(), alertDialog, mChat.get(i).getImage()
+                            ,mChat.get(i).isIsaudio(),mChat.get(i).getAudio_uri());
 
                     WsConstant.check = "activity";
                     recyclerView.setAdapter(newChatUserAdapter);
                 } catch (Exception e) {
+                    Log.d(TAG, "jigar the main exception in forward message is  "+e);
+
                     e.printStackTrace();
                 }
             }
@@ -854,6 +953,141 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         alertDialog.show();
     }
 
+
+//    public static void forwardMessage(final Context context) {
+//        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+//        LayoutInflater inflater = ((MainActivity) context).getLayoutInflater();
+//        View dialogView = inflater.inflate(R.layout.dailog_forward_message, null);
+//        alertDialogBuilder.setView(dialogView);
+//        alertDialogBuilder.setCancelable(true);
+//        final AlertDialog alertDialog = alertDialogBuilder.create();
+//
+//        final RecyclerView recyclerView;
+//        final LinearLayout imgBack;
+//
+//        final List<User> mUsers;
+//
+//        recyclerView = dialogView.findViewById(R.id.recycler_viewq);
+//        imgBack = dialogView.findViewById(R.id.imgBack);
+//
+//        imgBack.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                MainActivity.showpart1();
+//                alertDialog.dismiss();
+//            }
+//        });
+//
+//        final LinearLayoutManager layoutManager = new LinearLayoutManager(context);
+//        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+//        recyclerView.setLayoutManager(layoutManager);
+//        mUsers = new ArrayList<>();
+//
+//        final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+//
+//        DatabaseReference  reference = FirebaseDatabase.getInstance().getReference("Users");
+//
+//        reference.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                try {
+//                    mUsers.clear();
+//                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+//                        User user = snapshot.getValue(User.class);
+//                        Log.d(TAG,"jigar the chat to be forwarded is "+user.getId());
+//                        if (!user.getId().equals(firebaseUser.getUid())) {
+//                            mUsers.add(user);
+//                        }
+//                    }
+//                        newChatUserAdapter = new ForwardMessageAdapter(context, mUsers, mChat.get(i).isIsimage()
+//                                , true, mChat.get(i).getMessage(), alertDialog, mChat.get(i).getImage()
+//                                ,mChat.get(i).isIsaudio(),mChat.get(i).getAudio_uri());
+//
+//                    WsConstant.check = "activity";
+//                    recyclerView.setAdapter(newChatUserAdapter);
+//                } catch (Exception e) {
+//                    Log.d(TAG, "jigar the main exception in forward message is  "+e);
+//
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
+//        alertDialog.show();
+//    }
+//    public static void deleteMessageList(final String strLoginUserId,final String strReceiverID) {
+
+
+public static void deleteMessageList(final Context context) {
+
+        DatabaseReference  reference = FirebaseDatabase.getInstance().getReference("Chats");
+        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                try {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        Chat chat = snapshot.getValue(Chat.class);
+
+                        if (Objects.requireNonNull(chat).getId() != null) {
+
+                            if (chat.getTo().equalsIgnoreCase("personal")) {
+
+                                   if (chat.getId().equalsIgnoreCase(mChat.get(i).getId())) {
+                                       snapshot.getRef().removeValue();
+                                       Log.d(TAG,"jigar the chat to be deleted is "+chat.getId());
+                                       Toast.makeText(context, "Message is deleted!", Toast.LENGTH_SHORT).show();
+                                   }
+//                                if ((chat.getSender().equals(strLoginUserId) || chat.getSender().equals(strReceiverID))
+//                                        && (chat.getReceiver().equals(strLoginUserId)
+//                                        || chat.getReceiver().equals(strReceiverID))) {
+//                                    HashMap<String, Object> hashMap = new HashMap<>();
+                                    //                                    if (chat.getReceiver().equals(strLoginUserId)) {
+//                                        if (chat.getIsstatus().equals("0")) {
+//                                            hashMap.put("isstatus", "2");
+//                                        } else if (chat.getIsstatus().equals("1")) {
+//                                            hashMap.put("isstatus", "3");
+//                                        }
+//                                        Log.d(TAG, "jigar the login user is receiver and id is : " + strReceiverID + " and message is " + chat.getMessage());
+//                                        snapshot.getRef().updateChildren(hashMap);
+//                                        //                                    && chat.getSender().equals(userid)
+////                                    && !chat.isIsseen()) {
+////                                HashMap<String, Object> hashMap = new HashMap<>();
+////                                Long tsLong = (System.currentTimeMillis() / 1000);
+////                                String ts = tsLong.toString();
+//
+////                                hashMap.put("isseen", true);
+////                                hashMap.put("issend", true);
+////                                hashMap.put("isreceived", true);
+////                                hashMap.put("isseentime", ts);
+////                                snapshot.getRef().updateChildren(hashMap);
+//                                    } else {
+//                                        if (chat.getIsstatus().equals("0")) {
+//                                            hashMap.put("isstatus", "1");
+//                                        } else if (chat.getIsstatus().equals("2")) {
+//                                            hashMap.put("isstatus", "3");
+//                                        }
+//                                        Log.d(TAG, "jigar the login user is sender and id is : " + strLoginUserId + " and message is " + chat.getMessage());
+//                                        snapshot.getRef().updateChildren(hashMap);
+                                //    }
+                               // }
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
     public static void deletemessage(final Context context) {
         final DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Chats");
         reference.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -863,12 +1097,14 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         Chat chat = snapshot.getValue(Chat.class);
                         assert chat != null;
+                        Log.d(TAG,"jigar the chat to be deleted is "+chat.getId());
                         if (chat.getId().equalsIgnoreCase(mChat.get(i).getId())) {
                             snapshot.getRef().removeValue();
                             Toast.makeText(context, "Message is deleted!", Toast.LENGTH_SHORT).show();
                         }
                     }
                 } catch (Exception e) {
+                    Log.d(TAG,"jigar the exception in  delete is "+e);
                     e.printStackTrace();
                 }
             }

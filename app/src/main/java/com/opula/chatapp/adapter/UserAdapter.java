@@ -74,7 +74,8 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> im
     int intNotificationCount=0;
     ArrayList <String> arrayListUserLastMessageTime;
 
-    public UserAdapter(Context mContext, List<User> mUsers,List<Chatlist> mChatListDetails, List<BroadcastUser> mBroadcast, boolean ischat, boolean is) {
+    public UserAdapter(Context mContext, List<User> mUsers, List<Chatlist> mChatListDetails, List<BroadcastUser> mBroadcast
+            , boolean ischat, boolean is) {
         this.mUsers = mUsers;
         this.mUsersFilteredList = mUsers;
         this.mChatListDetails = mChatListDetails;

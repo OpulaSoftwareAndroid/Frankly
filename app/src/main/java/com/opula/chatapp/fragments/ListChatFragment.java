@@ -59,6 +59,7 @@ public class ListChatFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         View view = inflater.inflate(R.layout.fragment_list_chats, container, false);
 
         MainActivity.showpart1();
@@ -81,6 +82,7 @@ public class ListChatFragment extends Fragment {
         usersList = new ArrayList<>();
         broadcastList = new ArrayList<>();
         arrayListIsSecure=new ArrayList<>();
+
         Bundle bundle = this.getArguments();
         if (bundle != null) {
             String strFragmentName = bundle.getString(WsConstant.FRAGMENT_NAME, "");
@@ -139,9 +141,8 @@ public class ListChatFragment extends Fragment {
                         chatlist = snapshot.getValue(Chatlist.class);
 
                         if (!("group".equalsIgnoreCase(snapshot.getKey()) || ("broadcast".equalsIgnoreCase(snapshot.getKey())))) {
-                        //    Log.d(TAG,"jigar the message snapshot have "+ snapshot.getValue() + "//" + chatlist);
+                            //    Log.d(TAG,"jigar the message snapshot have "+ snapshot.getValue() + "//" + chatlist);
                             usersList.add(chatlist);
-
                         }
                     }
                     chatList();

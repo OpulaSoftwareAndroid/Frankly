@@ -91,6 +91,12 @@ dependencies {
     implementation 'com.github.rygelouv:android-audio-sensei:0.1.2'
     implementation 'com.naver.android.helloyako:imagecropview:1.2.2'
 
+    //Add image gallery extrenal
+
+    implementation 'com.github.florianPOLARSTEPS.android-image-picker:imagepicker:1.3.0'
+    // for experimental rx picker
+//    implementation 'com.github.ParkSangGwon:TedPicker:v1.0.10'
+
     implementation 'com.bogdwellers:pinchtozoom:0.1'
 
 }
