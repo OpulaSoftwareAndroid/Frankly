@@ -88,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
     public static StringBuilder sb;
     static final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     static SecureRandom rnd = new SecureRandom();
+    private Fragment messageFragment = new MessageFragment();
 
     String strStatusUserName;
     StorageReference storageReference;
@@ -636,6 +637,12 @@ public class MainActivity extends AppCompatActivity {
             Bitmap photo = (Bitmap) data.getExtras().get("data");
             imageView.setImageBitmap(photo);
         }
+
+
+//            videoFragment.onActivityResult(requestCode, resultCode, data);
+        messageFragment.onActivityResult(requestCode, resultCode, data);
+
+
     }
 
    /* public static void checkGlobleTheme(Context context) {

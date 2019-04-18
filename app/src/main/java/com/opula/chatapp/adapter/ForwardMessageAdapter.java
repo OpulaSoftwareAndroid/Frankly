@@ -91,7 +91,7 @@ public class ForwardMessageAdapter extends RecyclerView.Adapter<ForwardMessageAd
                 }else {
                     MessageFragment.sendMessageToPersonal(mContext, "false", fuser.getUid(), user.getId(), meg,
                             false, "","", "", isimage, url
-                            , "default", false, "default", "default");
+                            ,false,"default", "default", false, "default", "default");
                 }
                 alertDialog.dismiss();
                 FragmentManager fragmentManager = ((FragmentActivity) mContext).getSupportFragmentManager();

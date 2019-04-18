@@ -106,6 +106,53 @@
             </RelativeLayout>
 
             <RelativeLayout
+                android:id="@+id/relativeLayoutVideoView"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_marginTop="4dp"
+                android:visibility="gone">
+
+                <ProgressBar
+                    android:id="@+id/progressBarVideoCircular"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:visibility="gone" />
+
+
+                <VideoView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/videoView" />
+
+                <RelativeLayout
+                    android:id="@+id/relativelayoutImgBlur"
+                    android:layout_width="match_parent"
+                    android:visibility="gone"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:adjustViewBounds="true"
+                        android:alpha="0.9"
+                        android:background="@drawable/gradient_bg"
+                        android:scaleType="centerCrop"
+                        android:visibility="gone" />
+
+                    <ImageView
+                        android:id="@+id/imageViewVideoDownload"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="110dp"
+                        android:src="@drawable/ic_downward"
+                        android:visibility="gone" />
+                </RelativeLayout>
+            </RelativeLayout>
+
+            <RelativeLayout
                 android:id="@+id/relative_contact"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -167,6 +214,7 @@
                     android:textSize="18sp"
                     android:visibility="visible" />
             </RelativeLayout>
+
 
             <RelativeLayout
                 android:id="@+id/relativeLayoutAudioPlayer"

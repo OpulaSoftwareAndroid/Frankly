@@ -9,6 +9,7 @@ import android.graphics.Point;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -35,12 +36,14 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.MediaController;
 import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.VideoView;
 
 import com.bogdwellers.pinchtozoom.ImageMatrixTouchHandler;
 import com.bumptech.glide.Glide;
@@ -164,13 +167,10 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
                 holder.textViewRepliedMessage.setText(chat.getRepliedmessage());
                 holder.textViewUserName.setText(chat.isIsrepliedmessageby());
 
-
-
             } else {
                 holder.textViewRepliedMessage.setVisibility(View.GONE);
                 holder.textViewUserName.setVisibility(View.GONE);
                 holder.linearLayoutRepliedMessage.setVisibility(View.GONE);
-
             }
 
             if (!chat.getDoc_uri().equalsIgnoreCase("default")) {
@@ -190,6 +190,62 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
                 holder.show_message.setVisibility(View.GONE);
                 holder.relative.setVisibility(View.VISIBLE);
                 holder.progress_circular.setVisibility(View.VISIBLE);
+                //                holder.videoView.setVideoPath("http://videocdn.bodybuilding.com/video/mp4/62000/62792m.mp4");
+//                holder.videoView.start();
+//
+                MediaController mediaControls;
+
+              //  if (mediaControls == null)
+                {
+                    mediaControls = new MediaController(mContext);
+                }
+
+                try
+                {
+                    if(chat.isIsvideo()) {
+                        holder.relativeLayoutVideoView.setVisibility(View.VISIBLE);
+                        holder.videoView.setVisibility(View.VISIBLE);
+                        // set the media controller in the VideoView
+                        holder.videoView.setMediaController(mediaControls);
+                        // set the uri of the video to be played
+                        holder.videoView.setVideoURI(Uri.parse(chat.getVideourl()));
+                    }else
+                    {
+                        holder.relativeLayoutVideoView.setVisibility(View.GONE);
+                        holder.videoView.setVisibility(View.GONE);
+                    }
+                } catch (Exception e)
+                {
+                    Log.e("Error", e.getMessage());
+                    e.printStackTrace();
+                }
+                holder.videoView.requestFocus();
+
+                // we also set an setOnPreparedListener in order to know when the video
+                // file is ready for playback
+
+                holder.videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener()
+                {
+
+                    public void onPrepared(MediaPlayer mediaPlayer)
+                    {
+                        // if we have a position on savedInstanceState, the video
+                        // playback should start from here
+                        holder.videoView.seekTo(position);
+
+                        System.out.println("vidio is ready for playing");
+
+                        if (position == 0)
+                        {
+                            holder.videoView.start();
+                        } else
+                        {
+                            // if we come from a resumed activity, video playback will
+                            // be paused
+                            holder.videoView.pause();
+                        }
+                    }
+                });
 
                 Glide.with(mContext).load(chat.getImage())
                         .listener(new RequestListener<String, GlideDrawable>() {
@@ -337,8 +393,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
                                 }
                             })
                             .into(image);
-
-
 //
 //                Glide.with(image.getContext()).load(string).asBitmap().into(new SimpleTarget<Bitmap>() {
 //                    @Override
@@ -785,10 +839,12 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         public ImageView profile_image, img_receive, img_tick, img_dtick, img_dstick, img_download,img_loading_tick;
         public TextView show_time,audioTitle;
         public ProgressBar progress_circular;
-        RelativeLayout relative, txt_seen, img_blur, relative_contact, relativeLayoutAudioPlayer;
+        RelativeLayout relative, txt_seen, img_blur, relative_contact, relativeLayoutAudioPlayer,relativeLayoutVideoView;
         LinearLayout linear_chat,linearLayoutRepliedMessage;
         AudioSenseiPlayerView audioSenseiPlayerView;
         LinearLayout linmain;
+        public VideoView videoView;
+
         PDFView pdfView;
         TextView mRunTime, mTotalTime;
         SeekBar mMediaSeekBar;
@@ -831,6 +887,8 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             mMediaSeekBar = (SeekBar) itemView.findViewById(R.id.media_seekbar);
             mRunTime = (TextView) itemView.findViewById(R.id.run_time);
             mTotalTime = (TextView) itemView.findViewById(R.id.total_time);
+            videoView = (VideoView)itemView.findViewById(R.id.videoView);
+            relativeLayoutVideoView=itemView.findViewById(R.id.relativeLayoutVideoView);
         }
 
     }

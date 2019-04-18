@@ -47,6 +47,8 @@ import com.devlomi.record_view.OnBasketAnimationEnd;
 import com.devlomi.record_view.OnRecordListener;
 import com.devlomi.record_view.RecordButton;
 import com.devlomi.record_view.RecordView;
+//import com.esafirm.imagepicker.features.ImagePicker;
+//import com.esafirm.imagepicker.model.Image;
 import com.esafirm.imagepicker.features.ImagePicker;
 import com.esafirm.imagepicker.model.Image;
 import com.google.android.gms.tasks.Continuation;
@@ -66,6 +68,10 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
+import com.kbeanie.multipicker.api.Picker;
+import com.kbeanie.multipicker.api.VideoPicker;
+import com.kbeanie.multipicker.api.callbacks.VideoPickerCallback;
+import com.kbeanie.multipicker.api.entity.ChosenVideo;
 import com.luseen.spacenavigation.SpaceNavigationView;
 import com.mlsdev.rximagepicker.RxImagePicker;
 import com.mlsdev.rximagepicker.Sources;
@@ -91,6 +97,7 @@ import com.shashank.sony.fancydialoglib.FancyAlertDialog;
 import com.shashank.sony.fancydialoglib.FancyAlertDialogListener;
 import com.shashank.sony.fancydialoglib.Icon;
 import com.squareup.picasso.Picasso;
+
 
 import java.io.File;
 import java.io.IOException;
@@ -141,9 +148,9 @@ public class MessageFragment extends Fragment {
     View rootView;
     private static final int INTENT_REQUEST_GET_IMAGES = 13;
     private static final int REQUEST_CODE_PICKER = 11;
-    private ArrayList<Image> images = new ArrayList<>();
-
-
+    private ArrayList<com.esafirm.imagepicker.model.Image> images = new ArrayList<>();
+    Context context;
+    VideoPicker videoPicker;
     final static String TAG="MessageFragment";
     EmojIconActions emojIcon;
     //pickimae
@@ -208,6 +215,7 @@ public class MessageFragment extends Fragment {
         Date c = Calendar.getInstance().getTime();
         Log.d(TAG,"jigar the is secure whole current time is "+c.getTime());
 
+        context=getContext();
         SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
         String day          = (String) DateFormat.format("dd",   c); // 20
         String monthString  = (String) DateFormat.format("MMM",  c); // Jun
@@ -305,8 +313,11 @@ public class MessageFragment extends Fragment {
                         //   Toast.makeText(getContext(),"message is: "+textViewReplyMessage.getText().toString()+" and "+textViewUserName.getText().toString(),Toast.LENGTH_LONG).show();
                         sendMessageToPersonal(getActivity(), strIsSecureChat,fuser.getUid(), userid, msg
                                 , true, strRepliedMessageID,textViewReplyMessage.getText().toString()
-                                ,textViewUserName.getText().toString(),
-                                false, "default", "default"
+                                ,textViewUserName.getText().toString()
+                                , false, "default"
+                                , false, "default"
+
+                                , "default"
                                 , false, "default", "default");
                         linearLayoutReplyMessage.setVisibility(View.GONE);
                     }else
@@ -315,7 +326,9 @@ public class MessageFragment extends Fragment {
                        // if(AppGlobal.isNetworkAvailable(getContext())) {
                             sendMessageToPersonal(getActivity(), strIsSecureChat, fuser.getUid(), userid, msg
                                     , false, "", "", ""
-                                    ,false, "default", "default", false, "default"
+                                    ,false, "default"
+                                    , false, "default"
+                                    , "default", false, "default"
                                     , "default");
                        // }else
 //                        {
@@ -615,7 +628,9 @@ public void getCurrentLocation () {
             String strLocationMessage="https://www.google.com/maps/search/?api=1&query="+latitude+","+longitude;
 
             sendMessageToPersonal(getActivity(), strIsSecureChat, fuser.getUid(), userid, strLocationMessage
-                    , false, "", "","", false, "default"
+                    , false, "", "",""
+                    , false, "default"
+                    , false, "default"
                     , "default", false, "default", "default");
 
 
@@ -1223,21 +1238,72 @@ public void getCurrentLocation () {
 
 //        ImagePicker.create(this) // Activity or Fragment
 //                .start(REQUEST_CODE_PICKER);
-        ImagePicker.create(this)
-                .returnAfterFirst(true) // set whether pick or camera action should return immediate result or not. For pick image only work on single mode
-                .folderMode(false) // folder mode (false by default)
-               // .folderTitle("Folder") // folder selection title
-                .imageTitle("Tap to select") // image selection title
-                .single() // single mode
-                .multi() // multi mode (default mode)
-                .limit(70) // max images can be selected (99 by default)
-                .showCamera(true) // show camera or not (true by default)
-                .imageDirectory("Camera") // directory name for captured image ("Camera" folder by default)
-                .origin(images) // original selected images, used in multi mode
-           //     .useExternalPickers(true) // show external image pickers in the toolbar (Google photos... )
-                .start(REQUEST_CODE_PICKER); // start image picker activity with request code
 
+
+
+        //----------comment for video picker
+//        ImagePicker.create(this)
+//                .returnAfterFirst(true) // set whether pick or camera action should return immediate result or not. For pick image only work on single mode
+//                .folderMode(false) // folder mode (false by default)
+//               // .folderTitle("Folder") // folder selection title
+//                .imageTitle("Tap to select") // image selection title
+//                .single() // single mode
+//                .multi() // multi mode (default mode)
+//                .limit(70) // max images can be selected (99 by default)
+//                .showCamera(true) // show camera or not (true by default)
+//                .imageDirectory("Camera") // directory name for captured image ("Camera" folder by default)
+//                .origin(images) // original selected images, used in multi mode
+//           //     .useExternalPickers(true) // show external image pickers in the toolbar (Google photos... )
+//                .start(REQUEST_CODE_PICKER); // start image picker activity with request code
+        //----------comment for video picker end
+
+
+
+ videoPicker = new VideoPicker(this);
+        videoPicker.setVideoPickerCallback(new VideoPickerCallback(){
+            @Override
+            public void onVideosChosen(List<ChosenVideo> list) {
+                Log.d(TAG,"jigar the selected video uri we have is "+list.get(0).getOriginalPath());
+
+//                Toast.makeText(context,"jigar the path we have is "+list.get(0).getOriginalPath(),Toast.LENGTH_LONG).show();
+//                Uri uri =Uri.fromFile(new File((list.get(0).getOriginalPath())));
+                Uri uriThumbnailImage =Uri.fromFile(new File((list.get(0).getPreviewThumbnail())));
+                Uri uriVideo =Uri.fromFile(new File((list.get(0).getOriginalPath())));
+
+                uploadMultipleVideo(uriThumbnailImage,uriVideo);
+            }
+
+
+            @Override
+
+
+            public void onError(String message) {
+                                                   // Do error handling
+                Log.d(TAG,"jigar the selected video error "+message);
+            }
+
+        }
+        );
+// videoPicker.allowMultiple(); // Default is false
+// videoPicker.shouldGenerateMetadata(false); // Default is true
+// videoPicker.shouldGeneratePreviewImages(false); // Default is true
+        videoPicker.pickVideo();
+
+
+
+//        new ImagePicker.Builder(getActivity())
+//                .mode(ImagePicker.Mode.CAMERA_AND_GALLERY)
+//                .allowMultipleImages(true)
+//                .compressLevel(ImagePicker.ComperesLevel.MEDIUM)
+//                .directory(ImagePicker.Directory.DEFAULT)
+//                .extension(ImagePicker.Extension.PNG)
+//                .allowOnlineImages(false)
+//                .scale(600, 600)
+//                .allowMultipleImages(true)
+//                .enableDebuggingMode(true)
+//                .build();
     }
+
 
     public void chooseAudioFromGallary() {
         Intent intent;
@@ -1266,15 +1332,39 @@ public void getCurrentLocation () {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == Picker.PICK_VIDEO_DEVICE) {
+                if (videoPicker == null) {
+                    videoPicker = new VideoPicker(this);
+                    videoPicker.setVideoPickerCallback(new VideoPickerCallback() {
+                        @Override
+                        public void onVideosChosen(List<ChosenVideo> list) {
+                            Log.d(TAG,"jigar the selected video uri we have is "+list.get(0).getOriginalPath());
 
-        if (requestCode == REQUEST_CODE_PICKER && resultCode == RESULT_OK && data != null) {
+                        }
 
-            ArrayList<Image> images = (ArrayList<Image>) ImagePicker.getImages(data);
+                        @Override
+                        public void onError(String s) {
 
+                        }
+                    });
+                }
+                videoPicker.submit(data);
+            }
+        }
+
+            if (requestCode == REQUEST_CODE_PICKER && resultCode == RESULT_OK && data != null) {
+
+//        Log.d(TAG, "onActivityResult() called with: requestCode = [" + requestCode + "], resultCode = [" + resultCode + "], data = [" + data + "]");
+//        if (requestCode == ImagePicker.IMAGE_PICKER_REQUEST_CODE && resultCode == RESULT_OK) {
+////            mPath = data.getStringArrayListExtra(ImagePicker.EXTRA_IMAGE_PATH);
+//            Log.d(TAG, "onActivityResult: ");
+//
+//           // if (requestCode == ImagePicker.IMAGE_PICKER_REQUEST_CODE && resultCode == RESULT_OK) {
+
+           ArrayList<Image> images = (ArrayList<Image>) ImagePicker.getImages(data);
+//            List<String> images = data.getStringArrayListExtra(ImagePicker.EXTRA_IMAGE_PATH);
             Log.d(TAG,"jigar the selected image uri we have is "+images.toString());
-            //        if (requestCode == PICK_IMAGE_MULTIPLE && resultCode == RESULT_OK
-//                && null != data) {
-            // Get the Image from data
 
             String[] filePathColumn = { MediaStore.Images.Media.DATA };
             imagesEncodedList = new ArrayList<String>();
@@ -1284,13 +1374,14 @@ public void getCurrentLocation () {
                    // ClipData mClipData = data.getClipData();
                     ArrayList<Uri> mArrayUri = new ArrayList<Uri>();
                     for (int i = 0; i < images.size(); i++) {
-
-
                 //        Log.d(TAG,"jigar the uri we have is "+images.get(i).getPath());
 //                        Uri uri = Uri.parse(images.get(i).getPath());
                         Uri uri =Uri.fromFile(new File((images.get(i).getPath())));
-                     //   Log.d(TAG,"jigar the uri after we have is "+uri.getPath());
                         mArrayUri.add(uri);
+                        //                        Uri uri =Uri.fromFile(new File((images.get(i))));
+
+                     //   Log.d(TAG,"jigar the uri after we have is "+uri.getPath());
+
                         // Get the cursor
 //                        Cursor cursor = getContext().getContentResolver().query(uri, filePathColumn, null, null, null);
 //                        // Move to first row
@@ -1300,16 +1391,13 @@ public void getCurrentLocation () {
 //                        imageEncoded  = cursor.getString(columnIndex);
 //                        imagesEncodedList.add(imageEncoded);
 //                        cursor.close();
-
                     }
                     for(int i=0;i<mArrayUri.size();i++)
                     {
                         uploadMultipleImage(mArrayUri.get(i));
-
                     }
               //      Log.v(TAG, "jigar the multiple  Selected size Images are " + mArrayUri.size());
                //     Log.v(TAG, "jigar the multiple  Selected Images are " + mArrayUri.toString());
-
                 }
 
         }
@@ -1682,8 +1770,9 @@ private void uploadAudio(Uri data, String ext) {
                         Uri downloadUri = task.getResult();
                         String mUri = downloadUri.toString();
                         Log.d("UploadFile", mUri);
-                        sendMessageToPersonal(getActivity(),strIsSecureChat, fuser.getUid(), userid, "Document",
-                                false,"","","",false, "default", mUri, false, "default", "default");
+//                        sendMessageToPersonal(getActivity(),strIsSecureChat, fuser.getUid(), userid, "Document",
+//                                false,"","","",false, "default",
+//                                false,"default", false, "default", "default");
 
                         pd.dismiss();
                     } else {
@@ -1704,7 +1793,7 @@ private void uploadAudio(Uri data, String ext) {
     }
 
     private String getFileExtension(Uri uri) {
-        ContentResolver contentResolver = getContext().getContentResolver();
+        ContentResolver contentResolver = context.getContentResolver();
         MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
         return mimeTypeMap.getExtensionFromMimeType(contentResolver.getType(uri));
     }
@@ -1741,7 +1830,7 @@ private void uploadAudio(Uri data, String ext) {
                         sendMessageToPersonal(getActivity(),strIsSecureChat, fuser.getUid(), userid, "Image"
                                 , false,
                                 "","","",true
-                                , mUri, "default", false, "default", "default");
+                                , mUri,false,"default", "default", false, "default", "default");
 
                         pd.dismiss();
                     } else {
@@ -1771,8 +1860,14 @@ private void uploadAudio(Uri data, String ext) {
         if (strImageUri != null) {
             storageReference = FirebaseStorage.getInstance().getReference("chats");
 
+            Log.d(TAG,"jigar the uri we get  before extension is "+strImageUri);
             final StorageReference fileReference = storageReference.child(System.currentTimeMillis()
                     + "." + getFileExtension(strImageUri));
+//
+//            String strImageURL=String.valueOf(strImageUri);
+//            String extension = String.valueOf(strImageURL).substring(strImageURL.lastIndexOf("."));
+//            final StorageReference fileReference = storageReference.child(System.currentTimeMillis()
+//                    + "." + extension);
 
             uploadTask = fileReference.putFile(strImageUri);
             uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
@@ -1792,7 +1887,8 @@ private void uploadAudio(Uri data, String ext) {
                         String mUri = downloadUri.toString();
 
                         sendMessageToPersonal(getActivity(),strIsSecureChat, fuser.getUid(), userid, "Image",
-                                false,"","","",true, mUri, "default", false, "default", "default");
+                                false,"","",""
+                                ,true, mUri,false,"default", "default", false, "default", "default");
 
            //             pd.dismiss();
                     } else {
@@ -1805,6 +1901,106 @@ private void uploadAudio(Uri data, String ext) {
                 public void onFailure(@NonNull Exception e) {
                     Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
             //        pd.dismiss();
+                }
+            });
+        } else {
+            Toast.makeText(getContext(), "No image selected", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void uploadMultipleVideo(Uri strThumbNailImage, final Uri strVideoUri) {
+
+        //      final ProgressDialog pd = new ProgressDialog(getContext());
+//        pd.setMessage("Uploading...");
+//        pd.show();
+//        pd.setCancelable(false);
+
+        if (strVideoUri != null) {
+            storageReference = FirebaseStorage.getInstance().getReference("chats");
+
+//            Log.d(TAG,"jigar the uri we get  before extension is "+strVideoUri);
+//            final StorageReference fileReference = storageReference.child(System.currentTimeMillis()
+//                    + "." + getFileExtension(strVideoUri));
+
+            String strThumbNailImageURL=String.valueOf(strThumbNailImage);
+            String extension = String.valueOf(strThumbNailImageURL).substring(strThumbNailImageURL.lastIndexOf("."));
+            final StorageReference fileReference = storageReference.child(System.currentTimeMillis()
+                    + "" + extension);
+
+            uploadTask = fileReference.putFile(strThumbNailImage);
+            uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                @Override
+                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                    if (!task.isSuccessful()) {
+                        Toast.makeText(getContext(), "Failed!", Toast.LENGTH_SHORT).show();
+
+                        throw task.getException();
+                    }
+
+                    return fileReference.getDownloadUrl();
+                }
+            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                @Override
+                public void onComplete(@NonNull Task<Uri> task) {
+                    if (task.isSuccessful()) {
+                        Uri downloadUri = task.getResult();
+                        final String strThumbNailUri = downloadUri.toString();
+
+                        String strVideoURL=String.valueOf(strVideoUri);
+                        String extension = String.valueOf(strVideoURL).substring(strVideoURL.lastIndexOf("."));
+                        final StorageReference fileReference = storageReference.child(System.currentTimeMillis()
+                                + "" + extension);
+
+                        uploadTask = fileReference.putFile(strVideoUri);
+
+                        uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                            @Override
+                            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                                if (!task.isSuccessful()) {
+                                    Toast.makeText(getContext(), "Failed!", Toast.LENGTH_SHORT).show();
+
+                                    throw task.getException();
+                                }
+
+                                return fileReference.getDownloadUrl();
+                            }
+                        }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Uri> task) {
+                                if (task.isSuccessful()) {
+                                    Uri downloadUri = task.getResult();
+                                    String mUri = downloadUri.toString();
+
+                                    sendMessageToPersonal(getActivity(),strIsSecureChat, fuser.getUid(), userid, "Video",
+                                            false,"","",""
+                                            ,true, strThumbNailUri,true,mUri, "default"
+                                            , false, "default", "default");
+
+                                    //             pd.dismiss();
+                                } else {
+                                    Toast.makeText(getContext(), "Failed!", Toast.LENGTH_SHORT).show();
+                                    //             pd.dismiss();
+                                }
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                                //        pd.dismiss();
+                            }
+                        });
+
+                        //             pd.dismiss();
+                    } else {
+                        Toast.makeText(getContext(), "Failed!", Toast.LENGTH_SHORT).show();
+                        //             pd.dismiss();
+                    }
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                    //        pd.dismiss();
                 }
             });
         } else {
@@ -1937,7 +2133,8 @@ private void uploadAudio(Uri data, String ext) {
     public static void sendMessageToPersonal(final Context context, final String strIsSecureChat
             , final String sender, final String receiver
             , String message,boolean isRepliedMessage,String strRepliedMessageID,String strRepliedMessage
-            ,String strRepliedUserName, boolean isimage, String uri, String docUri
+            ,String strRepliedUserName, boolean isimage ,String uri,boolean isVideo,String strVideoUri
+            , String docUri
             , boolean iscontact, String con_name, String con_num) {
 
         if(strIsSecureChat.equals("true")) {
@@ -1980,6 +2177,8 @@ private void uploadAudio(Uri data, String ext) {
             hashMap.put("repliedmessage", strRepliedMessage);
             hashMap.put("isrepliedmessageby", strRepliedUserName);
             hashMap.put("isimage", isimage);
+            hashMap.put("isvideo", isVideo);
+            hashMap.put("videourl", strVideoUri);
             hashMap.put("iscontact", iscontact);
             hashMap.put("isaudio", false);
             hashMap.put("issecure",Boolean.valueOf(strIsSecureChat));
@@ -2007,6 +2206,8 @@ private void uploadAudio(Uri data, String ext) {
             hashMap.put("repliedmessage", strRepliedMessage);
             hashMap.put("isrepliedmessageby", strRepliedUserName);
             hashMap.put("isimage", isimage);
+            hashMap.put("isvideo", isVideo);
+            hashMap.put("videourl", strVideoUri);
             hashMap.put("iscontact", iscontact);
             hashMap.put("isaudio", false);
             hashMap.put("issecure", Boolean.valueOf(strIsSecureChat));
@@ -2121,6 +2322,8 @@ private void uploadAudio(Uri data, String ext) {
             hashMap.put("isrepliedmessageid", "");
             hashMap.put("repliedmessage", "");
             hashMap.put("isseentime", "");
+            hashMap.put("isvideo", false);
+            hashMap.put("videourl", "default");
             hashMap.put("isimage", isimage);
             hashMap.put("iscontact", false);
             hashMap.put("isaudio", isAudio);
@@ -2150,6 +2353,8 @@ private void uploadAudio(Uri data, String ext) {
             hashMap.put("isimage", isimage);
             hashMap.put("iscontact", false);
             hashMap.put("isaudio", isAudio);
+            hashMap.put("isvideo", false);
+            hashMap.put("videourl", "default");
             hashMap.put("contact_number", con_num);
             hashMap.put("contact_name", con_name);
             hashMap.put("image", "default");

@@ -22,11 +22,15 @@ public class Chat {
 
 
     private boolean isimage;
+    private boolean isvideo;
+
     private boolean iscontact;
     private boolean issecure;
 
     private boolean isaudio;
     private String image;
+    private String videourl;
+
     private String isrepliedmessageid;
     private String repliedmessage;
     private String isrepliedmessageby;
@@ -186,6 +190,14 @@ public class Chat {
         this.isimage = isimage;
     }
 
+    public boolean isIsvideo() {
+        return isvideo;
+    }
+
+    public void setIsvideo(boolean isvideo) {
+        this.isvideo = isvideo;
+    }
+
     public boolean isIscontact() {
         return iscontact;
     }
@@ -216,6 +228,14 @@ public class Chat {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public String getVideourl() {
+        return videourl;
+    }
+
+    public void setVideourl(String videourl) {
+        this.videourl = videourl;
     }
 
     public String getTime() {
