@@ -224,6 +224,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> im
         }
     }
 
+
     @Override
     public int getItemCount() {
         if (is) {

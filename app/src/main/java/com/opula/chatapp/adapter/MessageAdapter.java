@@ -1,6 +1,7 @@
 package com.opula.chatapp.adapter;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -34,6 +35,7 @@ import android.view.ViewTreeObserver;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.MediaController;
@@ -90,6 +92,7 @@ import java.util.TimerTask;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
+import jp.wasabeef.blurry.Blurry;
 import nl.changer.audiowife.AudioWife;
 
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHolder> {
@@ -114,6 +117,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     public final static String FOLDER = Environment.getExternalStorageDirectory() + "/PDF";
     public    String strUriForAudio, strUrlPath;
     private LinearLayoutManager manager;
+    private MediaController mediaControls;
 
     public MessageAdapter(Activity mContext, List<Chat> mChat, String imageurl,String strIsSecureChat,String strChatReceiverUserName
     ,String strLoginUserName,LinearLayoutManager manager)
@@ -126,6 +130,8 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         this.strLoginUserName=strLoginUserName;
         this.manager=manager;
         sharedPreference=new SharedPreference();
+        mediaControls = new MediaController(mContext);
+
     }
 
 //    public MessageAdapter(LinearLayoutManager manager)
@@ -137,6 +143,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (viewType == MSG_TYPE_RIGHT) {
             View view = LayoutInflater.from(mContext).inflate(R.layout.adapter_chat_item_right, parent, false);
+
             return new MessageAdapter.ViewHolder(view);
         } else {
             View view = LayoutInflater.from(mContext).inflate(R.layout.adapter_chat_item_left, parent, false);
@@ -175,103 +182,97 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
             if (!chat.getDoc_uri().equalsIgnoreCase("default")) {
                 holder.show_message.setVisibility(View.GONE);
+                holder.show_message.setText(chat.getDoc_uri());
                 holder.relative_contact.setVisibility(View.GONE);
                 holder.pdfView.setVisibility(View.VISIBLE);
-                try {
+                holder.img_receive.setVisibility(View.GONE);
+                Log.d(TAG,"jigar the pdf we have is "+chat.getDoc_uri());
+                //try
+                {
 //                String baseDir = Environment.getExternalStorageDirectory().getAbsolutePath();
-                    generateImageFromPdf(Uri.parse("/document/primary:text.pdf"), mContext);
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
+                    holder.pdfView.fromUri(Uri.parse(chat.getDoc_uri()));
+//                    generateImageFromPdf(Uri.parse(chat.getDoc_uri()), mContext);
                 }
+//                catch (FileNotFoundException e) {
+//                    e.printStackTrace();
+//                }
             }
-            if (!chat.getImage().equalsIgnoreCase("default")) {
-                holder.img_receive.setVisibility(View.VISIBLE);
+
+            if (!chat.getImage().equalsIgnoreCase("default")
+                    && chat.isIsvideo()) {
                 holder.relative_contact.setVisibility(View.GONE);
                 holder.show_message.setVisibility(View.GONE);
-                holder.relative.setVisibility(View.VISIBLE);
-                holder.progress_circular.setVisibility(View.VISIBLE);
-                //                holder.videoView.setVideoPath("http://videocdn.bodybuilding.com/video/mp4/62000/62792m.mp4");
-//                holder.videoView.start();
-//
-                MediaController mediaControls;
-
-              //  if (mediaControls == null)
-                {
-                    mediaControls = new MediaController(mContext);
-                }
-
+                // holder.videoView.setVideoPath("http://videocdn.bodybuilding.com/video/mp4/62000/62792m.mp4");
+                //holder.videoView.start();
                 try
                 {
-                    if(chat.isIsvideo()) {
-                        holder.relativeLayoutVideoView.setVisibility(View.VISIBLE);
-                        holder.videoView.setVisibility(View.VISIBLE);
-                        // set the media controller in the VideoView
-                        holder.videoView.setMediaController(mediaControls);
-                        // set the uri of the video to be played
-                        holder.videoView.setVideoURI(Uri.parse(chat.getVideourl()));
-                    }else
-                    {
-                        holder.relativeLayoutVideoView.setVisibility(View.GONE);
-                        holder.videoView.setVisibility(View.GONE);
+                    if (chat.isIsvideo()) {
+                        holder.relativeLayoutVideoThumbnail.setVisibility(View.VISIBLE);
+                        holder.imageViewPlayButton.setVisibility(View.VISIBLE);
+                        holder.imageViewThumbnail.setVisibility(View.VISIBLE);
+
+                        Log.d(TAG,"jigar the thumbnail image we have is "+chat.getImage());
+                        Glide.with(mContext).load(chat.getImage())
+                                .listener(new RequestListener<String, GlideDrawable>() {
+                                    @Override
+                                    public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                          //              holder.progress_circular.setVisibility(View.GONE);
+                                        return false;
+                                    }
+
+                                    @Override
+                                    public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                         //               holder.progress_circular.setVisibility(View.GONE);
+                                        return false;
+                                    }
+                                })
+                                .into(holder.imageViewThumbnail);
+                        //                        holder.videoView.setVisibility(View.VISIBLE);
+//                        // set the media controller in the VideoView
+//                        holder.videoView.setMediaController(mediaControls);
+//                        // set the uri of the video to be played
+//                        holder.videoView.setVideoURI(Uri.parse(chat.getVideourl()));
                     }
-                } catch (Exception e)
-                {
+                } catch (Exception e) {
                     Log.e("Error", e.getMessage());
                     e.printStackTrace();
                 }
-                holder.videoView.requestFocus();
-
-                // we also set an setOnPreparedListener in order to know when the video
-                // file is ready for playback
-
-                holder.videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener()
+            }else if(!chat.getImage().equalsIgnoreCase("default"))
                 {
 
-                    public void onPrepared(MediaPlayer mediaPlayer)
-                    {
-                        // if we have a position on savedInstanceState, the video
-                        // playback should start from here
-                        holder.videoView.seekTo(position);
+                    holder.relativeLayoutVideoThumbnail.setVisibility(View.GONE);
+                    holder.imageViewPlayButton.setVisibility(View.GONE);
+                    holder.imageViewThumbnail.setVisibility(View.GONE);
+                    holder.img_receive.setVisibility(View.VISIBLE);
+                    holder.relative.setVisibility(View.VISIBLE);
+                    holder.progress_circular.setVisibility(View.VISIBLE);
 
-                        System.out.println("vidio is ready for playing");
+                    Glide.with(mContext).load(chat.getImage())
+                            .listener(new RequestListener<String, GlideDrawable>() {
+                                @Override
+                                public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                                    holder.progress_circular.setVisibility(View.GONE);
+                                    return false;
+                                }
+                                @Override
+                                public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                                    holder.progress_circular.setVisibility(View.GONE);
+                                    return false;
+                                }
+                            })
+                            .into(holder.img_receive);
+                }
 
-                        if (position == 0)
-                        {
-                            holder.videoView.start();
-                        } else
-                        {
-                            // if we come from a resumed activity, video playback will
-                            // be paused
-                            holder.videoView.pause();
-                        }
-                    }
-                });
+                Log.d(TAG, "jigar the is audio is active or not " + chat.isIsaudio());
+                Log.d(TAG, "jigar the is audio url we have is active or not " + chat.getAudio_uri());
 
-                Glide.with(mContext).load(chat.getImage())
-                        .listener(new RequestListener<String, GlideDrawable>() {
-                            @Override
-                            public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
-                                holder.progress_circular.setVisibility(View.GONE);
-                                return false;
-                            }
 
-                            @Override
-                            public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                                holder.progress_circular.setVisibility(View.GONE);
-                                return false;
-                            }
-                        })
-                        .into(holder.img_receive);
-            }
-            Log.d(TAG, "jigar the is audio is active or not " + chat.isIsaudio());
-            Log.d(TAG, "jigar the is audio url we have is active or not " + chat.getAudio_uri());
-
-            if (chat.isIsaudio()) {
-                holder.show_message.setVisibility(View.GONE);
-                holder.relativeLayoutAudioPlayer.setVisibility(View.VISIBLE);
-                strUrlPath = chat.getAudio_uri();
-                holder.audioSenseiPlayerView
-                        .setAudioTarget(strUrlPath);
+                if (chat.isIsaudio()) {
+                    holder.show_message.setVisibility(View.GONE);
+                    holder.relativeLayoutAudioPlayer.setVisibility(View.VISIBLE);
+                    strUrlPath = chat.getAudio_uri();
+                    holder.audioSenseiPlayerView
+                            .setAudioTarget(strUrlPath);
 //
 //
 //
@@ -283,9 +284,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 //            holder.audioSenseiPlayerView.setAudioTarget(strUrlPath);
 //            holder.audioTitle.setText("hello");
                 //            holder.audioSenseiPlayerView.setAudioTarget(strUrlPath);
-
-
-            } else {
+                } else {
                 holder.show_message.setVisibility(View.VISIBLE);
                 holder.relativeLayoutAudioPlayer.setVisibility(View.GONE);
 
@@ -354,12 +353,155 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             holder.show_time.setText(str);
 
 
+
+            holder.pdfView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                }
+            });
             holder.imageViewPlayAudio.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
 
+
                 }
             });
+
+
+            holder.imageViewPlayButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mContext,android.R.style.Theme_Black_NoTitleBar_Fullscreen);
+                    LayoutInflater inflater = ((Activity) mContext).getLayoutInflater();
+                    final View dialogView = inflater.inflate(R.layout.dialog_show_video_player, null);
+                    alertDialogBuilder.setView(dialogView);
+                    alertDialogBuilder.setCancelable(true);
+
+                    // initialize the VideoView
+                    final VideoView  mVideoView = (VideoView)dialogView.findViewById(R.id.videoView);
+                    final ImageView imageViewBackButton=dialogView.findViewById(R.id.imageViewBackButton);
+           //         final LinearLayout relativeLayoutVideoPlayerMain=dialogView.findViewById(R.id.linearLayoutVideoPlayerMain);
+                    final AlertDialog alertDialog = alertDialogBuilder.create();
+                    alertDialog.show();
+                    imageViewBackButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            alertDialog.dismiss();
+                        }
+                    });
+
+                    //
+//                    relativeLayoutVideoPlayerMain.post(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            Blurry.with(mContext)
+//                                    .radius(25)
+//                                    .sampling(2)
+//                                    .animate(500)
+//                                    .onto(relativeLayoutVideoPlayerMain);
+//                        }
+//                    });
+
+                    mVideoView.setVideoURI(Uri.parse(chat.getVideourl()));
+                    mVideoView.start();
+                    mVideoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+
+                        @Override
+                        public void onPrepared(MediaPlayer mp) {
+                            mediaControls =  new MediaController(mContext){
+                                @Override
+                                public void hide() {
+                                    this.show();
+                                }
+                            };
+                            mVideoView.start();
+                            mVideoView.setMediaController(mediaControls);
+
+                            /*mV
+
+                             * and set its position on screen
+                             */
+
+                            mediaControls.setAnchorView(mVideoView);
+                            ((ViewGroup) mediaControls.getParent()).removeView(mediaControls);
+
+                            ((FrameLayout) dialogView.findViewById(R.id.videoViewWrapper))
+                                    .addView(mediaControls);
+                            mediaControls.setVisibility(View.VISIBLE);
+
+                            if (position == 0)
+                            {
+                                mVideoView.start();
+
+                            }else
+                            {
+                                // if we come from a resumed activity, video playback will
+                                // be paused
+                                mVideoView.pause();
+                            }
+                            // TODO Auto-generated method stub
+//                            mp.setOnVideoSizeChangedListener(new MediaPlayer.OnVideoSizeChangedListener() {
+//                                @Override
+//                                public void onVideoSizeChanged(MediaPlayer mp,
+//                                                               int width, int height) {
+//                                    /*
+//                                     * add media controller
+//                                     */
+//
+//
+//                                }
+//                            });
+                        }
+                    });
+
+//                    try
+//                    {
+//
+//                        // set the media controller in the VideoView
+//                        myVideoView.setMediaController(mediaControls);
+//
+//                        // set the uri of the video to be played
+//                        myVideoView.setVideoURI(Uri.parse(chat.getVideourl()));
+//
+//                    } catch (Exception e)
+//                    {
+//                        Log.e("Error", e.getMessage());
+//                        e.printStackTrace();
+//                    }
+//
+//                    myVideoView.requestFocus();
+//
+//                    // we also set an setOnPreparedListener in order to know when the video
+//                    // file is ready for playback
+//
+//                    myVideoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener()
+//                    {
+//
+//                        public void onPrepared(MediaPlayer mediaPlayer)
+//                        {
+//                            // if we have a position on savedInstanceState, the video
+//                            // playback should start from here
+//                            myVideoView.seekTo(position);
+//
+//                            System.out.println("vidio is ready for playing");
+//
+//                            if (position == 0)
+//                            {
+//                                myVideoView.start();
+//                            } else
+//                            {
+//                                // if we come from a resumed activity, video playback will
+//                                // be paused
+//                                myVideoView.pause();
+//                            }
+//                        }
+//                    });
+
+
+                }
+            });
+
             holder.img_receive.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -839,16 +981,16 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         public ImageView profile_image, img_receive, img_tick, img_dtick, img_dstick, img_download,img_loading_tick;
         public TextView show_time,audioTitle;
         public ProgressBar progress_circular;
-        RelativeLayout relative, txt_seen, img_blur, relative_contact, relativeLayoutAudioPlayer,relativeLayoutVideoView;
+        RelativeLayout relative, txt_seen, img_blur, relative_contact, relativeLayoutAudioPlayer,relativeLayoutVideoThumbnail;
         LinearLayout linear_chat,linearLayoutRepliedMessage;
         AudioSenseiPlayerView audioSenseiPlayerView;
         LinearLayout linmain;
-        public VideoView videoView;
+        //public VideoView videoView;
 
         PDFView pdfView;
         TextView mRunTime, mTotalTime;
         SeekBar mMediaSeekBar;
-        ImageView mPauseMedia, mPlayMedia,imageViewPlayAudio;
+        ImageView mPauseMedia, mPlayMedia,imageViewPlayAudio,imageViewThumbnail,imageViewPlayButton;
         AudioWife audioWife;
 
         public ViewHolder(View itemView) {
@@ -887,8 +1029,10 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             mMediaSeekBar = (SeekBar) itemView.findViewById(R.id.media_seekbar);
             mRunTime = (TextView) itemView.findViewById(R.id.run_time);
             mTotalTime = (TextView) itemView.findViewById(R.id.total_time);
-            videoView = (VideoView)itemView.findViewById(R.id.videoView);
-            relativeLayoutVideoView=itemView.findViewById(R.id.relativeLayoutVideoView);
+     //       videoView = (VideoView)itemView.findViewById(R.id.videoView);
+            relativeLayoutVideoThumbnail=itemView.findViewById(R.id.relativeLayoutVideoThumbnail);
+            imageViewPlayButton=itemView.findViewById(R.id.imageViewPlayButton);
+            imageViewThumbnail=itemView.findViewById(R.id.imageViewThumbnail);
         }
 
     }
@@ -1146,7 +1290,8 @@ public static void deleteMessageList(final Context context) {
             }
         });
     }
-    public static void deletemessage(final Context context) {
+
+public static void deletemessage(final Context context) {
         final DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Chats");
         reference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

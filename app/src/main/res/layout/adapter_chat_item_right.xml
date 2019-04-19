@@ -106,51 +106,75 @@
             </RelativeLayout>
 
             <RelativeLayout
-                android:id="@+id/relativeLayoutVideoView"
+                android:id="@+id/relativeLayoutVideoThumbnail"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:layout_marginTop="4dp"
                 android:visibility="gone">
 
-                <ProgressBar
-                    android:id="@+id/progressBarVideoCircular"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:visibility="gone" />
-
-
-                <VideoView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/videoView" />
-
                 <RelativeLayout
-                    android:id="@+id/relativelayoutImgBlur"
-                    android:layout_width="match_parent"
-                    android:visibility="gone"
-                    android:layout_height="match_parent">
+                    android:layout_width="250dp"
+                    android:layout_height="250dp"  >
 
                     <ImageView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:adjustViewBounds="true"
-                        android:alpha="0.9"
-                        android:background="@drawable/gradient_bg"
+                        android:id="@+id/imageViewThumbnail"
+                        android:layout_height="250dp"
+                        android:layout_width="250dp"
                         android:scaleType="centerCrop"
-                        android:visibility="gone" />
+                        android:background="@color/colorAccent"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentTop="true" />
 
                     <ImageView
-                        android:id="@+id/imageViewVideoDownload"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true"
-                        android:layout_centerVertical="true"
-                        android:layout_marginStart="110dp"
-                        android:src="@drawable/ic_downward"
-                        android:visibility="gone" />
+                        android:id="@+id/imageViewPlayButton"
+                        android:layout_height="50dp"
+                        android:layout_width="50dp"
+                        android:src="@drawable/ic_action_play_button"
+                        android:layout_centerInParent="true"
+                        android:layout_centerVertical="true"/>
                 </RelativeLayout>
+
             </RelativeLayout>
+
+            <!--<ProgressBar-->
+                    <!--android:id="@+id/progressBarVideoCircular"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_centerInParent="true"-->
+                    <!--android:visibility="visible" />-->
+
+
+                <!--<VideoView-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:id="@+id/videoView" />-->
+
+                <!--<RelativeLayout-->
+                    <!--android:id="@+id/relativelayoutImgBlur"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:visibility="gone"-->
+                    <!--android:layout_height="match_parent">-->
+
+                    <!--<ImageView-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="match_parent"-->
+                        <!--android:adjustViewBounds="true"-->
+                        <!--android:alpha="0.9"-->
+                        <!--android:background="@drawable/gradient_bg"-->
+                        <!--android:scaleType="centerCrop"-->
+                        <!--android:visibility="gone" />-->
+
+                    <!--<ImageView-->
+                        <!--android:id="@+id/imageViewVideoDownload"-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:layout_alignParentStart="true"-->
+                        <!--android:layout_centerVertical="true"-->
+                        <!--android:layout_marginStart="110dp"-->
+                        <!--android:src="@drawable/ic_downward"-->
+                        <!--android:visibility="gone" />-->
+                <!--</RelativeLayout>-->
+
 
             <RelativeLayout
                 android:id="@+id/relative_contact"

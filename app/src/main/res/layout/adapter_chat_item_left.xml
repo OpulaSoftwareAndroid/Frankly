@@ -108,6 +108,37 @@
                 </RelativeLayout>
 
                 <RelativeLayout
+                    android:id="@+id/relativeLayoutVideoThumbnail"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:layout_marginTop="4dp"
+                    android:visibility="gone">
+
+                    <RelativeLayout
+                        android:layout_width="250dp"
+                        android:layout_height="250dp"  >
+
+                        <ImageView
+                            android:id="@+id/imageViewThumbnail"
+                            android:layout_height="250dp"
+                            android:layout_width="250dp"
+                            android:scaleType="centerCrop"
+                            android:background="@color/colorAccent"
+                            android:layout_alignParentLeft="true"
+                            android:layout_alignParentTop="true" />
+
+                        <ImageView
+                            android:id="@+id/imageViewPlayButton"
+                            android:layout_height="50dp"
+                            android:layout_width="50dp"
+                            android:src="@drawable/ic_action_play_button"
+                            android:layout_centerInParent="true"
+                            android:layout_centerVertical="true"/>
+                    </RelativeLayout>
+
+                </RelativeLayout>
+
+                <RelativeLayout
                     android:id="@+id/relative_contact"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -175,7 +206,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:visibility="visible">
+                    android:visibility="gone">
 
                     <com.rygelouv.audiosensei.player.AudioSenseiPlayerView
                         android:id="@+id/audio_player"

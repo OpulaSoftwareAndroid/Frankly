@@ -239,7 +239,6 @@
                         android:gravity="center_vertical"
                         android:hint="@string/type_a_message"
                         android:imeOptions="actionSend"
-                        android:maxLines="4"
                         android:textColorHint="#ccc">
                         <requestFocus />
                     </hani.momanii.supernova_emoji_library.Helper.EmojiconEditText>

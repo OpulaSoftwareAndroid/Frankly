@@ -27,6 +27,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateFormat;
@@ -42,6 +43,7 @@ import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.VideoView;
 
 import com.devlomi.record_view.OnBasketAnimationEnd;
 import com.devlomi.record_view.OnRecordListener;
@@ -68,9 +70,12 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
+import com.kbeanie.multipicker.api.FilePicker;
 import com.kbeanie.multipicker.api.Picker;
 import com.kbeanie.multipicker.api.VideoPicker;
+import com.kbeanie.multipicker.api.callbacks.FilePickerCallback;
 import com.kbeanie.multipicker.api.callbacks.VideoPickerCallback;
+import com.kbeanie.multipicker.api.entity.ChosenFile;
 import com.kbeanie.multipicker.api.entity.ChosenVideo;
 import com.luseen.spacenavigation.SpaceNavigationView;
 import com.mlsdev.rximagepicker.RxImagePicker;
@@ -222,7 +227,7 @@ public class MessageFragment extends Fragment {
         String monthNumber  = (String) DateFormat.format("MM",   c); // 06
         String year         = (String) DateFormat.format("yyyy", c); // 2013
         String formattedDate = String.valueOf(c.getTime());
-
+        setRetainInstance(true);
         //        String formattedDate = day+monthString+year;
 
 //        fileName = Environment.getExternalStorageDirectory().getAbsolutePath();
@@ -1156,6 +1161,26 @@ public void getCurrentLocation () {
             intent.setType(mimeTypesStr.substring(0, mimeTypesStr.length() - 1));
         }
         startActivityForResult(Intent.createChooser(intent, "Select File"), PICK_PDF_CODE);
+
+
+        final FilePicker filePicker = new FilePicker(MessageFragment.this);
+// filePicker.allowMultiple();
+// filePicker.
+        filePicker.setFilePickerCallback(new FilePickerCallback() {
+            @Override
+            public void onFilesChosen(List<ChosenFile> files) {
+                // Display Files
+
+            }
+
+            @Override
+            public void onError(String message) {
+                // Handle errors
+            }
+        });
+
+        filePicker.pickFile();
+
     }
 
     public static String randomString(int len) {
@@ -1242,24 +1267,51 @@ public void getCurrentLocation () {
 
 
         //----------comment for video picker
-//        ImagePicker.create(this)
-//                .returnAfterFirst(true) // set whether pick or camera action should return immediate result or not. For pick image only work on single mode
-//                .folderMode(false) // folder mode (false by default)
-//               // .folderTitle("Folder") // folder selection title
-//                .imageTitle("Tap to select") // image selection title
-//                .single() // single mode
-//                .multi() // multi mode (default mode)
-//                .limit(70) // max images can be selected (99 by default)
-//                .showCamera(true) // show camera or not (true by default)
-//                .imageDirectory("Camera") // directory name for captured image ("Camera" folder by default)
-//                .origin(images) // original selected images, used in multi mode
-//           //     .useExternalPickers(true) // show external image pickers in the toolbar (Google photos... )
-//                .start(REQUEST_CODE_PICKER); // start image picker activity with request code
+//
         //----------comment for video picker end
 
+        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+        LayoutInflater inflater = ((Activity) context).getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.dialog_show_gallery_video, null);
+        alertDialogBuilder.setView(dialogView);
+        alertDialogBuilder.setCancelable(true);
+
+        // initialize the VideoView
+        final AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
 
 
- videoPicker = new VideoPicker(this);
+        final TextView textViewSelectImage=dialogView.findViewById(R.id.textViewSelectImage);
+        final TextView textViewSelectVideo=dialogView.findViewById(R.id.textViewSelectVideo);
+
+
+        textViewSelectImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ImagePicker.create(MessageFragment.this)
+                .returnAfterFirst(true) // set whether pick or camera action should return immediate result or not. For pick image only work on single mode
+                .folderMode(false) // folder mode (false by default)
+               // .folderTitle("Folder") // folder selection title
+                .imageTitle("Tap to select") // image selection title
+                .single() // single mode
+                .multi() // multi mode (default mode)
+                .limit(70) // max images can be selected (99 by default)
+                .showCamera(true) // show camera or not (true by default)
+                .imageDirectory("Camera") // directory name for captured image ("Camera" folder by default)
+                .origin(images) // original selected images, used in multi mode
+           //     .useExternalPickers(true) // show external image pickers in the toolbar (Google photos... )
+                .start(REQUEST_CODE_PICKER); // start image picker activity with request code
+
+            alertDialog.dismiss();
+            }
+        });
+
+
+        textViewSelectVideo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                videoPicker = new VideoPicker(MessageFragment.this);
         videoPicker.setVideoPickerCallback(new VideoPickerCallback(){
             @Override
             public void onVideosChosen(List<ChosenVideo> list) {
@@ -1271,17 +1323,15 @@ public void getCurrentLocation () {
                 Uri uriVideo =Uri.fromFile(new File((list.get(0).getOriginalPath())));
 
                 uploadMultipleVideo(uriThumbnailImage,uriVideo);
-            }
+                alertDialog.dismiss();
 
+            }
 
             @Override
-
-
             public void onError(String message) {
-                                                   // Do error handling
+                // Do error handling
                 Log.d(TAG,"jigar the selected video error "+message);
             }
-
         }
         );
 // videoPicker.allowMultiple(); // Default is false
@@ -1289,19 +1339,11 @@ public void getCurrentLocation () {
 // videoPicker.shouldGeneratePreviewImages(false); // Default is true
         videoPicker.pickVideo();
 
+            }
+        });
 
 
-//        new ImagePicker.Builder(getActivity())
-//                .mode(ImagePicker.Mode.CAMERA_AND_GALLERY)
-//                .allowMultipleImages(true)
-//                .compressLevel(ImagePicker.ComperesLevel.MEDIUM)
-//                .directory(ImagePicker.Directory.DEFAULT)
-//                .extension(ImagePicker.Extension.PNG)
-//                .allowOnlineImages(false)
-//                .scale(600, 600)
-//                .allowMultipleImages(true)
-//                .enableDebuggingMode(true)
-//                .build();
+
     }
 
 
@@ -1349,6 +1391,7 @@ public void getCurrentLocation () {
                         }
                     });
                 }
+
                 videoPicker.submit(data);
             }
         }
@@ -1394,7 +1437,7 @@ public void getCurrentLocation () {
                     }
                     for(int i=0;i<mArrayUri.size();i++)
                     {
-                        uploadMultipleImage(mArrayUri.get(i));
+                        uploadMultipleImage(mArrayUri.get(i),context);
                     }
               //      Log.v(TAG, "jigar the multiple  Selected size Images are " + mArrayUri.size());
                //     Log.v(TAG, "jigar the multiple  Selected Images are " + mArrayUri.toString());
@@ -1485,6 +1528,7 @@ public void getCurrentLocation () {
                 if (path != null) {
                     mPDFUri = data.getData();
                     String filename;
+
                     Cursor cursor = getActivity().getContentResolver().query(mPDFUri, null, null, null, null);
                     if (cursor == null) { // Source is Dropbox or other similar local file path
                         filename = mPDFUri.getPath();
@@ -1495,9 +1539,9 @@ public void getCurrentLocation () {
                         cursor.close();
                     }
                     String extension = filename.substring(filename.lastIndexOf("."));
-                    Log.d("File_upload", extension + "/+" + path);
+                    Log.d(TAG,"jigar the file upload have is "+ extension + "/+" + path);
                     //uploading the file
-                    //  uploadFile(data.getData(), extension);
+                      uploadFile(data.getData(), extension);
                 }
             } else {
                 Toast.makeText(getContext(), "No file chosen", Toast.LENGTH_SHORT).show();
@@ -1770,9 +1814,11 @@ private void uploadAudio(Uri data, String ext) {
                         Uri downloadUri = task.getResult();
                         String mUri = downloadUri.toString();
                         Log.d("UploadFile", mUri);
-//                        sendMessageToPersonal(getActivity(),strIsSecureChat, fuser.getUid(), userid, "Document",
-//                                false,"","","",false, "default",
-//                                false,"default", false, "default", "default");
+                        sendMessageToPersonal(getActivity(),strIsSecureChat, fuser.getUid(), userid, "Document",
+                                false,"","",""
+                                ,false, "default"
+                                ,false, "default",
+                                mUri,false,"default", "default");
 
                         pd.dismiss();
                     } else {
@@ -1793,7 +1839,7 @@ private void uploadAudio(Uri data, String ext) {
     }
 
     private String getFileExtension(Uri uri) {
-        ContentResolver contentResolver = context.getContentResolver();
+        ContentResolver contentResolver = Objects.requireNonNull(getContext()).getContentResolver();
         MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
         return mimeTypeMap.getExtensionFromMimeType(contentResolver.getType(uri));
     }
@@ -1850,7 +1896,7 @@ private void uploadAudio(Uri data, String ext) {
         }
     }
 
-    private void uploadMultipleImage(Uri strImageUri) {
+    private void uploadMultipleImage(Uri strImageUri,Context context) {
 
      //      final ProgressDialog pd = new ProgressDialog(getContext());
 //        pd.setMessage("Uploading...");
@@ -1863,7 +1909,7 @@ private void uploadAudio(Uri data, String ext) {
             Log.d(TAG,"jigar the uri we get  before extension is "+strImageUri);
             final StorageReference fileReference = storageReference.child(System.currentTimeMillis()
                     + "." + getFileExtension(strImageUri));
-//
+            //
 //            String strImageURL=String.valueOf(strImageUri);
 //            String extension = String.valueOf(strImageURL).substring(strImageURL.lastIndexOf("."));
 //            final StorageReference fileReference = storageReference.child(System.currentTimeMillis()
@@ -1909,19 +1955,15 @@ private void uploadAudio(Uri data, String ext) {
     }
 
     private void uploadMultipleVideo(Uri strThumbNailImage, final Uri strVideoUri) {
-
         //      final ProgressDialog pd = new ProgressDialog(getContext());
 //        pd.setMessage("Uploading...");
 //        pd.show();
 //        pd.setCancelable(false);
-
         if (strVideoUri != null) {
             storageReference = FirebaseStorage.getInstance().getReference("chats");
-
 //            Log.d(TAG,"jigar the uri we get  before extension is "+strVideoUri);
 //            final StorageReference fileReference = storageReference.child(System.currentTimeMillis()
 //                    + "." + getFileExtension(strVideoUri));
-
             String strThumbNailImageURL=String.valueOf(strThumbNailImage);
             String extension = String.valueOf(strThumbNailImageURL).substring(strThumbNailImageURL.lastIndexOf("."));
             final StorageReference fileReference = storageReference.child(System.currentTimeMillis()

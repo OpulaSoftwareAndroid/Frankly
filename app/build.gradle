@@ -98,6 +98,7 @@ dependencies {
     // for experimental rx picker
 //    implementation 'com.github.ParkSangGwon:TedPicker:v1.0.10'
 
+    implementation 'jp.wasabeef:blurry:3.0.0'
     implementation 'com.bogdwellers:pinchtozoom:0.1'
 
 }
