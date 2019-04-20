@@ -30,8 +30,11 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
 import android.text.format.DateFormat;
+import android.text.method.KeyListener;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -131,7 +134,7 @@ import retrofit2.Response;
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 
-public class MessageFragment extends Fragment {
+public class MessageFragment extends Fragment  {
 
     CircleImageView imgUser;
     LinearLayout imgBack;
@@ -1144,8 +1147,11 @@ public void getCurrentLocation () {
             startActivity(intent);
             return;
         }
+//        String[] mimeTypes =
+//                {"application/pdf", "text/plain"};
         String[] mimeTypes =
-                {"application/pdf", "text/plain"};
+                {"application/pdf", "text/plain", "application/msword","application/vnd.ms-powerpoint","application/vnd.ms-excel"};
+
         Intent intent = new Intent("android.intent.action.GET_CONTENT");
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -1163,23 +1169,28 @@ public void getCurrentLocation () {
         startActivityForResult(Intent.createChooser(intent, "Select File"), PICK_PDF_CODE);
 
 
-        final FilePicker filePicker = new FilePicker(MessageFragment.this);
-// filePicker.allowMultiple();
-// filePicker.
-        filePicker.setFilePickerCallback(new FilePickerCallback() {
-            @Override
-            public void onFilesChosen(List<ChosenFile> files) {
-                // Display Files
-
-            }
-
-            @Override
-            public void onError(String message) {
-                // Handle errors
-            }
-        });
-
-        filePicker.pickFile();
+//        final FilePicker filePicker = new FilePicker(MessageFragment.this);
+//// filePicker.allowMultiple();
+//// filePicker.
+//        filePicker.setFilePickerCallback(new FilePickerCallback() {
+//            @Override
+//            public void onFilesChosen(List<ChosenFile> files) {
+//                // Display Files
+//
+//                Log.d(TAG,"jigar the file picker have selected is "+files.get(0).getExtension());
+//                Log.d(TAG,"jigar the file picker have selected is "+files.get(0).getOriginalPath());
+//
+//            }
+//
+//            @Override
+//            public void onError(String message) {
+//                Log.d(TAG,"jigar the file picker error is "+files.get(0).getOriginalPath());
+//
+//                // Handle errors
+//            }
+//        });
+//
+//        filePicker.pickFile();
 
     }
 
@@ -1211,6 +1222,37 @@ public void getCurrentLocation () {
         recyclerView = view.findViewById(R.id.recycler_view);
         btn_send = view.findViewById(R.id.btn_send);
         text_send = view.findViewById(R.id.text_send);
+
+//
+//        text_send.setKeyListener(new KeyListener() {
+//            @Override
+//            public int getInputType() {
+//
+//
+//
+//                return 0;
+//            }
+//
+//            @Override
+//            public boolean onKeyDown(View view, Editable editable, int i, KeyEvent keyEvent) {
+//                return false;
+//            }
+//
+//            @Override
+//            public boolean onKeyUp(View view, Editable editable, int i, KeyEvent keyEvent) {
+//                return false;
+//            }
+//
+//            @Override
+//            public boolean onKeyOther(View view, Editable editable, KeyEvent keyEvent) {
+//                return false;
+//            }
+//
+//            @Override
+//            public void clearMetaKeyState(View view, Editable editable, int i) {
+//
+//            }
+//        });
         imgBack = view.findViewById(R.id.imgBack);
         imgUser = view.findViewById(R.id.imgUser);
         txtUserName = view.findViewById(R.id.txtUserName);
@@ -1525,6 +1567,9 @@ public void getCurrentLocation () {
         if (requestCode == PICK_PDF_CODE && resultCode == RESULT_OK && data != null && data.getData() != null) {
             if (data.getData() != null) {
                 String path = new File(Objects.requireNonNull(data.getData().getPath())).getAbsolutePath();
+
+                Log.d(TAG,"jigar the file upload first have is " + data.getData());
+
                 if (path != null) {
                     mPDFUri = data.getData();
                     String filename;
@@ -1539,9 +1584,9 @@ public void getCurrentLocation () {
                         cursor.close();
                     }
                     String extension = filename.substring(filename.lastIndexOf("."));
-                    Log.d(TAG,"jigar the file upload have is "+ extension + "/+" + path);
+                    Log.d(TAG,"jigar the file upload have is "+ extension + "/+" + filename);
                     //uploading the file
-                      uploadFile(data.getData(), extension);
+                      uploadFile(data.getData(),filename, extension);
                 }
             } else {
                 Toast.makeText(getContext(), "No file chosen", Toast.LENGTH_SHORT).show();
@@ -1786,7 +1831,7 @@ private void uploadAudio(Uri data, String ext) {
 //        return cursor.getString(column_index);
 //    }
 
-    private void uploadFile(Uri data, String ext) {
+    private void uploadFile(Uri data, final String strFileName, final String ext) {
 
         final ProgressDialog pd = new ProgressDialog(getContext());
         pd.setMessage("Uploading...");
@@ -1802,6 +1847,7 @@ private void uploadAudio(Uri data, String ext) {
                 @Override
                 public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
                     if (!task.isSuccessful()) {
+
                         throw task.getException();
                     }
 
@@ -1814,7 +1860,7 @@ private void uploadAudio(Uri data, String ext) {
                         Uri downloadUri = task.getResult();
                         String mUri = downloadUri.toString();
                         Log.d("UploadFile", mUri);
-                        sendMessageToPersonal(getActivity(),strIsSecureChat, fuser.getUid(), userid, "Document",
+                        sendMessageToPersonal(getActivity(),strIsSecureChat, fuser.getUid(), userid, strFileName,
                                 false,"","",""
                                 ,false, "default"
                                 ,false, "default",

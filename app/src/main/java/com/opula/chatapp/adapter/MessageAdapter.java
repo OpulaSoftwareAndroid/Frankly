@@ -2,6 +2,7 @@ package com.opula.chatapp.adapter;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -75,6 +76,7 @@ import com.rygelouv.audiosensei.player.AudioSenseiPlayerView;
 import com.shockwave.pdfium.PdfDocument;
 import com.shockwave.pdfium.PdfiumCore;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.MessageDigest;
@@ -182,20 +184,53 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
             if (!chat.getDoc_uri().equalsIgnoreCase("default")) {
                 holder.show_message.setVisibility(View.GONE);
-                holder.show_message.setText(chat.getDoc_uri());
+//                holder.show_message.setText(chat.getDoc_uri());
                 holder.relative_contact.setVisibility(View.GONE);
-                holder.pdfView.setVisibility(View.VISIBLE);
-                holder.img_receive.setVisibility(View.GONE);
-                Log.d(TAG,"jigar the pdf we have is "+chat.getDoc_uri());
-                //try
+                holder.linearLayoutDocumentMain.setVisibility(View.VISIBLE);
+                String strFileName;
+                if(chat.getMessage().contains("/")) {
+                     strFileName = String.valueOf(chat.getMessage()).substring(chat.getMessage().lastIndexOf("/") + 1);
+                }else
                 {
-//                String baseDir = Environment.getExternalStorageDirectory().getAbsolutePath();
-                    holder.pdfView.fromUri(Uri.parse(chat.getDoc_uri()));
-//                    generateImageFromPdf(Uri.parse(chat.getDoc_uri()), mContext);
+                    strFileName=chat.getMessage();
                 }
+                holder.textViewDocumentName.setText(strFileName);
+                holder.pdfView.setVisibility(View.GONE);
+
+                String extension = String.valueOf(chat.getMessage()).substring(chat.getMessage().lastIndexOf(".")+1);
+                if(extension.equalsIgnoreCase("xls"))
+                {
+                    holder.imageViewDocumentType.setImageResource(R.drawable.ic_action_file_excel);
+
+                }
+                else if(extension.equalsIgnoreCase("doc"))
+                {
+                    holder.imageViewDocumentType.setImageResource(R.drawable.ic_action_file_doc);
+                }
+                else if(extension.equalsIgnoreCase("pdf"))
+                {
+                    holder.imageViewDocumentType.setImageResource(R.drawable.ic_action_file_pdf);
+                }else
+                {
+                    holder.imageViewDocumentType.setImageResource(R.drawable.ic_action_file_any);
+                }
+
+                    holder.img_receive.setVisibility(View.GONE);
+                Log.d(TAG,"jigar the pdf we have is "+chat.getDoc_uri());
+
+                //try
+
+//                String baseDir = Environment.getExternalStorageDirectory().getAbsolutePath();
+//                    generateImageFromPdf(Uri.parse(chat.getDoc_uri()), mContext);
+
 //                catch (FileNotFoundException e) {
 //                    e.printStackTrace();
 //                }
+
+            }else
+            {
+                holder.linearLayoutDocumentMain.setVisibility(View.GONE);
+
             }
 
             if (!chat.getImage().equalsIgnoreCase("default")
@@ -357,6 +392,9 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             holder.pdfView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+
+                    Log.d(TAG,"jigar the clicked message type was  "+chat.getDoc_uri());
+
                 }
             });
             holder.imageViewPlayAudio.setOnClickListener(new View.OnClickListener() {
@@ -368,6 +406,17 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             });
 
 
+
+            holder.linearLayoutDocumentMain.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    File myFile = new File(chat.getDoc_uri());
+                    //                        openFile(mContext, myFile);
+                    openWebPage(chat.getDoc_uri());
+                    //   Toast.makeText(mContext,"jigar we cliced document is "+chat.getMessage(),Toast.LENGTH_LONG).show();
+                }
+            });
             holder.imageViewPlayButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -548,7 +597,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             holder.linear_chat.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-//                    Log.d(TAG,"jigar the position in message adapter we have is "+chat.getRepliedmessage());
+
 
                     for(int i=0;i<mChat.size();i++)
                     {
@@ -574,19 +623,14 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
                                     if(intCount[0] ==0) {
 
                                         intCount[0] = intCount[0] +1;
-
-
                                         manager.findViewByPosition(finalI).setBackgroundColor(ContextCompat.getColor(mContext, R.color.color_selecchat));
-
                                         Timer timer_interact=new Timer();
                                         timer_interact.schedule(new TimerTask() {
                                             @Override
                                             public void run() {
                                                 mContext.runOnUiThread(new Runnable() {
-
                                                     @Override
                                                     public void run() {
-
                                                         manager.findViewByPosition(finalI). setBackgroundColor(0);
                                                     }
                                                 });
@@ -596,15 +640,9 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
                                     }
                                 }
                             });
-
-
 //                            Toast.makeText(mContext,"jigar the item position we have is "+i ,Toast.LENGTH_LONG).show();
-
                         }
-
-
                     }
-
 //                    manager.scrollToPosition();
                 }
             });
@@ -730,8 +768,76 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     }
 //    ViewTreeObserver.OnGlobalLayoutListener
 
+    public static void openFile(Context context, File url) throws IOException {
+
+        try {
 
 
+            // Create URI
+            File file = url;
+            Uri uri = Uri.fromFile(file);
+
+
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            // Check what kind of file you are trying to open, by comparing the url with extensions.
+            // When the if condition is matched, plugin sets the correct intent (mime) type,
+            // so Android knew what application to use to open the file
+            if (url.toString().contains(".doc") || url.toString().contains(".docx")) {
+                // Word document
+                intent.setDataAndType(uri, "application/msword");
+            } else if (url.toString().contains(".pdf")) {
+                // PDF file
+                intent.setDataAndType(uri, "application/pdf");
+            } else if (url.toString().contains(".ppt") || url.toString().contains(".pptx")) {
+                // Powerpoint file
+                intent.setDataAndType(uri, "application/vnd.ms-powerpoint");
+            } else if (url.toString().contains(".xls") || url.toString().contains(".xlsx")) {
+                // Excel file
+                intent.setDataAndType(uri, "application/vnd.ms-excel");
+            } else if (url.toString().contains(".zip") || url.toString().contains(".rar")) {
+                // WAV audio file
+                intent.setDataAndType(uri, "application/x-wav");
+            } else if (url.toString().contains(".rtf")) {
+                // RTF file
+                intent.setDataAndType(uri, "application/rtf");
+            } else if (url.toString().contains(".wav") || url.toString().contains(".mp3")) {
+                // WAV audio file
+                intent.setDataAndType(uri, "audio/x-wav");
+            } else if (url.toString().contains(".gif")) {
+                // GIF file
+                intent.setDataAndType(uri, "image/gif");
+            } else if (url.toString().contains(".jpg") || url.toString().contains(".jpeg") || url.toString().contains(".png")) {
+                // JPG file
+                intent.setDataAndType(uri, "image/jpeg");
+            } else if (url.toString().contains(".txt")) {
+                // Text file
+                intent.setDataAndType(uri, "text/plain");
+            } else if (url.toString().contains(".3gp") || url.toString().contains(".mpg") || url.toString().contains(".mpeg") || url.toString().contains(".mpe") || url.toString().contains(".mp4") || url.toString().contains(".avi")) {
+                // Video files
+                intent.setDataAndType(uri, "video/*");
+            } else {
+                //if you want you can also define the intent type for any other file
+
+                //additionally use else clause below, to manage other unknown extensions
+                //in this case, Android will show all applications installed on the device
+                //so you can choose which application to use
+                intent.setDataAndType(uri, "*/*");
+            }
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
+        }catch (ActivityNotFoundException ex)
+        {
+            Toast.makeText(context,"No application found to open file",Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public void openWebPage(String url) {
+        Uri webpage = Uri.parse(url);
+        Intent intent = new Intent(Intent.ACTION_VIEW, webpage);
+        if (intent.resolveActivity(mContext.getPackageManager()) != null) {
+            mContext.startActivity(intent);
+        }
+    }
     private void showInfoSeenPopup(final Context context, Point p,
                                    final String strChatDeliveredTimeMiliSec, final String strChatSeenTimeMiliSec
             , final Boolean isSender, final LinearLayout linearLayoutRepliedMessage,final  int position) {
@@ -975,6 +1081,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         return mChat.size();
     }
 
+
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         public TextView show_message, txtContactName, txtContactNumber, txtAddContact,textViewRepliedMessage,textViewUserName;
@@ -982,15 +1089,15 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         public TextView show_time,audioTitle;
         public ProgressBar progress_circular;
         RelativeLayout relative, txt_seen, img_blur, relative_contact, relativeLayoutAudioPlayer,relativeLayoutVideoThumbnail;
-        LinearLayout linear_chat,linearLayoutRepliedMessage;
+        LinearLayout linear_chat,linearLayoutRepliedMessage,linearLayoutDocumentMain;
         AudioSenseiPlayerView audioSenseiPlayerView;
         LinearLayout linmain;
         //public VideoView videoView;
 
         PDFView pdfView;
-        TextView mRunTime, mTotalTime;
+        TextView mRunTime, mTotalTime,textViewDocumentName;
         SeekBar mMediaSeekBar;
-        ImageView mPauseMedia, mPlayMedia,imageViewPlayAudio,imageViewThumbnail,imageViewPlayButton;
+        ImageView mPauseMedia, mPlayMedia,imageViewPlayAudio,imageViewThumbnail,imageViewPlayButton,imageViewDocumentType;
         AudioWife audioWife;
 
         public ViewHolder(View itemView) {
@@ -1003,6 +1110,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             textViewRepliedMessage=itemView.findViewById(R.id.textViewRepliedMessage);
             textViewUserName=itemView.findViewById(R.id.textViewUserName);
             linearLayoutRepliedMessage=itemView.findViewById(R.id.linearLayoutRepliedMessage);
+            linearLayoutDocumentMain=itemView.findViewById(R.id.linearLayoutDocumentMain);
             imageViewPlayAudio=itemView.findViewById(R.id.imageViewPlayAudio);
             img_receive = itemView.findViewById(R.id.img_receive);
             txt_seen = itemView.findViewById(R.id.txt_seen);
@@ -1020,6 +1128,8 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             img_download = itemView.findViewById(R.id.img_download);
             img_blur = itemView.findViewById(R.id.img_blur);
             pdfView = itemView.findViewById(R.id.pdfView);
+            imageViewDocumentType = itemView.findViewById(R.id.imageViewDocumentType);
+            textViewDocumentName = itemView.findViewById(R.id.textViewFileName);
             relative_contact = itemView.findViewById(R.id.relative_contact);
             txtAddContact = itemView.findViewById(R.id.txtAddContact);
             txtContactName = itemView.findViewById(R.id.txtContactName);
@@ -1039,6 +1149,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
     @Override
     public int getItemViewType(int position) {
+
         fuser = FirebaseAuth.getInstance().getCurrentUser();
         if (mChat.get(position).getSender().equals(fuser.getUid())) {
             return MSG_TYPE_RIGHT;

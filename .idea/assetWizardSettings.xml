@@ -34,7 +34,7 @@
                                           <PersistentState>
                                             <option name="values">
                                               <map>
-                                                <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/av/ic_play_circle_filled_black_24dp.xml" />
+                                                <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/editor/ic_insert_drive_file_black_24dp.xml" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -66,9 +66,9 @@
                                   </option>
                                   <option name="values">
                                     <map>
-                                      <entry key="outputName" value="ic_action_play_button" />
+                                      <entry key="outputName" value="ic_action_file_pdf" />
                                       <entry key="theme" value="CUSTOM" />
-                                      <entry key="themeColor" value="fff6fe" />
+                                      <entry key="themeColor" value="ee3b00" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -150,6 +150,11 @@
                 </map>
               </option>
             </PersistentState>
+          </value>
+        </entry>
+        <entry key="vectorWizard">
+          <value>
+            <PersistentState />
           </value>
         </entry>
       </map>

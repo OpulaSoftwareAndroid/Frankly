@@ -230,16 +230,18 @@
                     <hani.momanii.supernova_emoji_library.Helper.EmojiconEditText
                         android:id="@+id/text_send"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_gravity="start"
-                        android:inputType="textCapSentences"
                         android:background="@android:color/transparent"
                         android:focusable="true"
                         android:fontFamily="@font/m"
                         android:gravity="center_vertical"
                         android:hint="@string/type_a_message"
                         android:imeOptions="actionSend"
+                        android:inputType="textMultiLine|textCapSentences"
+                        android:maxLines="5"
                         android:textColorHint="#ccc">
+
                         <requestFocus />
                     </hani.momanii.supernova_emoji_library.Helper.EmojiconEditText>
                 </LinearLayout>

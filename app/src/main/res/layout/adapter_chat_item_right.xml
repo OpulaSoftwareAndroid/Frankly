@@ -38,7 +38,7 @@
 
         <LinearLayout
             android:id="@+id/linear_chat"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/profile_image"
             android:layout_alignParentEnd="true"
@@ -58,6 +58,28 @@
                 android:layout_height="100dp"
                 android:visibility="gone" />
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:padding="20dp"
+                android:id="@+id/linearLayoutDocumentMain"
+                android:background="@drawable/border_frame_replied_message_right_side"
+                android:layout_height="wrap_content">
+            <ImageView
+                android:layout_width="35dp"
+                android:id="@+id/imageViewDocumentType"
+                android:src="@drawable/ic_action_file_doc"
+                android:layout_height="35dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_gravity="center"
+                android:textSize="16dp"
+                android:id="@+id/textViewFileName"
+                android:text="File Name"
+                android:textColor="@color/black"
+                android:layout_height="wrap_content" />
+            </LinearLayout>
             <RelativeLayout
                 android:id="@+id/relative"
                 android:layout_width="match_parent"
@@ -174,6 +196,7 @@
                         <!--android:src="@drawable/ic_downward"-->
                         <!--android:visibility="gone" />-->
                 <!--</RelativeLayout>-->
+
 
 
             <RelativeLayout
