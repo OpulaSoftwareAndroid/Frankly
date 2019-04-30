@@ -215,7 +215,7 @@ public class ListChatFragment extends Fragment {
                     }
 
 //                    userAdapter = new UserAdapter(getContext(), mUsers, mBroadcast, true, true);
-                    userAdapter = new UserAdapter(getContext(), mUsers,usersList, mBroadcast, true, true);
+                    userAdapter = new UserAdapter(getActivity(), mUsers,usersList, mBroadcast, true, true);
 
 //                   userAdapter = new UserAdapter(getContext(),spaceNavigationView, mUsers, mBroadcast, true, true);
 
@@ -251,7 +251,7 @@ public class ListChatFragment extends Fragment {
                             }
                         }
                     }
-                    broadcastAdapter = new UserAdapter(getContext(), mUsers, mBroadcast, true, false);
+                    broadcastAdapter = new UserAdapter(getActivity(), mUsers, mBroadcast, true, false);
 //                    broadcastAdapter = new UserAdapter(getContext(), mUsers,broadcastList, mBroadcast, true, true);
 
                     WsConstant.check = "fragment";

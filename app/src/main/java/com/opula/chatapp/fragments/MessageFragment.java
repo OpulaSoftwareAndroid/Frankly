@@ -195,6 +195,8 @@ public class MessageFragment extends Fragment  {
     boolean mStartRecording = true;
 
     boolean isBlockedUser=false;
+    boolean isBlockedUserBySender=false;
+
     String strLoginUserName;
     int PICK_IMAGE_MULTIPLE = 1;
     String imageEncoded;
@@ -282,6 +284,9 @@ public class MessageFragment extends Fragment  {
         linearLayoutManager = new LinearLayoutManager(Objects.requireNonNull(getActivity()).getApplicationContext());
         linearLayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(linearLayoutManager);
+        recordView = (RecordView) rootView.findViewById(R.id.record_view);
+        recordButton = (RecordButton) rootView.findViewById(R.id.record_button);
+        recordButton.setRecordView(recordView);
    //     messageAdapter=new MessageAdapter(linearLayoutManager);
         //        recyclerView.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -302,10 +307,31 @@ public class MessageFragment extends Fragment  {
 //        getUserDetails();
 
         getBlockUserListOfReceiver();
+        getSenderBlockUserList();
         Log.d(TAG,"jigar the user name  we have STRAT in fragment is "+username);
 
         fuser = FirebaseAuth.getInstance().getCurrentUser();
         Log.d(TAG,"jigar the user id current user we have in fragment is "+fuser.getUid());
+
+        if(isBlockedUser)
+        {
+            imageViewShareMediaDialog.setClickable(false);
+            recordButton.setClickable(false);
+        }else
+        {
+            imageViewShareMediaDialog.setClickable(true);
+            recordButton.setClickable(true);
+        }
+
+        if(isBlockedUserBySender)
+        {
+            imageViewShareMediaDialog.setClickable(false);
+            recordButton.setClickable(false);
+        }else
+        {
+            imageViewShareMediaDialog.setClickable(true);
+            recordButton.setClickable(true);
+        }
 
 
         btn_send.setOnClickListener(new View.OnClickListener() {
@@ -314,38 +340,89 @@ public class MessageFragment extends Fragment  {
                 notify = true;
                 String msg = text_send.getText().toString();
 
-                if (!msg.equals("")) {
-
-                    if(linearLayoutReplyMessage.getVisibility()==View.VISIBLE)
-                    {
-                        //   Toast.makeText(getContext(),"message is: "+textViewReplyMessage.getText().toString()+" and "+textViewUserName.getText().toString(),Toast.LENGTH_LONG).show();
-                        sendMessageToPersonal(getActivity(), strIsSecureChat,fuser.getUid(), userid, msg
-                                , true, strRepliedMessageID,textViewReplyMessage.getText().toString()
-                                ,textViewUserName.getText().toString()
-                                , false, "default"
-                                , false, "default"
-
-                                , "default"
-                                , false, "default", "default");
-                        linearLayoutReplyMessage.setVisibility(View.GONE);
-                    }else
+                if(!isBlockedUser) {
+                    Log.d(TAG, "jigar the user as friend is " + userid);
+                    if(isBlockedUserBySender)
                     {
 
-                       // if(AppGlobal.isNetworkAvailable(getContext())) {
-                            sendMessageToPersonal(getActivity(), strIsSecureChat, fuser.getUid(), userid, msg
-                                    , false, "", "", ""
-                                    ,false, "default"
-                                    , false, "default"
-                                    , "default", false, "default"
-                                    , "default");
-                       // }else
+                        imageViewShareMediaDialog.setClickable(false);
+                        recordButton.setClickable(false);
+
+                        new FancyAlertDialog.Builder(getActivity())
+                                                .setTitle("You have to unblock "+txtUserName.getText() +"?")
+                                                .setBackgroundColor(getResources().getColor(R.color.colorDarkYellow))  //Don't pass R.color.colorvalue
+                                                .setMessage("Until unblock,You will be not able to chat!")
+                                                .setNegativeBtnText("Cancel")
+                                                .setPositiveBtnBackground(getResources().getColor(R.color.colorDarkYellow))  //Don't pass R.color.colorvalue
+                                                .setPositiveBtnText("Unblock")
+                                                .setNegativeBtnBackground(getResources().getColor(R.color.colorDarkYellow))  //Don't pass R.color.colorvalue
+                                                .setIcon(R.drawable.ic_action_block_white, Icon.Visible)
+                                                .setAnimation(Animation.POP)
+                                                .isCancellable(true)
+                                                .OnPositiveClicked(new FancyAlertDialogListener() {
+                                                    @Override
+                                                    public void OnClick() {
+                                                        Log.d(TAG,"jigar the user name we are getting  is "+fuser.getUid());
+                                                        Log.d(TAG,"jigar the receiver user name we are getting  is "+userid);
+                                                        String strLoginUserId=fuser.getUid();
+                                                        String strReceiverId=userid;
+
+
+                                                    }
+                                                })
+                                                .OnNegativeClicked(new FancyAlertDialogListener() {
+                                                    @Override
+                                                    public void OnClick() {
+                                                        //Toast.makeText(getContext(),"Cancel",Toast.LENGTH_SHORT).show();
+                                                    }
+                                                })
+                                                .build();
+
+
+
+                    }else {
+                        imageViewShareMediaDialog.setClickable(true);
+                        recordButton.setClickable(true);
+
+                        if (!msg.equals("")) {
+
+
+                            if (linearLayoutReplyMessage.getVisibility() == View.VISIBLE) {
+                                //   Toast.makeText(getContext(),"message is: "+textViewReplyMessage.getText().toString()+" and "+textViewUserName.getText().toString(),Toast.LENGTH_LONG).show();
+                                sendMessageToPersonal(getActivity(), strIsSecureChat, fuser.getUid(), userid, msg
+                                        , true, strRepliedMessageID, textViewReplyMessage.getText().toString()
+                                        , textViewUserName.getText().toString()
+                                        , false, "default"
+                                        , false, "default"
+
+                                        , "default"
+                                        , false, "default", "default");
+                                linearLayoutReplyMessage.setVisibility(View.GONE);
+                            } else {
+
+                                // if(AppGlobal.isNetworkAvailable(getContext())) {
+                                sendMessageToPersonal(getActivity(), strIsSecureChat, fuser.getUid(), userid, msg
+                                        , false, "", "", ""
+                                        , false, "default"
+                                        , false, "default"
+                                        , "default", false, "default"
+                                        , "default");
+                                // }else
 //                        {
-                         //   Toast.makeText(getContext(),"Offline Mode",Toast.LENGTH_LONG).show();
+                                //   Toast.makeText(getContext(),"Offline Mode",Toast.LENGTH_LONG).show();
 
-  //                      }
+                                //                      }
+                            }
+                        }
+                        text_send.setText("");
                     }
+                }else
+                {
+                    imageViewShareMediaDialog.setClickable(false);
+                    recordButton.setClickable(false);
+                    Toast.makeText(getContext(), "You have been blocked by user ", Toast.LENGTH_LONG).show();
+
                 }
-                text_send.setText("");
             }
         });
 
@@ -769,7 +846,7 @@ public void getCurrentLocation () {
                         if (Objects.requireNonNull(user).getId() != null) {
 
                             if (user.getId().equals(fuser.getUid())) {
-                                Log.d(TAG, "jigar the blocked user list we have is " + user.getBlockedby());
+                                Log.d(TAG, "jigar the receiver blocked user list we have is " + user.getBlockedby());
 
 
                                 String strBlockedUserList = user.getBlockedby();
@@ -797,6 +874,45 @@ public void getCurrentLocation () {
         mSendEventListner = valueEventListener;
     }
 
+    public void getSenderBlockUserList() {
+        reference = FirebaseDatabase.getInstance().getReference("Users");
+        ValueEventListener valueEventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                try {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        User user = snapshot.getValue(User.class);
+                        if (Objects.requireNonNull(user).getId() != null) {
+                            Log.d(TAG, "jigar the sender blocked user list we have is " + user.getBlockedby());
+
+                            if (user.getId().equals(userid)) {
+                                Log.d(TAG, "jigar the sender blocked user list we have is " + user.getBlockedby());
+
+
+                                String strBlockedUserList = user.getBlockedby();
+
+                                if (strBlockedUserList.contains(fuser.getUid())) {
+                                    isBlockedUserBySender = true;
+                                    Toast.makeText(getContext(), "You have blocked this user ", Toast.LENGTH_LONG).show();
+                                } else {
+                                    isBlockedUserBySender = false;
+                                }
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
+        reference.addValueEventListener(valueEventListener);
+        mSendEventListner = valueEventListener;
+    }
 
 
     public void blockUser()

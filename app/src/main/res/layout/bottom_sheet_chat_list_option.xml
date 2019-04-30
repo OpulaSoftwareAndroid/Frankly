@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_marginTop="10dp"
+    android:background="@drawable/bottom_shape_sheet"
+    android:layout_margin="30dp"
+    android:padding="10dp"
+    android:layout_height="wrap_content">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="15dp"
+        android:background="@drawable/rounded_dialog"
+        android:padding="5dp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/linearLayoutProfileInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:foreground="?attr/selectableItemBackground"
+            android:orientation="horizontal">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:layout_width="@dimen/_25sdp"
+                android:layout_height="@dimen/_25sdp"
+                android:id="@+id/imageViewProfileImage"
+                android:src="@drawable/ic_action_profile_grey"
+                android:layout_gravity="center"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Profile Info"
+                android:layout_marginLeft="10dp"
+                android:layout_gravity="center"
+                android:textSize="@dimen/_12sdp" />
+
+            <!--<TextView-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="Document"-->
+            <!--android:layout_marginLeft="10dp"-->
+            <!--android:layout_gravity="center"-->
+            <!--android:textSize="@dimen/_12sdp" />-->
+
+
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:background="@color/gray"
+            android:layout_margin="10dp"
+            android:layout_height="0.5dp"/>
+
+
+        <LinearLayout
+            android:id="@+id/linearLayoutDeleteChat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:foreground="?attr/selectableItemBackground"
+            android:orientation="horizontal">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:layout_width="@dimen/_25sdp"
+                android:layout_height="@dimen/_25sdp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_delete_chat_forever_grey_24dp"
+                />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Delete Chat"
+                android:layout_marginLeft="10dp"
+                android:layout_gravity="center"
+                android:textSize="@dimen/_12sdp" />
+
+        </LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:background="@color/gray"
+            android:layout_margin="10dp"
+            android:layout_height="0.5dp"/>
+
+        <LinearLayout
+            android:id="@+id/linearLayoutMute"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:foreground="?attr/selectableItemBackground"
+            android:orientation="horizontal">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:layout_width="@dimen/_25sdp"
+                android:layout_height="@dimen/_25sdp"
+                android:src="@drawable/ic_volume_mute_grey_24dp"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="center"
+
+                />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Mute"
+                android:layout_marginLeft="10dp"
+                android:layout_gravity="center"
+                android:textSize="@dimen/_12sdp" />
+        </LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:background="@color/gray"
+            android:layout_margin="10dp"
+            android:layout_height="0.5dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:id="@+id/linearLayoutClearChat"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/lin_audio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:foreground="?attr/selectableItemBackground"
+                android:orientation="horizontal">
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_clear_all_chat_grey_24dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Clear Chat"
+                    android:layout_marginLeft="10dp"
+                    android:layout_gravity="center"
+                    android:textSize="@dimen/_12sdp" />
+
+            </LinearLayout>
+        </LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:background="@color/gray"
+            android:layout_margin="10dp"
+            android:layout_height="0.5dp"/>
+
+
+
+
+    </LinearLayout>
+
+</LinearLayout>
+<!--</android.support.v7.widget.CardView>-->

@@ -1,9 +1,12 @@
 package com.opula.chatapp.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -41,13 +44,19 @@ import com.opula.chatapp.model.BroadcastUser;
 import com.opula.chatapp.model.Chat;
 import com.opula.chatapp.model.Chatlist;
 import com.opula.chatapp.model.User;
+import com.shashank.sony.fancydialoglib.Animation;
+import com.shashank.sony.fancydialoglib.FancyAlertDialog;
+import com.shashank.sony.fancydialoglib.FancyAlertDialogListener;
+import com.shashank.sony.fancydialoglib.Icon;
 
 import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.TimeZone;
 
 import javax.crypto.Cipher;
@@ -56,25 +65,30 @@ import android.widget.Filter;
 import android.widget.Filterable;
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> implements Filterable {
 
-    private Context mContext;
+//    private Context mContext;
     private List<User> mUsers;
     private List<Chatlist> mChatListDetails;
     private List<User> mUsersFilteredList;
     SpaceNavigationView spaceNavigationView;
     private List<BroadcastUser> mBroadcast;
     private boolean ischat, is;
+    public Activity mContext;
+    public static FirebaseUser fuser;
+    DatabaseReference reference;
+
     SharedPreference sharedPreference;
 //    private int intNotificationCount=0;
     String theLastMessage, thetime;
     ArrayList<String> arrayListUserName;
     String AES = "AES";
     int intcount=0;
+    private BottomSheetDialog dialogMenu;
 
     static String TAG="UserAdapter";
     int intNotificationCount=0;
     ArrayList <String> arrayListUserLastMessageTime;
 
-    public UserAdapter(Context mContext, List<User> mUsers, List<Chatlist> mChatListDetails, List<BroadcastUser> mBroadcast
+    public UserAdapter(Activity mContext, List<User> mUsers, List<Chatlist> mChatListDetails, List<BroadcastUser> mBroadcast
             , boolean ischat, boolean is) {
         this.mUsers = mUsers;
         this.mUsersFilteredList = mUsers;
@@ -82,17 +96,23 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> im
         this.mBroadcast = mBroadcast;
         this.mContext = mContext;
         this.ischat = ischat;
+        fuser = FirebaseAuth.getInstance().getCurrentUser();
+        Log.d(TAG,"jigar the user id current user we have in fragment is "+fuser.getUid());
+
         this.is = is;
         arrayListUserLastMessageTime=new ArrayList<>();
     }
 
-    public UserAdapter(Context mContext, List<User> mUsers, List<BroadcastUser> mBroadcast, boolean ischat, boolean is) {
+    public UserAdapter(Activity mContext, List<User> mUsers, List<BroadcastUser> mBroadcast, boolean ischat, boolean is) {
         this.mUsers = mUsers;
         this.mUsersFilteredList = mUsers;
         this.mBroadcast = mBroadcast;
         this.mContext = mContext;
         this.ischat = ischat;
         this.is = is;
+        fuser = FirebaseAuth.getInstance().getCurrentUser();
+        Log.d(TAG,"jigar the user id current user we have in fragment is "+fuser.getUid());
+
         arrayListUserLastMessageTime=new ArrayList<>();
     }
 
@@ -182,6 +202,108 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> im
                     }
                 });
 
+                holder.click_layout.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View view) {
+                        Vibrator vv = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
+                        assert vv != null;
+                        vv.vibrate(50); // 5000 miliseconds = 5 seconds
+                        view = mContext.getLayoutInflater().inflate(R.layout.bottom_sheet_chat_list_option, null);
+                        dialogMenu = new BottomSheetDialog(mContext);
+                        dialogMenu.setContentView(view);
+                        dialogMenu.setCancelable(true);
+                        dialogMenu.show();
+                        LinearLayout linearLayoutProfileInfo=view.findViewById(R.id.linearLayoutProfileInfo);
+                        linearLayoutProfileInfo.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                sharedPreference.save(mContext, user.getId(), WsConstant.userId);
+                                MainActivity.showpart2();
+                                FragmentManager fragmentManager = ((FragmentActivity) mContext).getSupportFragmentManager();
+                                fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new UserProfileFragment()).addToBackStack(null).commit();
+                                dialogMenu.dismiss();
+
+                            }
+                        });
+
+
+                        LinearLayout linearLayoutClearChat=view.findViewById(R.id.linearLayoutClearChat);
+                        linearLayoutClearChat.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                new FancyAlertDialog.Builder(mContext)
+                                        .setTitle("Are you sure! you want clear this chat?")
+                                        .setBackgroundColor(mContext.getResources().getColor(R.color.colorPrimarytwo))  //Don't pass R.color.colorvalue
+                                        .setMessage("You won't be able to recover this chat!")
+                                        .setNegativeBtnText("Cancel")
+                                        .setPositiveBtnBackground(mContext.getResources().getColor(R.color.colorPrimarytwo))  //Don't pass R.color.colorvalue
+                                        .setPositiveBtnText("Clear")
+                                        .setNegativeBtnBackground(mContext.getResources().getColor(R.color.colorPrimarytwo))  //Don't pass R.color.colorvalue
+                                        .setAnimation(Animation.SLIDE)
+                                        .isCancellable(true)
+                                        .setIcon(R.drawable.sym_keyboard_delete_holo_dark, Icon.Visible)
+                                        .OnPositiveClicked(new FancyAlertDialogListener() {
+                                            @Override
+                                            public void OnClick() {
+                                                String strUserID=user.getId();
+                                                Log.d(TAG,"jigar the user name we are getting  is "+fuser.getUid());
+                                                Log.d(TAG,"jigar the receiver user name we are getting  is "+strUserID);
+                                                String strLoginUserId=fuser.getUid();
+                                                String strReceiverId=strUserID;
+                                                deleteMessageList(strLoginUserId,strReceiverId);
+//                                  //    Toast.makeText(getContext(),"Delete",Toast.LENGTH_SHORT).show();
+                                            }
+                                        })
+                                        .OnNegativeClicked(new FancyAlertDialogListener() {
+                                            @Override
+                                            public void OnClick() {
+                                                //Toast.makeText(getContext(),"Cancel",Toast.LENGTH_SHORT).show();
+                                            }
+                                        })
+                                        .build();
+                            }
+                        });
+
+                        LinearLayout linearLayoutDeleteChat=view.findViewById(R.id.linearLayoutDeleteChat);
+                        linearLayoutDeleteChat.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                new FancyAlertDialog.Builder(mContext)
+                                        .setTitle("Are you sure! you want to delete this chat?")
+                                        .setBackgroundColor(mContext.getResources().getColor(R.color.colorPrimary))  //Don't pass R.color.colorvalue
+                                        .setMessage("You won't be able to recover this chat!")
+                                        .setNegativeBtnText("Cancel")
+                                        .setPositiveBtnBackground(mContext.getResources().getColor(R.color.colorPrimary))  //Don't pass R.color.colorvalue
+                                        .setPositiveBtnText("Delete")
+                                        .setNegativeBtnBackground(mContext.getResources().getColor(R.color.colorPrimary))  //Don't pass R.color.colorvalue
+                                        .setAnimation(Animation.SLIDE)
+                                        .isCancellable(true)
+                                        .setIcon(R.drawable.sym_keyboard_delete_holo_dark, Icon.Visible)
+                                        .OnPositiveClicked(new FancyAlertDialogListener() {
+                                            @Override
+                                            public void OnClick() {
+                                                String strUserID=user.getId();
+                                                Log.d(TAG,"jigar the user name we are getting  is "+fuser.getUid());
+                                                Log.d(TAG,"jigar the receiver user name we are getting  is "+strUserID);
+                                                String strLoginUserId=fuser.getUid();
+                                                String strReceiverId=strUserID;
+                                                deleteMessageList(strLoginUserId,strReceiverId);
+//                                  //    Toast.makeText(getContext(),"Delete",Toast.LENGTH_SHORT).show();
+                                            }
+                                        })
+                                        .OnNegativeClicked(new FancyAlertDialogListener() {
+                                            @Override
+                                            public void OnClick() {
+                                                //Toast.makeText(getContext(),"Cancel",Toast.LENGTH_SHORT).show();
+                                            }
+                                        })
+                                        .build();
+                            }
+                        });
+
+                        return true;
+                    }
+                });
                 holder.profile_image.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -223,7 +345,66 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> im
             }
         }
     }
+    public void deleteMessageList(final String strLoginUserId,final String strReceiverID) {
+        reference = FirebaseDatabase.getInstance().getReference("Chats");
+        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                try {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        Chat chat = snapshot.getValue(Chat.class);
+                        if (Objects.requireNonNull(chat).getId() != null) {
 
+                            if (chat.getTo().equalsIgnoreCase("personal")) {
+
+                                if ((chat.getSender().equals(strLoginUserId) || chat.getSender().equals(strReceiverID))
+                                        && (chat.getReceiver().equals(strLoginUserId) || chat.getReceiver().equals(strReceiverID))) {
+                                    HashMap<String, Object> hashMap = new HashMap<>();
+
+                                    if (chat.getReceiver().equals(strLoginUserId)) {
+                                        if (chat.getIsstatus().equals("0")) {
+                                            hashMap.put("isstatus", "2");
+                                        } else if (chat.getIsstatus().equals("1")) {
+                                            hashMap.put("isstatus", "3");
+                                        }
+                                        Log.d(TAG, "jigar the login user is receiver and id is : " + strReceiverID + " and message is " + chat.getMessage());
+                                        snapshot.getRef().updateChildren(hashMap);
+                                        //                                    && chat.getSender().equals(userid)
+//                                    && !chat.isIsseen()) {
+//                                HashMap<String, Object> hashMap = new HashMap<>();
+//                                Long tsLong = (System.currentTimeMillis() / 1000);
+//                                String ts = tsLong.toString();
+
+//                                hashMap.put("isseen", true);
+//                                hashMap.put("issend", true);
+//                                hashMap.put("isreceived", true);
+//                                hashMap.put("isseentime", ts);
+//                                snapshot.getRef().updateChildren(hashMap);
+                                    } else {
+                                        if (chat.getIsstatus().equals("0")) {
+                                            hashMap.put("isstatus", "1");
+                                        } else if (chat.getIsstatus().equals("2")) {
+                                            hashMap.put("isstatus", "3");
+                                        }
+                                        Log.d(TAG, "jigar the login user is sender and id is : " + strLoginUserId + " and message is " + chat.getMessage());
+                                        snapshot.getRef().updateChildren(hashMap);
+                                    }
+
+                                }
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
 
     @Override
     public int getItemCount() {

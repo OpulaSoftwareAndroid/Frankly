@@ -30,16 +30,24 @@ public class ForwardMessageAdapter extends RecyclerView.Adapter<ForwardMessageAd
 
     private Context mContext;
     private List<User> mUsers;
-    private boolean ischat, isimage,isAudio;
+    private boolean ischat, isimage,isAudio,isContact;
+
+    String strContactName;
+    String strContactNumber;
+    String strDocumentUrl;
     SharedPreference sharedPreference;
     FirebaseUser fuser;
     String meg, url;
+    boolean isVideo;
+    String strVideoUrl;
     String TAG="ForwardMessageAdapter";
     AlertDialog alertDialog;
     String strAudioUrl;
 
     public ForwardMessageAdapter(Context mContext, List<User> mUsers, boolean isimage
-            , boolean ischat, String meg, AlertDialog alertDialog, String url,boolean isAudio,String strAudioUrl) {
+            , boolean ischat, String meg, AlertDialog alertDialog, String url,boolean isAudio,String strAudioUrl
+            ,boolean isContact,String strContactName,String strContactNumber
+            ,boolean isVideo,String strVideoUrl,String strDocumentUrl) {
 
         this.mUsers = mUsers;
         this.mContext = mContext;
@@ -50,6 +58,12 @@ public class ForwardMessageAdapter extends RecyclerView.Adapter<ForwardMessageAd
         this.url = url;
         this.strAudioUrl=strAudioUrl;
         this.alertDialog = alertDialog;
+        this.isContact=isContact;
+        this.strContactName=strContactName;
+        this.strContactNumber=strContactNumber;
+        this.isVideo=isVideo;
+        this.strVideoUrl=strVideoUrl;
+        this.strDocumentUrl=strDocumentUrl;
     }
 
     @NonNull
@@ -89,10 +103,54 @@ public class ForwardMessageAdapter extends RecyclerView.Adapter<ForwardMessageAd
                             , false,strAudioUrl, "default", true, "default"
                             , "default");
                 }else {
-                    MessageFragment.sendMessageToPersonal(mContext, "false", fuser.getUid(), user.getId(), meg,
-                            false, "","", "", isimage, url
-                            ,false,"default", "default", false, "default", "default");
+                    if(isContact)
+                    {
+                        Log.d(TAG,"jigar the contact name we have is "+isContact);
+                        MessageFragment.sendMessageToPersonal(mContext,"false", fuser.getUid(), user.getId(),
+                                "contact", false,"",""
+                                ,"",false, "default"
+                                ,false, "default"
+                                , "default", true, strContactName
+                                , strContactNumber);
+
+                    }else {
+                        if(isVideo)
+                        {
+                            MessageFragment.sendMessageToPersonal(mContext,"false", fuser.getUid(),  user.getId()
+                                    , "Video",
+                                    false,"","",""
+                                    ,true, url,true,strVideoUrl, "default"
+                                    , false, "default", "default");
+
+
+                        }else {
+                            if(!strDocumentUrl.equalsIgnoreCase("default"))
+                            {
+                                MessageFragment.sendMessageToPersonal(mContext,"false", fuser.getUid(), user.getId()
+                                        , meg,
+                                        false,"","",""
+                                        ,false, "default"
+                                        ,false, "default",
+                                        strDocumentUrl,false,"default", "default");
+
+                                //                                public static void sendMessageToPersonal(final Context context, final String strIsSecureChat
+//            , final String sender, final String receiver
+//            , String message,boolean isRepliedMessage,String strRepliedMessageID,String strRepliedMessage
+//                                    ,String strRepliedUserName, boolean isimage ,String uri,boolean isVideo,String strVideoUri
+//                                    , String docUri
+//            , boolean iscontact, String con_name, String con_num) {
+
+                            }else
+                            {
+                                MessageFragment.sendMessageToPersonal(mContext, "false", fuser.getUid(), user.getId(), meg,
+                                        false, "", "", "", isimage, url
+                                        , false, "default"
+                                        , "default", false, "default", "default");
+                            }
+                        }
+                    }
                 }
+
                 alertDialog.dismiss();
                 FragmentManager fragmentManager = ((FragmentActivity) mContext).getSupportFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new MessageFragment()).commit();
