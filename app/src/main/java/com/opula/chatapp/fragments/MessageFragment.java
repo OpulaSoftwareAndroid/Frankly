@@ -4,7 +4,6 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.ClipData;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.CursorLoader;
@@ -30,11 +29,8 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
 import android.text.format.DateFormat;
-import android.text.method.KeyListener;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -46,7 +42,6 @@ import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.VideoView;
 
 import com.devlomi.record_view.OnBasketAnimationEnd;
 import com.devlomi.record_view.OnRecordListener;
@@ -73,12 +68,9 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
-import com.kbeanie.multipicker.api.FilePicker;
 import com.kbeanie.multipicker.api.Picker;
 import com.kbeanie.multipicker.api.VideoPicker;
-import com.kbeanie.multipicker.api.callbacks.FilePickerCallback;
 import com.kbeanie.multipicker.api.callbacks.VideoPickerCallback;
-import com.kbeanie.multipicker.api.entity.ChosenFile;
 import com.kbeanie.multipicker.api.entity.ChosenVideo;
 import com.luseen.spacenavigation.SpaceNavigationView;
 import com.mlsdev.rximagepicker.RxImagePicker;
@@ -113,6 +105,7 @@ import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -136,10 +129,10 @@ import static android.app.Activity.RESULT_OK;
 
 public class MessageFragment extends Fragment  {
 
-    CircleImageView imgUser;
+    CircleImageView imageViewUserProfileImage;
     LinearLayout imgBack;
     EmojiconTextView txtUserName;
-    TextView txtCheckActive;
+    TextView textViewLastSeen;
     public static FirebaseUser fuser;
     DatabaseReference reference;
     RelativeLayout btn_send;
@@ -189,11 +182,8 @@ public class MessageFragment extends Fragment  {
     private static final String LOG_TAG = "AudioRecordTest";
     private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
     private static final int MY_PERMISSIONS_REQUEST_READ_LOCATION = 201;
-
-
     private static String fileName = null;
     boolean mStartRecording = true;
-
     boolean isBlockedUser=false;
     boolean isBlockedUserBySender=false;
 
@@ -233,6 +223,7 @@ public class MessageFragment extends Fragment  {
         String year         = (String) DateFormat.format("yyyy", c); // 2013
         String formattedDate = String.valueOf(c.getTime());
         setRetainInstance(true);
+
         //        String formattedDate = day+monthString+year;
 
 //        fileName = Environment.getExternalStorageDirectory().getAbsolutePath();
@@ -366,7 +357,7 @@ public class MessageFragment extends Fragment  {
                                                         Log.d(TAG,"jigar the receiver user name we are getting  is "+userid);
                                                         String strLoginUserId=fuser.getUid();
                                                         String strReceiverId=userid;
-
+                                                        unBlockUser();
 
                                                     }
                                                 })
@@ -394,7 +385,6 @@ public class MessageFragment extends Fragment  {
                                         , textViewUserName.getText().toString()
                                         , false, "default"
                                         , false, "default"
-
                                         , "default"
                                         , false, "default", "default");
                                 linearLayoutReplyMessage.setVisibility(View.GONE);
@@ -420,7 +410,7 @@ public class MessageFragment extends Fragment  {
                 {
                     imageViewShareMediaDialog.setClickable(false);
                     recordButton.setClickable(false);
-                    Toast.makeText(getContext(), "You have been blocked by user ", Toast.LENGTH_LONG).show();
+          //          Toast.makeText(getContext(), "You have been blocked by user ", Toast.LENGTH_LONG).show();
 
                 }
             }
@@ -444,7 +434,6 @@ public class MessageFragment extends Fragment  {
                 lin_location.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-
 
 //                        if (ContextCompat.checkSelfPermission(getActivity(),
 //                                Manifest.permission.ACCESS_FINE_LOCATION)
@@ -473,12 +462,10 @@ public class MessageFragment extends Fragment  {
 //                            getCurrentLocation();
 //
 //                        }
-
                         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
                                 != PackageManager.PERMISSION_GRANTED) {
                             ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.ACCESS_FINE_LOCATION
                             }, MY_PERMISSIONS_REQUEST_READ_LOCATION);
-
                             dialogMenu.dismiss();
 
                         }else {
@@ -535,7 +522,7 @@ public class MessageFragment extends Fragment  {
             }
         });
 
-        imgUser.setOnClickListener(new View.OnClickListener() {
+        imageViewUserProfileImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 MainActivity.showpart2();
@@ -559,20 +546,20 @@ public class MessageFragment extends Fragment  {
                     CheckActive = user.getStatus();
 
                     if (user.getStatus().equalsIgnoreCase("online")) {
-                        txtCheckActive.setText(user.getStatus());
+                        textViewLastSeen.setText(user.getStatus());
                     } else {
                         String str = getDateCurrentTimeZone(Long.parseLong(user.getStatus()));
-                        txtCheckActive.setText("Last seen : " + str);
+                        textViewLastSeen.setText("Last seen : " + str);
                     }
                     if (user.getImageURL().equals("default")) {
-                        imgUser.setImageResource(R.drawable.image_boy);
+                        imageViewUserProfileImage.setImageResource(R.drawable.image_boy);
                     } else {
                         //and this
                         try {
                             Log.d("Image", user.getImageURL());
                             Picasso.get().load(user.getImageURL())
                                     .placeholder(R.drawable.image_boy).error(R.drawable.image_boy)
-                                    .into(imgUser);
+                                    .into(imageViewUserProfileImage);
                         } catch (Exception e) {
                             Log.d(TAG, "jigar the error in image exception we have in reference users is " + e);
 
@@ -853,9 +840,15 @@ public void getCurrentLocation () {
 
                                 if (strBlockedUserList.contains(userid)) {
                                     isBlockedUser = true;
-                                    Toast.makeText(getContext(), "You have been blocked by user ", Toast.LENGTH_LONG).show();
+                  //                  Toast.makeText(getContext(), "You have been blocked by user ", Toast.LENGTH_LONG).show();
+                                    imageViewUserProfileImage.setVisibility(View.GONE);
+                                    textViewLastSeen.setVisibility(View.GONE);
+
                                 } else {
                                     isBlockedUser = false;
+                                    imageViewUserProfileImage.setVisibility(View.VISIBLE);
+                                    textViewLastSeen.setVisibility(View.VISIBLE);
+
                                 }
                             }
                         }
@@ -887,13 +880,11 @@ public void getCurrentLocation () {
 
                             if (user.getId().equals(userid)) {
                                 Log.d(TAG, "jigar the sender blocked user list we have is " + user.getBlockedby());
-
-
                                 String strBlockedUserList = user.getBlockedby();
 
                                 if (strBlockedUserList.contains(fuser.getUid())) {
                                     isBlockedUserBySender = true;
-                                    Toast.makeText(getContext(), "You have blocked this user ", Toast.LENGTH_LONG).show();
+              //                      Toast.makeText(getContext(), "You have blocked this user ", Toast.LENGTH_LONG).show();
                                 } else {
                                     isBlockedUserBySender = false;
                                 }
@@ -987,17 +978,38 @@ public void getCurrentLocation () {
                             if (user.getId().equals(userid)) {
                                 String strWhoBlockedUser = user.getBlockedby();
 
+                                List<String> arrayListIHaveBlockedUser = new ArrayList<String>(Arrays.asList(strWhoBlockedUser.split(",")));
+
                                 HashMap<String, Object> hashMap = new HashMap<>();
-//                            hashMap.put("blockedby", true);
-//                            snapshot.getRef().updateChildren(hashMap);
 
-                                if (strWhoBlockedUser.contains(fuser.getUid())) {
+                                if(arrayListIHaveBlockedUser.contains(fuser.getUid()))
+                                {
 
+                                    arrayListIHaveBlockedUser.remove(fuser.getUid());
+                                    String strUpdateBlockList="";
+
+                                    if(arrayListIHaveBlockedUser.size()>0) {
+
+                                        for(int i=0;i<arrayListIHaveBlockedUser.size();i++)
+                                        {
+                                            if(i==0)
+                                            {
+                                                strUpdateBlockList=arrayListIHaveBlockedUser.get(i);
+                                            }else
+                                            {
+                                                strUpdateBlockList=strUpdateBlockList+arrayListIHaveBlockedUser.get(i);
+                                            }
+                                        }
+                                    }
+                                    hashMap.put("blockedby", strUpdateBlockList);
+                                    snapshot.getRef().updateChildren(hashMap);
+                                }
+                                if (strWhoBlockedUser.contains(fuser.getUid()))
+                                {
                                     strWhoBlockedUser = strWhoBlockedUser.replace(fuser.getUid(), "");
                                     hashMap.put("blockedby", strWhoBlockedUser);
                                     snapshot.getRef().updateChildren(hashMap);
                                     System.out.println("jigar the already blocked user is " + strWhoBlockedUser);
-
                                 }
                                 Log.d(TAG, "jigar the blocking username we have is " + user.getUsername());
                             }
@@ -1370,9 +1382,9 @@ public void getCurrentLocation () {
 //            }
 //        });
         imgBack = view.findViewById(R.id.imgBack);
-        imgUser = view.findViewById(R.id.imgUser);
+        imageViewUserProfileImage = view.findViewById(R.id.imageViewUserProfileImage);
         txtUserName = view.findViewById(R.id.txtUserName);
-        txtCheckActive = view.findViewById(R.id.txtCheckActive);
+        textViewLastSeen = view.findViewById(R.id.textViewLastSeen);
         rootView = view.findViewById(R.id.root_view);
         emojiButton = view.findViewById(R.id.emoji_btn);
         imageViewShareMediaDialog = view.findViewById(R.id.imageViewShareMediaDialog);
@@ -2425,8 +2437,8 @@ private void uploadAudio(Uri data, String ext) {
             hashMap.put("storage_uri", "default");
             hashMap.put("isstatus", "0");
 
-
         }
+
         reference.setValue(hashMap);
 
         final String messageUniqueID = reference.getKey();
