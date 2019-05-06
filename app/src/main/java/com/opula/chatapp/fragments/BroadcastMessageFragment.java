@@ -403,9 +403,9 @@ public class BroadcastMessageFragment extends Fragment {
         btn_send = view.findViewById(R.id.btn_send);
         text_send = view.findViewById(R.id.text_send);
         imgBack = view.findViewById(R.id.imgBack);
-        imgUser = view.findViewById(R.id.imgUser);
+        imgUser = view.findViewById(R.id.imageViewUserProfileImage);
         txtUserName = view.findViewById(R.id.txtUserName);
-        txtCheckActive = view.findViewById(R.id.txtCheckActive);
+        txtCheckActive = view.findViewById(R.id.textViewLastSeen);
         rootView = view.findViewById(R.id.root_view);
         emojiButton = view.findViewById(R.id.emoji_btn);
         send_image = view.findViewById(R.id.send_image);

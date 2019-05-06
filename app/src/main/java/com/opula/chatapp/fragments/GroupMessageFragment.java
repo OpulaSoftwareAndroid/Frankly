@@ -2,34 +2,21 @@ package com.opula.chatapp.fragments;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
 
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.content.Context;
-import android.graphics.Color;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.iid.FirebaseInstanceId;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -39,12 +26,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -71,7 +54,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
@@ -82,7 +64,6 @@ import com.mlsdev.rximagepicker.Sources;
 import com.opula.chatapp.MainActivity;
 import com.opula.chatapp.R;
 import com.opula.chatapp.adapter.GroupMessageAdapter;
-import com.opula.chatapp.adapter.MessageAdapter;
 import com.opula.chatapp.api.APIService;
 import com.opula.chatapp.constant.AppGlobal;
 import com.opula.chatapp.constant.SharedPreference;
@@ -97,9 +78,6 @@ import com.opula.chatapp.notifications.Sender;
 import com.opula.chatapp.notifications.Token;
 import com.squareup.picasso.Picasso;
 
-import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
-import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener;
-
 import java.io.File;
 import java.io.IOException;
 import java.security.SecureRandom;
@@ -107,8 +85,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import hani.momanii.supernova_emoji_library.Actions.EmojIconActions;
@@ -353,7 +329,7 @@ public class GroupMessageFragment extends Fragment {
 //                            commaSepValueBuilder.append(u1.getEmail());
 //                            if (finalI != user.getMemberList().size()) {
 //                                commaSepValueBuilder.append(",");
-//                                txtCheckActive.setText(commaSepValueBuilder);
+//                                textViewLastSeen.setText(commaSepValueBuilder);
 //                            }
 //                        }
 //
@@ -573,9 +549,9 @@ public class GroupMessageFragment extends Fragment {
         btn_send = view.findViewById(R.id.btn_send);
         text_send = view.findViewById(R.id.text_send);
         imgBack = view.findViewById(R.id.imgBack);
-        imgUser = view.findViewById(R.id.imgUser);
+        imgUser = view.findViewById(R.id.imageViewUserProfileImage);
         txtUserName = view.findViewById(R.id.txtUserName);
-        txtCheckActive = view.findViewById(R.id.txtCheckActive);
+        txtCheckActive = view.findViewById(R.id.textViewLastSeen);
         rootView = view.findViewById(R.id.root_view);
         emojiButton = view.findViewById(R.id.emoji_btn);
         send_image = view.findViewById(R.id.send_image);

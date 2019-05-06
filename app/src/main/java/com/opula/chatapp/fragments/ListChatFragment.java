@@ -35,8 +35,10 @@ import com.opula.chatapp.model.Chatlist;
 import com.opula.chatapp.model.User;
 import com.opula.chatapp.notifications.Token;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 
 public class ListChatFragment extends Fragment {
@@ -56,12 +58,14 @@ public class ListChatFragment extends Fragment {
     static SearchView searchViewChatList;
     String TAG="ListChatFragment";
     SpaceNavigationView spaceNavigationView;
+    ValueEventListener mSendEventListner;
+    List<String> arrayListImBlockedByThisUser;
+    boolean isBlockedUserBySender=false;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_list_chats, container, false);
-
         MainActivity.showpart1();
         MainActivity.showFloatingActionButton();
         WsConstant.ismain = "p";
@@ -91,6 +95,8 @@ public class ListChatFragment extends Fragment {
         }
         getChats();
         getBroadcast();
+        getSenderBlockUserList();
+        Log.d(TAG,"jigar the sender OWN user id  we have is "+fuser.getUid());
 
         searchViewChatList.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -125,6 +131,7 @@ public class ListChatFragment extends Fragment {
           //  searchViewChatList.setVisibility(View.VISIBLE);
         }else
         {
+
         //    searchViewChatList.setVisibility(View.GONE);
         }
     }
@@ -189,10 +196,48 @@ public class ListChatFragment extends Fragment {
         reference.child(fuser.getUid()).setValue(token1);
     }
 
+    public void getSenderBlockUserList() {
+        reference = FirebaseDatabase.getInstance().getReference("Users");
+        ValueEventListener valueEventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                try {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        User user = snapshot.getValue(User.class);
+                        if (Objects.requireNonNull(user).getId() != null) {
+                            Log.d(TAG, "jigar the sender REGISTER id user we have is " + fuser.getUid());
+
+                        //    Log.d(TAG, "jigar the sender blocked id user list we have is " + user.getId());
+                            if (user.getId().equals(fuser.getUid())) {
+                                String strImBlockedByUserList = user.getBlockedby();
+
+                                Log.d(TAG, "jigar the i m blocked by users are " + strImBlockedByUserList);
+                                arrayListImBlockedByThisUser = new ArrayList<String>(Arrays.asList(strImBlockedByUserList.split(",")));
+
+                                Log.d(TAG, "jigar the i m blocked ARRAY LIST by users are " + arrayListImBlockedByThisUser);
+//                                System.out.println(myList);  // prints [lorem, ipsum, dolor, sit, amet]
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
+        reference.addValueEventListener(valueEventListener);
+        mSendEventListner = valueEventListener;
+    }
+
     private void chatList() {
+
         mUsers = new ArrayList<>();
         reference = FirebaseDatabase.getInstance().getReference("Users");
-        reference.addValueEventListener(new ValueEventListener() {
+        reference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 try {
@@ -215,8 +260,7 @@ public class ListChatFragment extends Fragment {
                     }
 
 //                    userAdapter = new UserAdapter(getContext(), mUsers, mBroadcast, true, true);
-                    userAdapter = new UserAdapter(getActivity(), mUsers,usersList, mBroadcast, true, true);
-
+                    userAdapter = new UserAdapter(getActivity(), mUsers,usersList, mBroadcast, true, true,arrayListImBlockedByThisUser );
 //                   userAdapter = new UserAdapter(getContext(),spaceNavigationView, mUsers, mBroadcast, true, true);
 
                     WsConstant.check = "fragment";
@@ -233,6 +277,7 @@ public class ListChatFragment extends Fragment {
             }
         });
     }
+
 
     private void broadcastList() {
         mBroadcast = new ArrayList<>();
@@ -251,7 +296,7 @@ public class ListChatFragment extends Fragment {
                             }
                         }
                     }
-                    broadcastAdapter = new UserAdapter(getActivity(), mUsers, mBroadcast, true, false);
+                    broadcastAdapter = new UserAdapter(getActivity(), mUsers, mBroadcast, true, false, arrayListImBlockedByThisUser );
 //                    broadcastAdapter = new UserAdapter(getContext(), mUsers,broadcastList, mBroadcast, true, true);
 
                     WsConstant.check = "fragment";
@@ -277,12 +322,15 @@ public class ListChatFragment extends Fragment {
             no_chat.setVisibility(View.VISIBLE);
         } else {
             recyclerView.setAdapter(userAdapter);
+
             recyclerView.addItemDecoration(new DividerItemDecoration(getContext(),
                     DividerItemDecoration.VERTICAL));
             recycler_view1.setAdapter(broadcastAdapter);
-        }
+            userAdapter.notifyDataSetChanged();
+          broadcastAdapter.notifyDataSetChanged();
 
-////        if (userAdapter.getItemCount() > 0 || broadcastAdapter.getItemCount() > 0) {
+        }
+        ////        if (userAdapter.getItemCount() > 0 || broadcastAdapter.getItemCount() > 0) {
 ////            recyclerView.setAdapter(userAdapter);
 ////            recycler_view1.setAdapter(broadcastAdapter);
 ////        } else {
@@ -318,6 +366,7 @@ public class ListChatFragment extends Fragment {
 //            task_list.setVisibility(View.GONE);
 //            no_chat.setVisibility(View.VISIBLE);
 //        }*/
+
     }
 
 }

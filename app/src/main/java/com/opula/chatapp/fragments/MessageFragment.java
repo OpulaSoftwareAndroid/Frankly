@@ -205,6 +205,8 @@ public class MessageFragment extends Fragment  {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_message, container, false);
+        sharedPreference = new SharedPreference();
+
         //if (android.os.Build.VERSION.SDK_INT > 9)
         {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
@@ -259,11 +261,11 @@ public class MessageFragment extends Fragment  {
         }
         catch (Exception e){
             e.printStackTrace();
-            strIsSecureChat="false"; }
+            strIsSecureChat="false";
+        }
 
         Log.d(TAG,"jigar the is secure intent have is clicked with status is "+strIsSecureChat);
 
-        sharedPreference = new SharedPreference();
         apiService = Client.getClient("https://fcm.googleapis.com/").create(APIService.class);
         initViews(view);
 
@@ -278,6 +280,7 @@ public class MessageFragment extends Fragment  {
         recordView = (RecordView) rootView.findViewById(R.id.record_view);
         recordButton = (RecordButton) rootView.findViewById(R.id.record_button);
         recordButton.setRecordView(recordView);
+
    //     messageAdapter=new MessageAdapter(linearLayoutManager);
         //        recyclerView.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -2732,13 +2735,16 @@ private void uploadAudio(Uri data, String ext) {
                     }
                     strLoginUserName = sharedPreference.getValue(getActivity(), WsConstant.userUsername);
 
+                    Log.d(TAG,"jigar the user login shared  name is the "+strLoginUserName);
+
                     messageAdapter = new MessageAdapter(getActivity(), mchat, imageurl,strIsSecureChat
                             ,txtUserName.getText().toString(),strLoginUserName,linearLayoutManager);
 
-                    Log.d(TAG,"jigar the user login has name is the "+fuser.getDisplayName());
+             //       Log.d(TAG,"jigar the user login has name is the "+fuser.getDisplayName());
 
                     recyclerView.setAdapter(messageAdapter);
                 } catch (Exception e) {
+                    Log.d(TAG,"jigar the error from notification is "+e);
                     e.printStackTrace();
                 }
             }

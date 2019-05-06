@@ -19,17 +19,17 @@
             android:queryHint="Search Here..."
             android:iconifiedByDefault="false" />
 
-        <!--<android.support.constraint.ConstraintLayout-->
-            <!--android:id="@+id/task_list"-->
-            <!--android:visibility="visible"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content">-->
-
         <android.support.constraint.ConstraintLayout
             android:id="@+id/task_list"
             android:visibility="visible"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
+        <!--<androi-->
+            <!--android:id="@+id/task_list"-->
+            <!--android:visibility="visible"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content">-->
 
         <android.support.v7.widget.RecyclerView
                 android:id="@+id/recycler_view"

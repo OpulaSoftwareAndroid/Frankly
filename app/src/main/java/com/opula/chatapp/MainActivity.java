@@ -319,6 +319,7 @@ public class MainActivity extends AppCompatActivity {
                 //Do something after 100ms
         if(strMenuFragment!=null)
         {
+            AppGlobal.showProgressDialog(MainActivity.this);
 
             if(strMenuFragment.equals(WsConstant.FRAGMENT_CHAT)) {
 
@@ -335,11 +336,15 @@ public class MainActivity extends AppCompatActivity {
                 sharedPreference.save(MainActivity.this,strUserID, WsConstant.userId);
                 fragmentMessage.setArguments(args);
                 fragmentManager = getSupportFragmentManager();
-                fragmentManager.beginTransaction().replace(R.id.frame_mainactivity,fragmentMessage).addToBackStack(null).commitAllowingStateLoss();
+                AppGlobal.hideProgressDialog(MainActivity.this);
 
+                fragmentManager.beginTransaction().replace(R.id.frame_mainactivity,fragmentMessage).addToBackStack(null)
+                        .commitAllowingStateLoss();
 
             }else
             {
+                AppGlobal.hideProgressDialog(MainActivity.this);
+
                 fragmentManager = getSupportFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.frame_mainactivity, new ListChatFragment()).addToBackStack(null).commitAllowingStateLoss();
 
@@ -347,7 +352,7 @@ public class MainActivity extends AppCompatActivity {
 
         }
             }
-        }, 1000);
+        }, 5000);
 
         txt_my_wallate.setOnClickListener(new View.OnClickListener() {
             @Override

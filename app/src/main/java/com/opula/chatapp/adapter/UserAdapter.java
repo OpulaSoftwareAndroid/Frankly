@@ -83,19 +83,20 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> im
     String AES = "AES";
     int intcount=0;
     private BottomSheetDialog dialogMenu;
-
+    List<String> arrayListImBlockedByThisUser;
     static String TAG="UserAdapter";
     int intNotificationCount=0;
     ArrayList <String> arrayListUserLastMessageTime;
 
     public UserAdapter(Activity mContext, List<User> mUsers, List<Chatlist> mChatListDetails, List<BroadcastUser> mBroadcast
-            , boolean ischat, boolean is) {
+            , boolean ischat, boolean is, List<String> arrayListImBlockedByThisUser ) {
         this.mUsers = mUsers;
         this.mUsersFilteredList = mUsers;
         this.mChatListDetails = mChatListDetails;
         this.mBroadcast = mBroadcast;
         this.mContext = mContext;
         this.ischat = ischat;
+        this.arrayListImBlockedByThisUser=arrayListImBlockedByThisUser;
         fuser = FirebaseAuth.getInstance().getCurrentUser();
         Log.d(TAG,"jigar the user id current user we have in fragment is "+fuser.getUid());
 
@@ -103,13 +104,15 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> im
         arrayListUserLastMessageTime=new ArrayList<>();
     }
 
-    public UserAdapter(Activity mContext, List<User> mUsers, List<BroadcastUser> mBroadcast, boolean ischat, boolean is) {
+    public UserAdapter(Activity mContext, List<User> mUsers, List<BroadcastUser> mBroadcast, boolean ischat, boolean is, List<String> arrayListImBlockedByThisUser )
+    {
         this.mUsers = mUsers;
         this.mUsersFilteredList = mUsers;
         this.mBroadcast = mBroadcast;
         this.mContext = mContext;
         this.ischat = ischat;
         this.is = is;
+        this.arrayListImBlockedByThisUser=arrayListImBlockedByThisUser;
         fuser = FirebaseAuth.getInstance().getCurrentUser();
         Log.d(TAG,"jigar the user id current user we have in fragment is "+fuser.getUid());
 
@@ -150,13 +153,18 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> im
                 holder.username.setText(strUserName);
                 final Boolean aBooleanIsSecure = mChatListDetails.get(position).issecure;
 
+               Log.d(TAG,"jigar the receiver list which in chat list are "+ user.getId());
+               if(arrayListImBlockedByThisUser.contains(user.getId()))
+               {
+                   holder.profile_image.setImageResource(R.drawable.no_dp_profile_pic);
 
-                if (user.getImageURL().equals("default")) {
-                    holder.profile_image.setImageResource(R.drawable.image_boy);
-                } else {
-                    Glide.with(mContext).load(user.getImageURL()).into(holder.profile_image);
-                }
-
+               }else {
+                   if (user.getImageURL().equals("default")) {
+                       holder.profile_image.setImageResource(R.drawable.image_boy);
+                   } else {
+                       Glide.with(mContext).load(user.getImageURL()).into(holder.profile_image);
+                   }
+               }
                 if (ischat) {
 
 

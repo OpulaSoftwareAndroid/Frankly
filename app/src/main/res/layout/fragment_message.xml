@@ -47,7 +47,7 @@
         </LinearLayout>
 
         <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/imgUser"
+            android:id="@+id/imageViewUserProfileImage"
             android:layout_width="@dimen/_40sdp"
             android:layout_height="match_parent"
             android:layout_marginTop="@dimen/_8sdp"
@@ -78,7 +78,7 @@
                 android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/txtCheckActive"
+                    android:id="@+id/textViewLastSeen"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/m"
@@ -229,9 +229,12 @@
 
                     <hani.momanii.supernova_emoji_library.Helper.EmojiconEditText
                         android:id="@+id/text_send"
+                        android:scrollbars="vertical"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_gravity="start"
+                        android:maxLength="2000"
+                        android:maxLines="5"
                         android:background="@android:color/transparent"
                         android:focusable="true"
                         android:fontFamily="@font/m"
@@ -239,9 +242,7 @@
                         android:hint="@string/type_a_message"
                         android:imeOptions="actionSend"
                         android:inputType="textMultiLine|textCapSentences"
-                        android:maxLines="5"
                         android:textColorHint="#ccc">
-
                         <requestFocus />
                     </hani.momanii.supernova_emoji_library.Helper.EmojiconEditText>
                 </LinearLayout>

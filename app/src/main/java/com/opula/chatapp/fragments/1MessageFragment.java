@@ -109,10 +109,10 @@
 //
 //public class MessageFragment extends Fragment {
 //
-//    CircleImageView imgUser;
+//    CircleImageView imageViewUserProfileImage;
 //    LinearLayout imgBack;
 //    EmojiconTextView txtUserName;
-//    TextView txtCheckActive;
+//    TextView textViewLastSeen;
 //    public static FirebaseUser fuser;
 //    DatabaseReference reference;
 //    RelativeLayout btn_send;
@@ -279,7 +279,7 @@
 //            }
 //        });
 //
-//        imgUser.setOnClickListener(new View.OnClickListener() {
+//        imageViewUserProfileImage.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View view) {
 //                MainActivity.showpart2();
@@ -299,20 +299,20 @@
 //                    CheckActive = user.getStatus();
 //
 //                    if (user.getStatus().equalsIgnoreCase("online")) {
-//                        txtCheckActive.setText(user.getStatus());
+//                        textViewLastSeen.setText(user.getStatus());
 //                    } else {
 //                        String str = getDateCurrentTimeZone(Long.parseLong(user.getStatus()));
-//                        txtCheckActive.setText("Last seen : " + str);
+//                        textViewLastSeen.setText("Last seen : " + str);
 //                    }
 //                    if (user.getImageURL().equals("default")) {
-//                        imgUser.setImageResource(R.drawable.image_boy);
+//                        imageViewUserProfileImage.setImageResource(R.drawable.image_boy);
 //                    } else {
 //                        //and this
 //                        try {
 //                            Log.d("Image", user.getImageURL());
 //                            Picasso.get().load(user.getImageURL())
 //                                    .placeholder(R.drawable.image_boy).error(R.drawable.image_boy)
-//                                    .into(imgUser);
+//                                    .into(imageViewUserProfileImage);
 //                        } catch (Exception e) {
 //                            e.printStackTrace();
 //                        }
@@ -537,9 +537,9 @@
 //        btn_send = view.findViewById(R.id.btn_send);
 //        text_send = view.findViewById(R.id.text_send);
 //        imgBack = view.findViewById(R.id.imgBack);
-//        imgUser = view.findViewById(R.id.imgUser);
+//        imageViewUserProfileImage = view.findViewById(R.id.imageViewUserProfileImage);
 //        txtUserName = view.findViewById(R.id.txtUserName);
-//        txtCheckActive = view.findViewById(R.id.txtCheckActive);
+//        textViewLastSeen = view.findViewById(R.id.textViewLastSeen);
 //        rootView = view.findViewById(R.id.root_view);
 //        emojiButton = view.findViewById(R.id.emoji_btn);
 //        send_image = view.findViewById(R.id.send_image);

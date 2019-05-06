@@ -61,7 +61,7 @@
 
             <TextView
                 android:layout_gravity="center"
-                android:id="@+id/txtCheckActive"
+                android:id="@+id/textViewLastSeen"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/m"
@@ -71,7 +71,7 @@
         </LinearLayout>
 
         <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/imgUser"
+            android:id="@+id/imageViewUserProfileImage"
             android:layout_marginRight="8dp"
             android:layout_width="@dimen/_40sdp"
             android:layout_height="match_parent"

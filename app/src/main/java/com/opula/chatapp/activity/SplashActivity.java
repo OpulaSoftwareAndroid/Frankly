@@ -50,6 +50,9 @@ public class SplashActivity extends AppCompatActivity {
     FirebaseAuth auth;
     SharedPreference sharedPreference;
     PackageInfo pInfo;
+    DatabaseReference ref;
+    ValueEventListener listener ;
+    String TAG="SplashActivity";
     MyFirebaseMessaging myFirebaseMessaging;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,20 +79,25 @@ public class SplashActivity extends AppCompatActivity {
         notificationManager.cancelAll();
         try {
             pInfo = SplashActivity.this.getPackageManager().getPackageInfo(getPackageName(), 0);
+            Log.d(TAG,"jigar the current version in mobile is "+pInfo.versionCode);
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
 
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Version").child("code");
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+         ref = FirebaseDatabase.getInstance().getReference("Version").child("code");
+        ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull final DataSnapshot d1) {
                 try {
                     Log.d("code",d1.getValue().toString());
                         String verCode = String.valueOf(pInfo.versionCode);
-                    if (verCode.equalsIgnoreCase(d1.getValue().toString())){
+                    Log.d(TAG,"jigar the data base version we have ar server is "+d1.getValue().toString());
+
+                    if (verCode.equalsIgnoreCase(d1.getValue().toString()))
+                    {
                         if (firebaseUser != null){
-                            auth.signInWithEmailAndPassword(Objects.requireNonNull(firebaseUser.getEmail()), sharedPreference.getValue(SplashActivity.this,WsConstant.password))
+                            auth.signInWithEmailAndPassword(Objects.requireNonNull(firebaseUser.getEmail())
+                                    , sharedPreference.getValue(SplashActivity.this,WsConstant.password))
                                     .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                                         @Override
                                         public void onComplete(@NonNull Task<AuthResult> task) {
@@ -292,7 +300,7 @@ public class SplashActivity extends AppCompatActivity {
 
         btn_no.setVisibility(View.GONE);
 
-        txt.setText("Please update to latest version of app to get latest features...");
+        txt.setText("You are using old version.Please get the updated version from provider...");
 
         btn_yes.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -304,4 +312,9 @@ public class SplashActivity extends AppCompatActivity {
         alertDialog.show();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+     //   ref.removeEventListener(valueEventListener);
+    }
 }
